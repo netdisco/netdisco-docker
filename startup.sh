@@ -81,9 +81,12 @@ for i in `parse_yaml $ENV_FILE CONF_ | grep ^CONF_database` ; do export $i ; don
 NETDISCO_DB_USER=`eval echo $CONF_database_user`
 NETDISCO_DB_PASS=`eval echo $CONF_database_pass`
 NETDISCO_DB_HOST=`eval echo $CONF_database_host | cut -d\; -f1`
-NETDISCO_DB_PORT=`eval echo $CONF_database_host | cut -d\; -f2 | cut -d\= -f2`
+# pull port from host config, set blank if no port specified
+NETDISCO_DB_PORT=`eval echo $CONF_database_host | cut -d\; -f2 | sed "s/$NETDISCO_DB_HOST//" | cut -d\= -f2`
+# coalesce DB port
 NETDISCO_DB_PORT=${NETDISCO_DB_PORT:="5432"}
 
+# options to initialize DB
 DB_POSTGRES_USER=postgres
 PSQL_OPTIONS="-h "$NETDISCO_DB_HOST" -p "$NETDISCO_DB_PORT" -U $DB_POSTGRES_USER"
 
