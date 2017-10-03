@@ -73,6 +73,7 @@ check_environment() {
     fi
 }
 
+
 check_environment
 
 
