@@ -20,8 +20,8 @@ RUN apt-get -yq update && \
 WORKDIR $NETDISCO_HOME
 
 # https://metacpan.org/pod/App::Netdisco#Installation
-RUN curl -L https://cpanmin.us/ | perl - --notest --local-lib ~/perl5 App::Netdisco && \
-    cd /tmp && curl -o oui.txt http://linuxnet.ca/ieee/oui.txt
+RUN curl -L https://cpanmin.us/ | perl - --notest --local-lib ${NETDISCO_HOME}/perl5 App::Netdisco && \
+    cd /tmp && curl -o ${NETDISCO_HOME}/oui.txt http://linuxnet.ca/ieee/oui.txt
 
 
 #VOLUME /netdisco/environments
