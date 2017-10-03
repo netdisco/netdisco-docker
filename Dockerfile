@@ -11,15 +11,16 @@ RUN apt-get -yq update && \
       curl &&  \
     apt-get clean &&   \
     rm -rf /var/lib/apt/lists/*
-RUN mkdir $NETDISCO_HOME
+RUN mkdir -p $NETDISCO_HOME
 WORKDIR $NETDISCO_HOME
-
-RUN curl -k -L http://cpanmin.us/ | perl - --notest --local-lib $NETDISCO_HOME/perl5 App::Netdisco
-RUN cd /tmp && curl -o oui.txt http://linuxnet.ca/ieee/oui.txt
-ENV PATH $NETDISCO_HOME/perl5/bin:$PATH
 
 ADD *.sh /
 RUN chmod 755 /*.sh
+
+# https://metacpan.org/pod/App::Netdisco#Installation
+RUN curl -L https://cpanmin.us/ | perl - --notest --local-lib ~/perl5 App::Netdisco
+RUN cd /tmp && curl -o oui.txt http://linuxnet.ca/ieee/oui.txt
+ENV PATH $NETDISCO_HOME/perl5/bin:$PATH
 
 #VOLUME /netdisco/environments
 #EXPOSE 5000
