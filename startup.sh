@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # File modified from originals at https://github.com/sheeprine/docker-netdisco and https://github.com/kkniffin/docker-netdisco 
 
 

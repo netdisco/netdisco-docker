@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 ## simple script to backup the db on an interval
 ## pulled from: https://metacpan.org/pod/distribution/App-Netdisco/lib/App/Netdisco/Manual/Deployment.pod#Database-Backups
 
