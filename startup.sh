@@ -122,16 +122,17 @@ netdisco-backend status || cleanup
 
 tail -f $NETDISCO_HOME/logs/netdisco-*.log &
 
-
 while true
 do
-    sleep 5
+    sleep 30
     ## clean up file to split by spaces
+    touch ${NETDISCO_HOME}/pending_devices.txt
     sed -i 's/ /\n/g; /^$/d;' ${NETDISCO_HOME}/pending_devices.txt
     ## loop over lines that are IP addresses
     for device in `cat ${NETDISCO_HOME}/pending_devices.txt | grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}'`
     do
         echo "Processing device from pending_devices.txt: $device"
-        netdisco-do discover -d $device && sed "/^${device}$/d" || echo "--Failed to discover this device"
+        discover_output=`netdisco-do -D discover -d $device 2>&1`
+        echo "$discover_output" | grep -q status\ done && sed -i "/^${device}$/d" ${NETDISCO_HOME}/pending_devices.txt || echo "--Failed to discover this device"
     done
 done
