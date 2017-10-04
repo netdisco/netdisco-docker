@@ -24,7 +24,7 @@ WORKDIR $NETDISCO_HOME
 # https://metacpan.org/pod/App::Netdisco#Installation
 RUN curl -L https://cpanmin.us/ | perl - --notest --local-lib ${NETDISCO_HOME}/perl5 App::Netdisco && \
     cd /tmp && \
-    curl -o ${NETDISCO_HOME}/oui.txt http://linuxnet.ca/ieee/oui.txt && \
+    curl -o oui.txt https://raw.githubusercontent.com/netdisco/upstream-sources/master/ieee/oui.txt && \
     mkdir ${NETDISCO_HOME}/bin && \
     ln -s ${NETDISCO_HOME}/perl5/bin/{localenv,netdisco-*} ${NETDISCO_HOME}/bin/
 
