@@ -88,10 +88,16 @@ create_cron() {
     if [ ! -e "$CRON_FILE" ]; then
         ## create standard cron file
 cat << EOF > "$CRON_FILE"
+# min   hour    day     month   weekday command
+
 # backup every morning at 2am
-0       2       *       *       *       /backup.sh >> $NETDISCO_HOME/logs/netdisco-backup.log 2>&1
+0  2   *   *   *   /backup.sh >> $NETDISCO_HOME/logs/netdisco-backup.log 2>&1
+
 # export to rancid every hour
-#0       *       *       *       *       netdisco-rancid-export >> $NETDISCO_HOME/logs/netdisco-backend.log 2>&1
+#0  *   *   *   *   netdisco-rancid-export >> $NETDISCO_HOME/logs/netdisco-backend.log 2>&1
+
+# put failed devices back into pending file daily
+0  8   *   *   *   cat "${NETDISCO_HOME}/environments/failed_devices.txt" >> "${NETDISCO_HOME}/environments/pending_devices.txt" && rm "${NETDISCO_HOME}/environments/failed_devices.txt" -f
 EOF
     fi
 
