@@ -130,11 +130,13 @@ echo "running netdisco-deploy, the download can take a while"
 #sed -i "s/new('netdisco'.*/new('netdisco', \\*STDIN, \\*STDOUT);/" $NETDISCO_HOME/perl5/bin/netdisco-deploy
 #$NETDISCO_HOME/perl5/bin/netdisco-deploy << ANSWERS
 sed -i "s/new('netdisco'.*/new('netdisco', \\*STDIN, \\*STDOUT);/" $NETDISCO_HOME/perl5/bin/netdisco-deploy
+
+## pass oui.txt as arg and skip mibs if already present
 $NETDISCO_HOME/perl5/bin/netdisco-deploy ${NETDISCO_HOME}/oui.txt << ANSWERS
 y
 y
 y
-y
+`if [ -e "${NETDISCO_HOME}/netdisco-mibs" ] ; then echo n ; else echo y ; fi`
 ANSWERS
 
 netdisco-web start
