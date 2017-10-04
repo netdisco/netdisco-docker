@@ -3,6 +3,7 @@
 
 
 ENV_FILE="$NETDISCO_HOME/environments/deployment.yml"
+CRON_FILE="$NETDISCO_HOME/environments/crontabs"
 
 ## function from https://stackoverflow.com/questions/5014632/how-can-i-parse-a-yaml-file-from-a-linux-shell-script
 function parse_yaml {
@@ -45,7 +46,7 @@ check_postgres() {
 
 set_environment() {
 
-    mkdir `dirname $ENV_FILE`
+    mkdir -p `dirname $ENV_FILE`
     cp $NETDISCO_HOME/perl5/lib/perl5/auto/share/dist/App-Netdisco/environments/deployment.yml $ENV_FILE
     chmod 600 $ENV_FILE
     
@@ -83,6 +84,20 @@ check_environment() {
     fi
 }
 
+create_cron() {
+    if [ ! -e "$CRON_FILE" ]; then
+        ## create standard cron file
+"$CRON_FILE" << EOF
+# backup every morning at 2am
+0       2       *       *       *       /backup.sh >> $NETDISCO_HOME/logs/netdisco-backup.log 2>&1
+# export to rancid every hour
+#0       *       *       *       *       netdisco-rancid-export >> $NETDISCO_HOME/logs/netdisco-backend.log 2>&1
+EOF
+    fi
+
+    crontab "$CRON_FILE"
+}
+
 
 check_environment
 
@@ -101,6 +116,8 @@ DB_POSTGRES_USER=postgres
 PSQL_OPTIONS="-h "$NETDISCO_DB_HOST" -p "$NETDISCO_DB_PORT" -U $DB_POSTGRES_USER"
 
 check_postgres
+
+create_cron
 
 # Provide Answers to Configuration Questions of Netdisco
 echo "running netdisco-deploy, the download can take a while"
@@ -122,17 +139,28 @@ netdisco-backend status || cleanup
 
 tail -f $NETDISCO_HOME/logs/netdisco-*.log &
 
+PENDING_FILE="${NETDISCO_HOME}/environments/pending_devices.txt"
+FAILED_FILE="${NETDISCO_HOME}/environments/failed_devices.txt"
+
+
+## Loop serves to keep docker container running as well as provide a simple way to push devices into netdisco
+## 
 while true
 do
     sleep 30
     ## clean up file to split by spaces
-    touch ${NETDISCO_HOME}/pending_devices.txt
-    sed -i 's/ /\n/g; /^$/d;' ${NETDISCO_HOME}/pending_devices.txt
+    if [ ! -e "$PENDING_FILE" ]; then
+        touch "$PENDING_FILE"
+    fi
+    
+    sed -i 's/ /\n/g; /^$/d;' "$PENDING_FILE"
     ## loop over lines that are IP addresses
-    for device in `cat ${NETDISCO_HOME}/pending_devices.txt | grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}'`
+    for device in `cat "$PENDING_FILE" | grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}'`
     do
         echo "Processing device from pending_devices.txt: $device"
         discover_output=`netdisco-do -D discover -d $device 2>&1`
-        echo "$discover_output" | grep -q status\ done && sed -i "/^${device}$/d" ${NETDISCO_HOME}/pending_devices.txt || echo "--Failed to discover this device"
+        # preserve device for later if discovery was a failure
+        echo "$discover_output" | grep -q status\ done || (echo "${device}" >> "$FAILED_FILE")
+        sed -i "/^${device}$/d" "$PENDING_FILE"
     done
 done

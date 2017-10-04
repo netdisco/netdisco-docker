@@ -3,6 +3,7 @@ ENV NETDISCO_HOME "/netdisco"
 ENV PATH $NETDISCO_HOME/perl5/bin:$PATH
 
 ADD *.sh /
+ADD netdiscologrotate /etc/logrotate.d/
 
 RUN apt-get -yq update && \
     apt-get install -yq --no-install-recommends \
@@ -23,10 +24,8 @@ WORKDIR $NETDISCO_HOME
 
 # https://metacpan.org/pod/App::Netdisco#Installation
 RUN curl -L https://cpanmin.us/ | perl - --notest --local-lib ${NETDISCO_HOME}/perl5 App::Netdisco && \
-    cd /tmp && \
-    curl -o oui.txt https://raw.githubusercontent.com/netdisco/upstream-sources/master/ieee/oui.txt && \
-    mkdir ${NETDISCO_HOME}/bin && \
-    ln -s ${NETDISCO_HOME}/perl5/bin/{localenv,netdisco-*} ${NETDISCO_HOME}/bin/
+    curl -o ${NETDISCO_HOME}/oui.txt https://raw.githubusercontent.com/netdisco/upstream-sources/master/ieee/oui.txt && \
+    ln -s ${NETDISCO_HOME}/perl5/bin/ ${NETDISCO_HOME}/bin
 
 
 #VOLUME /netdisco/environments
