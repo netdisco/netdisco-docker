@@ -22,6 +22,16 @@ function parse_yaml {
    }'
 }
 
+cleanup() {
+    echo "Exitting NetDisco..."
+    netdisco-web stop
+    netdisco-daemon stop
+    sleep 1
+
+    exit
+}
+trap cleanup INT TERM
+
 provision_netdisco_db() {
     psql $PSQL_OPTIONS -c "CREATE ROLE netdisco WITH LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE password '$NETDISCO_DB_PASS'"
     psql $PSQL_OPTIONS -c "CREATE DATABASE netdisco OWNER netdisco"
@@ -93,17 +103,20 @@ PSQL_OPTIONS="-h "$NETDISCO_DB_HOST" -p "$NETDISCO_DB_PORT" -U $DB_POSTGRES_USER
 check_postgres
 
 # Provide Answers to Configuration Questions of Netdisco
+echo "running netdisco-deploy, the download can take a while"
 sed -i "s/new('netdisco')/new('netdisco', \\*STDIN, \\*STDOUT)/" $NETDISCO_HOME/perl5/bin/netdisco-deploy
-$NETDISCO_HOME/perl5/bin/netdisco-deploy /tmp/oui.txt << ANSWERS
+$NETDISCO_HOME/perl5/bin/netdisco-deploy ${NETDISCO_HOME}/oui.txt << ANSWERS
 y
 y
 y
 y
 ANSWERS
 
-netdisco-web start
-netdisco-daemon start
-tail -f $NETDISCO_HOME/logs/netdisco-*.log &
+netdisco-web start && \
+    netdisco-daemon start && \
+    sleep 5 && \
+
+(tail -f $NETDISCO_HOME/logs/netdisco-*.log &) || (echo "netdisco didn't fully start" ; exit 1)
 
 while true
 do
