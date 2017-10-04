@@ -87,7 +87,7 @@ check_environment() {
 create_cron() {
     if [ ! -e "$CRON_FILE" ]; then
         ## create standard cron file
-"$CRON_FILE" << EOF
+cat << EOF > "$CRON_FILE"
 # backup every morning at 2am
 0       2       *       *       *       /backup.sh >> $NETDISCO_HOME/logs/netdisco-backup.log 2>&1
 # export to rancid every hour
