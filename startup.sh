@@ -26,7 +26,7 @@ cleanup() {
     echo "Exitting NetDisco..."
     netdisco-web stop
     netdisco-daemon stop
-    sleep 1
+    sleep 5
 
     exit
 }
@@ -54,7 +54,7 @@ set_environment() {
     NETDISCO_DB_PASS=`< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c32`
     NETDISCO_DB_HOST=${NETDISCO_DB_HOST:='postgres'}
     NETDISCO_DB_PORT=${NETDISCO_DB_PORT:='5432'}
-    NETDISCO_DOMAIN=${NETDISCO_DOMAIN:="'`hostname -d`"}
+    NETDISCO_DOMAIN=${NETDISCO_DOMAIN:="`hostname -d`"}
     NETDISCO_RO_COMMUNITY=${NETDISCO_RO_COMMUNITY:='public'}
     NETDISCO_RO_COMMUNITY=${NETDISCO_WR_COMMUNITY:='private'}
 
@@ -104,7 +104,9 @@ check_postgres
 
 # Provide Answers to Configuration Questions of Netdisco
 echo "running netdisco-deploy, the download can take a while"
-sed -i "s/new('netdisco')/new('netdisco', \\*STDIN, \\*STDOUT)/" $NETDISCO_HOME/perl5/bin/netdisco-deploy
+#sed -i "s/new('netdisco'.*/new('netdisco', \\*STDIN, \\*STDOUT);/" $NETDISCO_HOME/perl5/bin/netdisco-deploy
+#$NETDISCO_HOME/perl5/bin/netdisco-deploy << ANSWERS
+sed -i "s/new('netdisco'.*/new('netdisco', \\*STDIN, \\*STDOUT);/" $NETDISCO_HOME/perl5/bin/netdisco-deploy
 $NETDISCO_HOME/perl5/bin/netdisco-deploy ${NETDISCO_HOME}/oui.txt << ANSWERS
 y
 y
@@ -112,11 +114,14 @@ y
 y
 ANSWERS
 
-netdisco-web start && \
-    netdisco-daemon start && \
-    sleep 5 && \
+netdisco-web start
+netdisco-daemon start
+sleep 5
 
-(tail -f $NETDISCO_HOME/logs/netdisco-*.log &) || (echo "netdisco didn't fully start" ; exit 1)
+netdisco-backend status || cleanup
+
+tail -f $NETDISCO_HOME/logs/netdisco-*.log &
+
 
 while true
 do
