@@ -13,7 +13,7 @@
 database:
   name: 'netdisco'
   user: 'netdisco'
-  pass: 'qfnBsFbxhUt_9E03dU_I-VeLjnjy_Rs6'
+  pass: <randomlyGenerated>
   host: 'postgres;port=5432'
 
 # --------------------
@@ -85,4 +85,4 @@ discover_no_type:
 # set to true to globally disable authentication/login.
 # create a user called "guest" if you want to assign port/admin rights.
 # `````````````````````````````````````````````````````````````````````
-#no_auth: false
+no_auth: true

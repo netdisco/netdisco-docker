@@ -63,8 +63,8 @@ set_environment() {
     sed -i "s/pass: 'changeme'/pass: '$NETDISCO_DB_PASS'/" $ENV_FILE
     sed -i "s/#*host: 'localhost'/host: '$NETDISCO_DB_HOST;port=$NETDISCO_DB_PORT'/" $ENV_FILE
     sed -i "s/#*domain_suffix: '.example.com'/domain_suffix: '$NETDISCO_DOMAIN'/" $ENV_FILE
-
     sed -i "s/community: 'public'/community: '$NETDISCO_RO_COMMUNITY'/" $ENV_FILE
+    sed -i "s/#no_auth: false/no_auth: true/" $ENV_FILE
 
     if [ -n $NETDISCO_WR_COMMUNITY ]; then
         sed -i "/snmp_auth:/a\  - tag: 'default_v2_for_write'" $ENV_FILE
