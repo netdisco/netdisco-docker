@@ -22,11 +22,10 @@ NETDISCO_DB_PORT=${NETDISCO_DB_PORT:="5432"}
 
 if [ ! -e "~/.pgpass" ]; then
 
-    cat << EOF > "$CRON_FILE"
+    cat << EOF > "~/.pgpass" 
 ${NETDISCO_DB_HOST}:${NETDISCO_DB_PORT}:netdisco:${NETDISCO_DB_USER}:${NETDISCO_DB_PASS}
 EOF
-
-
+    chmod 600 "~/.pgpass" 
 fi
 
 mkdir -p $backup_dir
