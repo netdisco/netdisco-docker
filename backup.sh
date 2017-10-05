@@ -1,6 +1,7 @@
 #!/bin/bash
 ## simple script to backup the db on an interval
 ## pulled from: https://metacpan.org/pod/distribution/App-Netdisco/lib/App/Netdisco/Manual/Deployment.pod#Database-Backups
+## modified to pull host and creds from deployment.yml
 
 
 
@@ -18,8 +19,6 @@ NETDISCO_DB_PORT=`eval echo $CONF_database_host | cut -d\; -f2 | sed "s/$NETDISC
 # coalesce DB port
 NETDISCO_DB_PORT=${NETDISCO_DB_PORT:="5432"}
 
-mkdir -p $backup_dir
-
 
 if [ ! -e "~/.pgpass" ]; then
 
@@ -29,6 +28,9 @@ EOF
 
 
 fi
+
+mkdir -p $backup_dir
+
 
 DATE=`date +%Y%m%d`
 /usr/bin/pg_dump -F c --create -f $backup_dir/netdisco-pgsql-$DATE.dump --host=${NETDISCO_DB_HOST} --port=${NETDISCO_DB_PORT} --user=${NETDISCO_DB_USER} netdisco
