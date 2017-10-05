@@ -3,7 +3,34 @@
 ## pulled from: https://metacpan.org/pod/distribution/App-Netdisco/lib/App/Netdisco/Manual/Deployment.pod#Database-Backups
 
 
+
+backup_dir="${NETDISCO_HOME}/backups"
+
+source /parse_yaml.sh
+ENV_FILE="$NETDISCO_HOME/environments/deployment.yml"
+
+for i in `parse_yaml $ENV_FILE CONF_ | grep ^CONF_database` ; do export $i ; done
+NETDISCO_DB_USER=`eval echo $CONF_database_user`
+NETDISCO_DB_PASS=`eval echo $CONF_database_pass`
+NETDISCO_DB_HOST=`eval echo $CONF_database_host | cut -d\; -f1`
+# pull port from host config, set blank if no port specified
+NETDISCO_DB_PORT=`eval echo $CONF_database_host | cut -d\; -f2 | sed "s/$NETDISCO_DB_HOST//" | cut -d\= -f2`
+# coalesce DB port
+NETDISCO_DB_PORT=${NETDISCO_DB_PORT:="5432"}
+
+mkdir -p $backup_dir
+
+
+if [ ! -e "~/.pgpass" ]; then
+
+    cat << EOF > "$CRON_FILE"
+${NETDISCO_DB_HOST}:${NETDISCO_DB_PORT}:netdisco:${NETDISCO_DB_USER}:${NETDISCO_DB_PASS}
+EOF
+
+
+fi
+
 DATE=`date +%Y%m%d`
-/usr/bin/pg_dump -F c --create -f /path/to/backups/netdisco-pgsql-$DATE.dump netdisco
+/usr/bin/pg_dump -F c --create -f $backup_dir/netdisco-pgsql-$DATE.dump --host=${NETDISCO_DB_HOST} --port=${NETDISCO_DB_PORT} --user=${NETDISCO_DB_USER} netdisco
 gzip -9f /path/to/backups/netdisco-pgsql-$DATE.dump
-/usr/bin/find /path/to/backups/ -type f -ctime +30 -exec rm {} \;
+/usr/bin/find $backup_dir -type f -ctime +30 -exec rm {} \;
