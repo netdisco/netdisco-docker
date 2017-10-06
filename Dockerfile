@@ -16,7 +16,9 @@ RUN apt-get -yq update && \
       postgresql-client \
       curl \
       iputils-ping \
-      snmp && \
+      snmp \
+      procps \
+      ca-certificates && \
     apt-get clean &&  \
     rm -rf /var/lib/apt/lists/* && \
     mkdir -p ${NETDISCO_HOME}/cron && \
@@ -28,9 +30,9 @@ WORKDIR $NETDISCO_HOME
 
 
 # https://metacpan.org/pod/App::Netdisco#Installation
-#RUN curl -L https://cpanmin.us/ | perl - --notest --local-lib ${NETDISCO_HOME}/perl5 App::Netdisco && \
-#    curl -o /tmp/oui.txt https://raw.githubusercontent.com/netdisco/upstream-sources/master/ieee/oui.txt && \
-#    ln -s /netdisco/perl5/bin /netdisco/bin 
+RUN curl -L https://cpanmin.us/ | perl - --notest --local-lib ${NETDISCO_HOME}/perl5 App::Netdisco && \
+    curl -o /${NETDISCO_HOME}/oui.txt https://raw.githubusercontent.com/netdisco/upstream-sources/master/ieee/oui.txt && \
+    ln -s /netdisco/perl5/bin/ /netdisco/bin 
 
 
 #VOLUME /netdisco/environments
