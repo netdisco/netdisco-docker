@@ -28,12 +28,10 @@ WORKDIR $NETDISCO_HOME
 
 
 # https://metacpan.org/pod/App::Netdisco#Installation
-RUN curl -L https://cpanmin.us/ | perl - --notest --local-lib ${NETDISCO_HOME}/perl5 App::Netdisco && \
-    curl -o /tmp/oui.txt https://raw.githubusercontent.com/netdisco/upstream-sources/master/ieee/oui.txt 
-    
-    
-RUN ln -s /netdisco/perl5/bin /netdisco/bin && \
-    cp /tmp/oui.txt ${NETDISCO_HOME}
+#RUN curl -L https://cpanmin.us/ | perl - --notest --local-lib ${NETDISCO_HOME}/perl5 App::Netdisco && \
+#    curl -o /tmp/oui.txt https://raw.githubusercontent.com/netdisco/upstream-sources/master/ieee/oui.txt && \
+#    ln -s /netdisco/perl5/bin /netdisco/bin 
+
 
 #VOLUME /netdisco/environments
 #EXPOSE 5000
