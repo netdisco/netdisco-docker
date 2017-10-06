@@ -3,8 +3,8 @@
 
 if [ ! -e "${NETDISCO_HOME}/perl5" ] 
 then
-    # netdisco is not installed. This is a test image, then
-    while true; do sleep 300; done
+    
+    while true; do echo "netdisco is not installed. This is a test image, then" ; sleep 30; done
 
 fi
 
