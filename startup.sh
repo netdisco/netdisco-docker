@@ -1,6 +1,9 @@
 #!/bin/bash
 # File modified from originals at https://github.com/sheeprine/docker-netdisco and https://github.com/kkniffin/docker-netdisco 
 
+if [ ! -e "${NETDISCO_HOME}/perl5"]
+    sleep 300
+fi
 
 ENV_FILE="$NETDISCO_HOME/environments/deployment.yml"
 CRON_FILE="$NETDISCO_HOME/environments/crontabs"
