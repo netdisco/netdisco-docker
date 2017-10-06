@@ -31,7 +31,7 @@ WORKDIR $NETDISCO_HOME
 RUN NETDISCO_HOME="/netdisco" && \
     curl -L https://cpanmin.us/ | perl - --notest --local-lib ${NETDISCO_HOME}/perl5 App::Netdisco && \
     curl -o ${NETDISCO_HOME}/oui.txt https://raw.githubusercontent.com/netdisco/upstream-sources/master/ieee/oui.txt && \
-    ln -s ${NETDISCO_HOME}/perl5/bin/ ${NETDISCO_HOME}/bin 
+    ln -s ${NETDISCO_HOME}/perl5/bin ${NETDISCO_HOME}/bin 
     
     
 
