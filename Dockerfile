@@ -21,12 +21,14 @@ RUN apt-get -yq update && \
     rm -rf /var/lib/apt/lists/* && \
     mkdir -p ${NETDISCO_HOME}/cron && \
     chmod 755 /*.sh
+
+
 WORKDIR $NETDISCO_HOME
 
 # https://metacpan.org/pod/App::Netdisco#Installation
-RUN curl -L https://cpanmin.us/ | perl - --notest --local-lib ${NETDISCO_HOME}/perl5 App::Netdisco 
-
-RUN curl -o ${NETDISCO_HOME}/oui.txt https://raw.githubusercontent.com/netdisco/upstream-sources/master/ieee/oui.txt && \
+RUN cd /tmp && \ 
+    curl -L https://cpanmin.us/ | perl - --notest --local-lib ${NETDISCO_HOME}/perl5 App::Netdisco && \
+    curl -o ${NETDISCO_HOME}/oui.txt https://raw.githubusercontent.com/netdisco/upstream-sources/master/ieee/oui.txt && \
     ln -s ${NETDISCO_HOME}/perl5/bin/ ${NETDISCO_HOME}/bin 
     
     
