@@ -6,8 +6,7 @@ ENV PATH $NETDISCO_HOME/perl5/bin:$PATH
 ADD *.sh /
 ADD netdiscologrotate /etc/logrotate.d/
 
-RUN NETDISCO_HOME="/netdisco" && \
-    apt-get -yq update && \
+RUN apt-get -yq update && \
     apt-get install -yq --no-install-recommends \
       libssl-dev \
       libdbd-pg-perl \
@@ -21,14 +20,15 @@ RUN NETDISCO_HOME="/netdisco" && \
     apt-get clean &&  \
     rm -rf /var/lib/apt/lists/* && \
     mkdir -p ${NETDISCO_HOME}/cron && \
-    chmod 755 /*.sh
+    chmod 755 /*.sh && \
+    ls -l /
 
 
 WORKDIR $NETDISCO_HOME
 
 
 # https://metacpan.org/pod/App::Netdisco#Installation
-RUN NETDISCO_HOME="/netdisco" && \
+RUN export NETDISCO_HOME="/netdisco" && \
     curl -L https://cpanmin.us/ | perl - --notest --local-lib ${NETDISCO_HOME}/perl5 App::Netdisco && \
     cd ${NETDISCO_HOME} && \
     curl -o oui.txt https://raw.githubusercontent.com/netdisco/upstream-sources/master/ieee/oui.txt && \
