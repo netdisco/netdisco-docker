@@ -24,8 +24,9 @@ RUN apt-get -yq update && \
 WORKDIR $NETDISCO_HOME
 
 # https://metacpan.org/pod/App::Netdisco#Installation
-RUN curl -L https://cpanmin.us/ | perl - --notest --local-lib ${NETDISCO_HOME}/perl5 App::Netdisco && \
-    ln -s ${NETDISCO_HOME}/perl5/bin/ ${NETDISCO_HOME}/bin && \
+RUN curl -L https://cpanmin.us/ | perl - --notest --local-lib ${NETDISCO_HOME}/perl5 App::Netdisco 
+
+RUN ln -s ${NETDISCO_HOME}/perl5/bin/ ${NETDISCO_HOME}/bin && \
     curl -o ${NETDISCO_HOME}/oui.txt https://raw.githubusercontent.com/netdisco/upstream-sources/master/ieee/oui.txt 
     
 
