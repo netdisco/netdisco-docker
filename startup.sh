@@ -2,7 +2,9 @@
 # File modified from originals at https://github.com/sheeprine/docker-netdisco and https://github.com/kkniffin/docker-netdisco 
 
 if [ ! -e "${NETDISCO_HOME}/perl5"]
-    sleep 300
+    # netdisco is not installed. This is a test image, then
+    while true; do sleep 300; done
+
 fi
 
 ENV_FILE="$NETDISCO_HOME/environments/deployment.yml"
