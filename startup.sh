@@ -72,6 +72,7 @@ check_environment() {
 create_cron() {
     if [ ! -e "$CRON_FILE" ]; then
         ## create standard cron file
+        mkdir -p `dirname ${CRON_FILE}`
 cat << EOF > "$CRON_FILE"
 # min   hour    day     month   weekday command
 
@@ -117,6 +118,7 @@ echo "running netdisco-deploy, the download can take a while"
 sed -i "s/new('netdisco'.*/new('netdisco', \\*STDIN, \\*STDOUT);/" $NETDISCO_HOME/perl5/bin/netdisco-deploy
 
 ## pass oui.txt as arg and skip mibs if already present
+## mibs should only be downloaded the first run of the image, but can be run again if the mibs dir is deleted
 $NETDISCO_HOME/perl5/bin/netdisco-deploy ${NETDISCO_HOME}/oui.txt << ANSWERS
 y
 y
