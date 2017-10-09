@@ -11,7 +11,6 @@ RUN apt-get -yq update && \
       libssl-dev \
       libdbd-pg-perl \
       libsnmp-perl \
-      libnetssleay-perl \
       libio-socket-ssl-perl \
       build-essential \
       libnet-ldap-perl \
@@ -27,6 +26,7 @@ RUN apt-get -yq update && \
     chmod 755 /*.sh && \
     ls -l /
 
+#libnetssleay-perl \
 
 WORKDIR $NETDISCO_HOME
 
