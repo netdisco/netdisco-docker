@@ -11,6 +11,8 @@ RUN apt-get -yq update && \
       libssl-dev \
       libdbd-pg-perl \
       libsnmp-perl \
+      libnetssleay-perl \
+      libio-socket-ssl-perl \
       build-essential \
       libnet-ldap-perl \
       postgresql-client \
