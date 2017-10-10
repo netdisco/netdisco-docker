@@ -19,7 +19,8 @@ RUN apt-get -yq update && \
       iputils-ping \
       snmp \
       procps \
-      ca-certificates && \
+      ca-certificates \
+      cron && \
     apt-get clean &&  \
     rm -rf /var/lib/apt/lists/* && \
     mkdir -p ${NETDISCO_HOME}/cron && \
