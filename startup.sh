@@ -48,7 +48,7 @@ set_environment() {
     NETDISCO_DB_PORT=${NETDISCO_DB_PORT:='5432'}
     NETDISCO_DOMAIN=${NETDISCO_DOMAIN:="`hostname -d`"}
     NETDISCO_RO_COMMUNITY=${NETDISCO_RO_COMMUNITY:='public'}
-    NETDISCO_RO_COMMUNITY=${NETDISCO_WR_COMMUNITY:='private'}
+    NETDISCO_WR_COMMUNITY=${NETDISCO_WR_COMMUNITY:='private'}
 
     sed -i "s/user: 'changeme'/user: '$NETDISCO_DB_USER'/" $ENV_FILE
     sed -i "s/pass: 'changeme'/pass: '$NETDISCO_DB_PASS'/" $ENV_FILE
@@ -161,7 +161,7 @@ do
         echo "Processing device from pending_devices.txt: $device"
         discover_output=`netdisco-do -D discover -d $device 2>&1`
         # preserve device for later if discovery was a failure
-        echo "$discover_output" | grep -q status\ done || (echo "${device}" >> "$FAILED_FILE")
+        echo "$discover_output" | grep -q status\ done || (echo "${device}" | sort | uniq >> "$FAILED_FILE")
         sed -i "/^${device}$/d" "$PENDING_FILE"
     done
 done

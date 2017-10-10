@@ -8,7 +8,7 @@
 backup_dir="${NETDISCO_HOME}/backups"
 
 source /parse_yaml.sh
-ENV_FILE="$NETDISCO_HOME/environments/deployment.yml"
+ENV_FILE="${NETDISCO_HOME}/environments/deployment.yml"
 
 for i in `parse_yaml $ENV_FILE CONF_ | grep ^CONF_database` ; do export $i ; done
 NETDISCO_DB_USER=`eval echo $CONF_database_user`
