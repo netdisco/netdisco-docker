@@ -1,4 +1,3 @@
-#FROM phusion/baseimage
 FROM debian:stable
 ENV NETDISCO_HOME "/netdisco"
 ENV PATH $NETDISCO_HOME/perl5/bin:$PATH
