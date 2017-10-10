@@ -2,6 +2,7 @@ FROM debian:stable
 ENV NETDISCO_HOME "/netdisco"
 ENV PATH $NETDISCO_HOME/perl5/bin:$PATH
 
+
 ADD *.sh /
 ADD netdiscologrotate /etc/logrotate.d/
 
