@@ -7,6 +7,7 @@ ADD netdiscologrotate /etc/logrotate.d/
 
 ## since we are using a slim image, we must make any directories that packages want to symlink man pages into
 RUN mkdir -p /usr/share/man/man1/ && \
+    mkdir -p /usr/share/man/man7/ && \
     apt-get -yq update && \
     apt-get install -yq --no-install-recommends \
       libssl-dev \
