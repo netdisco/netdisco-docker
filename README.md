@@ -1,6 +1,11 @@
 # netdisco-docker
 Docker images for App::Netdisco
 
+# Persistent Environment variables
+These will affect settings everytime the container starts
+- `TZ`
+  - Since this container is based off of the debian image, it supports all ENV variables from there. Setting this ENV variable to an accepted (Timezone Name)[https://en.wikipedia.org/wiki/List_of_tz_database_time_zones] will have it reflect in the system. Useful for human-readable logs and cronjobs.
+
 # One-time-Use Environment variables
 These only affect things if `deployment.yml` doesn't exist when the container starts, as they are defining the values that get added to that config file. Normal running of the container references `deployment.yml` directly
 - `NETDISCO_DB_HOST`
@@ -19,7 +24,3 @@ These only affect things if `deployment.yml` doesn't exist when the container st
   - Specifies the read-only community string
 - `NETDISCO_WR_COMMUNITY`
   - Specifies the read-write community string
-
-# Persistent Environment variables
-These will affect settings everytime the container starts
-- There are currently no supported global environment variables 

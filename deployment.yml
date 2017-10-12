@@ -38,7 +38,7 @@ snmp_auth:
     read: false
     write: true
   - tag: 'default_v2_readonly'
-    community: 'private'
+    community: 'public'
     read: true
     write: false
 #  - tag: 'default_v2_for_write'

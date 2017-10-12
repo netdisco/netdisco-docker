@@ -82,8 +82,8 @@ create_cron() {
 cat << EOF > "$CRON_FILE"
 # min   hour    day     month   weekday command
 
-# backup every morning at 2am
-0  2   *   *   *   /backup.sh >> $NETDISCO_HOME/logs/netdisco-backup.log 2>&1
+# backup every morning at 2am, with prefix of "cron"
+0  2   *   *   *   /backup.sh cron >> $NETDISCO_HOME/logs/netdisco-backup.log 2>&1
 
 # export to rancid every hour
 #0  *   *   *   *   netdisco-rancid-export >> $NETDISCO_HOME/logs/netdisco-backend.log 2>&1

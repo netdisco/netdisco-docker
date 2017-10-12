@@ -52,6 +52,10 @@ then
     temp_restore_file=`mktemp`
     gzip -d $restore_file -c > $temp_restore_file
     /usr/bin/pg_restore --host=${NETDISCO_DB_HOST} --port=${NETDISCO_DB_PORT} --user=${NETDISCO_DB_USER} -c -n public -d netdisco -1 $temp_restore_file
+
+    echo "Bouncing the netdisco services since data has likely changed."
+    netdisco-web restart
+    netdisco-daemon restart
 else
     echo "Run this script again with a number from above as an argument. ex: '/restoreBackup.sh 1'"
 fi

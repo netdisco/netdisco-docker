@@ -2,12 +2,13 @@
 ## simple script to backup the db on an interval
 ## pulled from: https://metacpan.org/pod/distribution/App-Netdisco/lib/App/Netdisco/Manual/Deployment.pod#Database-Backups
 ## modified to pull host and creds from deployment.yml
+## An optional arg is accepted to set the prefix of the backup files. The default is "manual"
 
 prefix=$1
 
 if [ "$prefix" == "" ]
 then
-    prefix="cron"
+    prefix="manual"
 fi
 
 backup_dir="${NETDISCO_HOME}/backups"
