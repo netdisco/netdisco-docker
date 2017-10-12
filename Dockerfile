@@ -5,7 +5,8 @@ ENV PATH $NETDISCO_HOME/perl5/bin:$PATH
 ADD *.sh /
 ADD netdiscologrotate /etc/logrotate.d/
 
-RUN touch /usr/share/man/man1/ && \
+## since we are using a slim image, we must make any directories that packages want to symlink man pages into
+RUN mkdir -p /usr/share/man/man1/ && \
     apt-get -yq update && \
     apt-get install -yq --no-install-recommends \
       libssl-dev \
