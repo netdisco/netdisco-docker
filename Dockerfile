@@ -5,7 +5,8 @@ ENV PATH $NETDISCO_HOME/perl5/bin:$PATH
 ADD *.sh /
 ADD netdiscologrotate /etc/logrotate.d/
 
-RUN apt-get -yq update && \
+RUN touch /usr/share/man/man1/ && \
+    apt-get -yq update && \
     apt-get install -yq --no-install-recommends \
       libssl-dev \
       libdbd-pg-perl \
