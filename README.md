@@ -24,3 +24,15 @@ These only affect things if `deployment.yml` doesn't exist when the container st
   - Specifies the read-only community string
 - `NETDISCO_WR_COMMUNITY`
   - Specifies the read-write community string
+
+# Quick Start
+The easiest way to get it going is to bring up a user-defined network and a postgres container:
+```
+docker network create netdisco
+docker run -d --name=postgres --network=netdisco postgres
+```
+
+then bring up the netdisco container connected to the same network, and expose port 5000
+```
+docker run -d --name=netdisco --network=netdisco netdisco/netdisco-docker
+```
