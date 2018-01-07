@@ -1,0 +1,6 @@
+.dockerignore
+.git
+docker-compose.yml
+LICENSE
+postgresql-data
+README.md
