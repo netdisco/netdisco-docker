@@ -1,4 +1,0 @@
-/netdisco/logs/*.log {
-    weekly
-    rotate 5
-}
