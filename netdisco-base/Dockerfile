@@ -31,8 +31,8 @@ RUN curl -s https://api.github.com/repos/netdisco/netdisco/tags | \
   PERL5LIB='.' xargs -n1 cpanm --quiet --notest --local-lib $NETDISCO_HOME/perl5
 
 RUN mkdir $NETDISCO_HOME/bin && \
-  ln -sf $NETDISCO_HOME/perl5/bin/{localenv,netdisco-*} $NETDISCO_BIN/bin/
-ENV PATH $NETDISCO_HOME/perl5/bin:$PATH
+  ln -sf $NETDISCO_HOME/perl5/bin/{localenv,netdisco-*} $NETDISCO_HOME/bin/
+ENV PATH $NETDISCO_HOME/bin:$PATH
 ENV SHELL "/bin/bash"
 
 WORKDIR $NETDISCO_HOME
