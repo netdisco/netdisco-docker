@@ -16,7 +16,7 @@ services:
     image: netdisco-backend:latest
     build:
       context: .
-      dockerfile: netdiso-backend/Dockerfile
+      dockerfile: netdisco-backend/Dockerfile
     volumes:
       - "./netdisco/config:/home/netdisco/environments"
     depends_on:

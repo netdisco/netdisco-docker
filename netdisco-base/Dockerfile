@@ -1,8 +1,6 @@
 # vim: ft=Dockerfile
 FROM debian:stable-slim
 
-# since we are using a slim image, we must make any directories that packages
-# want to symlink man pages into
 RUN for i in 1 2 3 4 5 6 7 8 ; do mkdir -p /usr/share/man/man$i ; done && \
     apt-get -yq update && \
     apt-get install -yq --no-install-recommends \
@@ -24,14 +22,18 @@ RUN for i in 1 2 3 4 5 6 7 8 ; do mkdir -p /usr/share/man/man$i ; done && \
 
 ENV NETDISCO_HOME "/home/netdisco"
 RUN groupadd -r netdisco -g 901 && \
-    useradd -u 901 -r -g netdisco -m -d $NETDISCO_HOME -s /bin/bash -c "netdisco user" netdisco
+    useradd -u 901 -r -p x -g netdisco -m -d $NETDISCO_HOME -s /bin/bash -c "netdisco user" netdisco
 USER netdisco:netdisco
-
-ENV SHELL "/bin/bash"
-WORKDIR $NETDISCO_HOME
 
 RUN curl -s https://api.github.com/repos/netdisco/netdisco/tags | \
   jq '.[]|.name|select(test("^\\d+\\.\\d+$"))|"https://github.com/netdisco/netdisco.git@"+.' | \
-  sort -rg | head -n1 | PERL5LIB='.' xargs -n1 cpanm --quiet --notest --local-lib $NETDISCO_HOME/perl5
+  sort -rg | head -n1 | \
+  PERL5LIB='.' xargs -n1 cpanm --quiet --notest --local-lib $NETDISCO_HOME/perl5
 
+RUN mkdir $NETDISCO_HOME/bin && \
+  ln -sf $NETDISCO_HOME/perl5/bin/{localenv,netdisco-*} $NETDISCO_BIN/bin/
+ENV PATH $NETDISCO_HOME/perl5/bin:$PATH
+ENV SHELL "/bin/bash"
+
+WORKDIR $NETDISCO_HOME
 CMD bash
