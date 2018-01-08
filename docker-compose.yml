@@ -1,9 +1,4 @@
 version: '3'
-#volumes:
-#  config-volume:
-#    - type: bind
-#      source: "./netdisco/config"
-#      target: "/home/netdisco/environments"
 services:
   postgres:
     image: docker.io/postgres:9.6.6-alpine
@@ -16,28 +11,12 @@ services:
     image: netdisco-base:latest
     build:
       context: .
-      dockerfile: Dockerfile-netdisco-base
-  netdisco-web:
-    image: netdisco-web:latest
-    build:
-      context: .
-      dockerfile: Dockerfile-netdisco-web
-    volumes:
-      - "./netdisco/config:/home/netdisco/environments"
-    environment:
-      - NETDISCO_ADMIN_USER=admin
-      - NETDISCO_ADMIN_PASS=admin
-    depends_on:
-      - netdisco-base
-    links:
-      - postgres:db
-    ports:
-      - "5000:5000"
+      dockerfile: netdisco-base/Dockerfile
   netdisco-backend:
     image: netdisco-backend:latest
     build:
       context: .
-      dockerfile: Dockerfile-netdisco-backend
+      dockerfile: netdiso-backend/Dockerfile
     volumes:
       - "./netdisco/config:/home/netdisco/environments"
     depends_on:
