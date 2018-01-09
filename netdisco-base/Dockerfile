@@ -1,7 +1,7 @@
 # vim: ft=Dockerfile
 FROM debian:stable-slim
 
-RUN for i in 1 2 3 4 5 6 7 8 ; do mkdir -p /usr/share/man/man$i ; done && \
+RUN bash -c 'mkdir -p /usr/share/man/man{1..8}' && \
     apt-get -yq update && \
     apt-get install -yq --no-install-recommends \
       build-essential \

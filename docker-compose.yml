@@ -1,10 +1,10 @@
 version: '3'
 services:
-  postgres:
-    image: docker.io/postgres:9.6.6-alpine
-    environment:
-      - POSTGRES_USER=netdisco
-      - POSTGRES_PASSWORD=netdisco
+  netdisco-db:
+    image: netdisco-db:latest
+    build:
+      context: .
+      dockerfile: netdisco-db/Dockerfile
     volumes:
       - "./netdisco/data:/var/lib/postgresql/data"
   netdisco-base:
@@ -22,4 +22,4 @@ services:
     depends_on:
       - netdisco-base
     links:
-      - postgres:db
+      - netdisco-db:db

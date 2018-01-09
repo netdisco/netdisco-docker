@@ -1,0 +1,4 @@
+CREATE ROLE netdisco WITH LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE password 'netdisco';
+CREATE DATABASE netdisco OWNER netdisco;
+SET ROLE netdisco;
+
