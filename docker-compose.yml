@@ -3,8 +3,7 @@ services:
   netdisco-db:
     image: netdisco-db:latest
     build:
-      context: .
-      dockerfile: netdisco-db/Dockerfile
+      context: netdisco-db
     volumes:
       - "./netdisco/data:/var/lib/postgresql/data"
   netdisco-base:
