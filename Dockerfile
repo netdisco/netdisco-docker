@@ -1,3 +1,4 @@
+# vim: ft=dockerfile
 FROM debian:stable-slim
 ENV NETDISCO_HOME "/netdisco"
 ENV PATH $NETDISCO_HOME/perl5/bin:$PATH
