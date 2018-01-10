@@ -1,9 +1,11 @@
-version: '3'
+version: '3.4'
 services:
   netdisco-db:
     image: netdisco-db:latest
     build:
       context: netdisco-db
+      args:
+        - SOURCE_BRANCH
     volumes:
       - "./netdisco/pgdata:/var/lib/postgresql/data"
   netdisco-base:

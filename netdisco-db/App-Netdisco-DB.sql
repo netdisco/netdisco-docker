@@ -1,5 +1,0 @@
-CREATE ROLE netdisco WITH LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE password 'netdisco';
-CREATE DATABASE netdisco OWNER netdisco;
-SET ROLE netdisco;
-\unset ON_ERROR_STOP
-\set ON_ERROR_ROLLBACK=on
