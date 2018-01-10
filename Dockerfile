@@ -26,17 +26,13 @@ RUN for i in 1 2 3 4 5 6 7 8 ; do mkdir -p /usr/share/man/man$i ; done && \
     rm -rf /var/lib/apt/lists/* && \
     mkdir -p ${NETDISCO_HOME}/cron && \
     chmod 755 /*.sh && \
-    ls -l /
+    ls -l / && \
+    curl -L https://cpanmin.us/ | perl - --notest --local-lib ${NETDISCO_HOME}/perl5 App::Netdisco && \
+    curl -o /${NETDISCO_HOME}/oui.txt https://raw.githubusercontent.com/netdisco/upstream-sources/master/ieee/oui.txt && \
+    ln -s /netdisco/perl5/bin/ /netdisco/bin 
 
 #libnetssleay-perl \
 
-WORKDIR $NETDISCO_HOME
-
-
-# https://metacpan.org/pod/App::Netdisco#Installation
-RUN curl -L https://cpanmin.us/ | perl - --notest --local-lib ${NETDISCO_HOME}/perl5 App::Netdisco && \
-    curl -o /${NETDISCO_HOME}/oui.txt https://raw.githubusercontent.com/netdisco/upstream-sources/master/ieee/oui.txt && \
-    ln -s /netdisco/perl5/bin/ /netdisco/bin 
 
 
 #VOLUME /netdisco/environments
