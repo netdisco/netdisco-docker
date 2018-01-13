@@ -1,5 +1,4 @@
 # vim: ft=Dockerfile
-ARG TAG=master
 FROM debian:stable-slim as netdisco-build-image
 
 RUN bash -c 'mkdir -p /usr/share/man/man{1..8}' && \
@@ -35,6 +34,9 @@ COPY deployment.yml "${HOME}/environments/"
 COPY wait_to_start.sh "${HOME}/bin/"
 
 FROM debian:stable-slim
+
+ARG TAG
+ENV TAG ${TAG:-master}
 
 LABEL org.netdisco.maintainer="The Netdisco Project"
 LABEL org.netdisco.version=${TAG}

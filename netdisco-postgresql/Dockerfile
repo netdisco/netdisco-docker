@@ -1,6 +1,8 @@
 # vim: ft=Dockerfile
-ARG TAG=master
 FROM docker.io/postgres:9.6.6-alpine
+
+ARG TAG
+ENV TAG ${TAG:-master}
 
 LABEL org.netdisco.maintainer="The Netdisco Project"
 LABEL org.netdisco.version=${TAG}
