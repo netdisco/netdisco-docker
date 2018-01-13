@@ -1,0 +1,6 @@
+.dockerignore
+.git
+docker-compose.yml
+LICENSE
+netdisco
+README.md

@@ -1,38 +1,22 @@
-# netdisco-docker
-Docker images for App::Netdisco
+[![Build Status](https://travis-ci.org/netdisco/netdisco.svg?branch=master)](https://travis-ci.org/netdisco/netdisco)
+[![CPAN version](https://badge.fury.io/pl/App-Netdisco.svg)](https://metacpan.org/pod/App::Netdisco)
 
-# Persistent Environment variables
-These will affect settings everytime the container starts
-- `TZ`
-  - Since this container is based off of the debian image, it supports all ENV variables from there. Setting this ENV variable to an accepted [Timezone Name](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) will have it reflect in the system. Useful for human-readable logs and cronjobs.
+**Netdisco** is a web-based network management tool suitable for small to very large networks. IP and MAC address data is collected into a PostgreSQL database using SNMP, CLI, or device APIs. Some of the things you can do with Netdisco:
 
-# One-time-Use Environment variables
-These only affect things if `deployment.yml` doesn't exist when the container starts, as they are defining the values that get added to that config file. Normal running of the container references `deployment.yml` directly
-- `NETDISCO_DB_HOST`
-  - Defines the hostname of the postgres DB. Docker containers connected to user-defined networks have builtin DNS, so if you have a container called "netdiscodb", this can be set to "netdiscodb" and the netdisco container should be able to access the DB
-  - Default value of "postgres"
-- `NETDISCO_DB_PORT`
-  - Defines the pgsql port
-  - Default value of 5432
-- `NETDISCO_DB_USER`
-  - Defines the netdisco db user
-  - Default value of "netdisco"
-- `NETDISCO_DB_PASS`
-  - Defines the netdisco db user's password
-  - Default value of a 32 random characters
-- `NETDISCO_RO_COMMUNITY`
-  - Specifies the read-only community string
-- `NETDISCO_WR_COMMUNITY`
-  - Specifies the read-write community string
+* Locate a machine on the network by MAC or IP and show the switch port it lives at
+* Turn off a switch port, or change the VLAN or PoE status of a port
+* Inventory your network hardware by model, vendor, software and operating system
+* Pretty pictures of your network
 
-# Quick Start
-The easiest way to get it going is to bring up a user-defined network and a postgres container:
-```
-docker network create netdisco
-docker run -d --name=postgres --network=netdisco postgres
-```
+See the demo at: [https://netdisco2-demo.herokuapp.com/](https://netdisco2-demo.herokuapp.com/)
 
-then bring up the netdisco container connected to the same network, and expose port 5000
-```
-docker run -d --name=netdisco --network=netdisco netdisco/netdisco-docker
-```
+##  Installation
+
+Netdisco is written in Perl and is self-contained apart from the PostgreSQL database, so is very easy to install and runs well on any linux or unix system.
+
+It includes a lightweight web server for the interface, a backend daemon to gather data from your network, and a command line interface for troubleshooting. There is a simple configuration file in YAML format.
+
+Please check out the [installation instructions](https://metacpan.org/pod/App::Netdisco) on CPAN.
+
+You can also speak to someone in the [`#netdisco@freenode`](https://webchat.freenode.net/?randomnick=1&prompt=1&channels=%23netdisco) IRC channel, or on the [community email list](https://lists.sourceforge.net/lists/listinfo/netdisco-users).
+

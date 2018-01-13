@@ -1,0 +1,6 @@
+*.swp
+*.pid
+test.pl
+*.tar.gz
+netdisco
+!netdisco-*/hooks/*
