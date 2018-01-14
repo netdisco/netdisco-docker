@@ -59,8 +59,9 @@ RUN for tgt in bin environments nd-site-local logs; \
 COPY deployment.yml /home/netdisco/environments/
 COPY wait_to_start.sh /home/netdisco/bin/
 
-# as Docker Cloud is not yet suppporting COPY --chown we can
-# run this last phase with build --squash to achieve something similar.
+# Docker Cloud is a bit rubbish and does not support COPY --chown
+# or build --squash, so the image is too large.
+
 FROM netdisco-base-image
 
 COPY --from=netdisco-builder-image /home/netdisco-build /home/netdisco/
