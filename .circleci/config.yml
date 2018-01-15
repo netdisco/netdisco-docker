@@ -2,7 +2,7 @@ version: 2
 jobs:
   build-netdisco-base:
     docker:
-      - image: debian:stretch
+      - image: docker:stable-git
     steps:
       - checkout
       - run:
@@ -25,5 +25,6 @@ workflows:
           filters:
             tags:
               only: /^2\.\d{6}/
-#            branches:
+            branches:
+              only: master
 #              ignore: /.*/
