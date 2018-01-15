@@ -9,13 +9,11 @@ jobs:
           name: Show Tag
           command: echo test 3
       - run:
-          name: Show Tag
-          command: export MY_TAG="$(git tag -l --points-at HEAD)"
+          name: Show pwd
+          command: cd project/ && pwd
       - run:
-          name: Show Tag
-          command: |
-            MY_TAG="$(git tag -l --points-at HEAD)" \
-            echo ">> $MY_TAG $CIRCLE_TAG $CIRCLE_BRANCH"
+          name: Show pwd2
+          command: cd project/ && pwd
 workflows:
   version: 2
   build-netdisco:
