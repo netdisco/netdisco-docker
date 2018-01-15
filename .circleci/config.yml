@@ -7,6 +7,9 @@ jobs:
       - checkout
       - run:
           name: Show Tag
+          command: echo test 1
+      - run:
+          name: Show Tag
           command: echo $(git tag -l --points-at HEAD)
       - run:
           name: Show Tag
