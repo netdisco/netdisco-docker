@@ -10,7 +10,7 @@ jobs:
           command: echo test 2
       - run:
           name: Show Tag
-          command: echo $(git tag -l --points-at HEAD)
+          command: git tag -l --points-at HEAD
       - run:
           name: Show Tag
           command: export MY_TAG=$(git tag -l --points-at HEAD)
