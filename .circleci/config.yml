@@ -6,10 +6,9 @@ jobs:
     steps:
       - checkout
       - run: cd /root/project && echo "export HEAD_TAG=$(git tag -l | grep -E '^2\.\d{6}' | sort -gr | head -n1)" >> $BASH_ENV
-      - run: cd /root/project && echo "export TAG=$(echo $HEAD_TAG | sed -E 's/\.\d{3}$//')" >> $BASH_ENV
+      - run: . $BASH_ENV && cd /root/project && echo "export TAG=$(echo $HEAD_TAG | sed -E 's/\.\d{3}$//')" >> $BASH_ENV
       - run: cat $BASH_ENV
-      - run: pwd
-      - run: env
+      - run: . $BASH_ENV && env
 workflows:
   version: 2
   build-netdisco:
