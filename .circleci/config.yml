@@ -7,7 +7,7 @@ jobs:
       - checkout
       - run:
           name: Show Tag
-          command: echo test 1
+          command: echo test 2
       - run:
           name: Show Tag
           command: echo $(git tag -l --points-at HEAD)
@@ -25,5 +25,5 @@ workflows:
           filters:
             tags:
               only: /^2\.\d{6}/
-            branches:
-              ignore: /.*/
+#            branches:
+#              ignore: /.*/
