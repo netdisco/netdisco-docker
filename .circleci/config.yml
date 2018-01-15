@@ -1,0 +1,26 @@
+version: 2
+jobs:
+  build-netdisco-base:
+    docker:
+      - image: debian:stretch
+    steps:
+      - checkout
+      - run:
+          name: Show Tag
+          command: echo $(git tag -l --points-at HEAD)
+      - run:
+          name: Show Tag
+          command: export MY_TAG=$(git tag -l --points-at HEAD)
+      - run:
+          name: Show Tag
+          command: echo ">> $MY_TAG $CIRCLE_TAG $CIRCLE_BRANCH"
+workflows:
+  version: 2
+  build-netdisco:
+    jobs:
+      - build-netdisco-base:
+          filters:
+            tags:
+              only: /^2\.\d{6}/
+            branches:
+              ignore: /.*/
