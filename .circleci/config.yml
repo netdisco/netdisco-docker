@@ -9,6 +9,9 @@ jobs:
           name: Show Tag
           command: echo test 3
       - run:
+          name: Show pwd0
+          command: pwd
+      - run:
           name: Show pwd
           command: cd project/ && pwd
       - run:
