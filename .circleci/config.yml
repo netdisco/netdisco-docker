@@ -13,8 +13,6 @@ jobs:
       - run:
           name: Build netdisco-base
           command: |
-#            if [ -z $CIRCLE_TAG ]; then exit 1; fi
-#            TAG="netdisco/netdisco:${CIRCLE_TAG}-base"
             TAG=$(git tag -l | grep -E '^2\.[0-9]{6}' | sort -gr | head -n1 | sed -E 's/\.[0-9]{3}$//')
             cd /root/project/netdisco-base
             docker build -t $TAG .
@@ -34,8 +32,6 @@ jobs:
       - run:
           name: Restore netdisco-base
           command: |
-#            if [ -z $CIRCLE_TAG ]; then exit 1; fi
-#            TAG="netdisco/netdisco:${CIRCLE_TAG}-base"
             TAG=$(git tag -l | grep -E '^2\.[0-9]{6}' | sort -gr | head -n1 | sed -E 's/\.[0-9]{3}$//')
             docker load -i /tmp/workspace/netdisco-base.tar
             docker inspect $TAG
