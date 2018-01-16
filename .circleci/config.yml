@@ -8,21 +8,24 @@ jobs:
     <<: *defaults
     steps:
       - checkout
+      - attach_workspace:
+          at: /tmp/workspace
       - run: |
           cd /home/circleci/project
           TAG=$(git tag -l | grep -E '^2\.[0-9]{6}' | sort -gr | head -n1 | sed -E 's/\.[0-9]{3}$//')
-          echo "export IMAGE_ROOT=\"netdisco:${TAG}\"" >> $BASH_ENV
+          echo "export IMAGE_ROOT=\"netdisco:${TAG}\"" >> /tmp/workspace/bash_env
 
   build-netdisco-base:
     <<: *defaults
     steps:
       - setup_remote_docker
       - checkout
-      - run: mkdir -p /tmp/workspace | true
+      - attach_workspace:
+          at: /tmp/workspace
       - run:
           name: Build netdisco-base
           command: |
-            source $BASH_ENV
+            source /tmp/workspace/bash_env
             cd /home/circleci/project/netdisco-base
             docker build -t ${IMAGE_ROOT}-base .
             docker save -o /tmp/workspace/netdisco-base.tar ${IMAGE_ROOT}-base
@@ -38,7 +41,6 @@ jobs:
       - checkout
       - attach_workspace:
           at: /tmp/workspace
-      - run: mkdir -p /tmp/workspace | true
       - run:
           name: Restore netdisco-base
           command: |
@@ -46,7 +48,7 @@ jobs:
       - run:
           name: Build netdisco-do
           command: |
-            source $BASH_ENV
+            source /tmp/workspace/bash_env
             cd /home/circleci/project/netdisco-do
             docker build --cache-from ${IMAGE_ROOT}-base -t ${IMAGE_ROOT}-do .
             docker save -o /tmp/workspace/netdisco-do.tar ${IMAGE_ROOT}-do
