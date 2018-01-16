@@ -14,7 +14,7 @@ jobs:
           name: Build netdisco-base
           command: |
             TAG=$(git tag -l | grep -E '^2\.[0-9]{6}' | sort -gr | head -n1 | sed -E 's/\.[0-9]{3}$//')
-            cd /root/project/netdisco-base
+            cd "${CIRCLE_WORKING_DIRECTORY}/netdisco-base"
             docker build -t $TAG .
             docker save -o /tmp/workspace/netdisco-base.tar $TAG
       - persist_to_workspace:
@@ -26,7 +26,6 @@ jobs:
     <<: *defaults
     steps:
       - setup_remote_docker
-      - checkout
       - attach_workspace:
           at: /tmp/workspace
       - run:
