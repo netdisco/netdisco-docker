@@ -28,6 +28,24 @@ jobs:
           paths:
             - bash_env
 
+  build-netdisco-postgresql:
+    <<: *container_config
+    steps:
+      - setup_remote_docker
+      - checkout
+      - *attach_workspace
+      - run:
+          name: Build netdisco-postgresql
+          command: |
+            source /tmp/workspace/bash_env
+            cd /home/circleci/project/netdisco-postgresql
+            docker build -t ${IMAGE_ROOT}-postgresql .
+            docker save -o /tmp/workspace/netdisco-postgresql.tar ${IMAGE_ROOT}-postgresql
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - netdisco-postgresql.tar
+
   build-netdisco-base:
     <<: *container_config
     steps:
@@ -46,6 +64,54 @@ jobs:
           paths:
             - netdisco-base.tar
 
+  build-netdisco-backend:
+    <<: *container_config
+    steps:
+      - setup_remote_docker
+      - checkout
+      - *attach_workspace
+      - run:
+          name: Restore netdisco-base
+          command: |
+            source /tmp/workspace/bash_env
+            docker load -i /tmp/workspace/netdisco-base.tar
+            docker tag ${IMAGE_ROOT}-base netdisco/${IMAGE_ROOT}-base
+      - run:
+          name: Build netdisco-backend
+          command: |
+            source /tmp/workspace/bash_env
+            cd /home/circleci/project/netdisco-backend
+            docker build -t ${IMAGE_ROOT}-backend --build-arg TAG=${TAG} .
+            docker save -o /tmp/workspace/netdisco-backend.tar ${IMAGE_ROOT}-backend
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - netdisco-backend.tar
+
+  build-netdisco-web:
+    <<: *container_config
+    steps:
+      - setup_remote_docker
+      - checkout
+      - *attach_workspace
+      - run:
+          name: Restore netdisco-base
+          command: |
+            source /tmp/workspace/bash_env
+            docker load -i /tmp/workspace/netdisco-base.tar
+            docker tag ${IMAGE_ROOT}-base netdisco/${IMAGE_ROOT}-base
+      - run:
+          name: Build netdisco-web
+          command: |
+            source /tmp/workspace/bash_env
+            cd /home/circleci/project/netdisco-web
+            docker build -t ${IMAGE_ROOT}-web --build-arg TAG=${TAG} .
+            docker save -o /tmp/workspace/netdisco-web.tar ${IMAGE_ROOT}-web
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - netdisco-web.tar
+
   build-netdisco-do:
     <<: *container_config
     steps:
@@ -63,21 +129,71 @@ jobs:
           command: |
             source /tmp/workspace/bash_env
             cd /home/circleci/project/netdisco-do
-            docker build -t ${IMAGE_ROOT}-do --build-arg TAG=${TAG}.
+            docker build -t ${IMAGE_ROOT}-do --build-arg TAG=${TAG} .
             docker save -o /tmp/workspace/netdisco-do.tar ${IMAGE_ROOT}-do
       - persist_to_workspace:
           root: *workspace_root
           paths:
             - netdisco-do.tar
 
+  upload-netdisco:
+    <<: *container_config
+    steps:
+      - setup_remote_docker
+      - *attach_workspace
+      - run:
+          name: Restore all images
+          command: |
+            source /tmp/workspace/bash_env
+            docker load -i /tmp/workspace/netdisco-postgresql.tar
+            docker tag ${IMAGE_ROOT}-postgresql netdisco/${IMAGE_ROOT}-postgresql
+            docker tag ${IMAGE_ROOT}-postgresql latest-postgresql
+            docker load -i /tmp/workspace/netdisco-base.tar
+            docker tag ${IMAGE_ROOT}-base netdisco/${IMAGE_ROOT}-base
+            docker tag ${IMAGE_ROOT}-base latest-base
+            docker load -i /tmp/workspace/netdisco-backend.tar
+            docker tag ${IMAGE_ROOT}-backend netdisco/${IMAGE_ROOT}-backend
+            docker tag ${IMAGE_ROOT}-backend latest-backend
+            docker load -i /tmp/workspace/netdisco-web.tar
+            docker tag ${IMAGE_ROOT}-web netdisco/${IMAGE_ROOT}-web
+            docker tag ${IMAGE_ROOT}-web latest-web
+            docker load -i /tmp/workspace/netdisco-do.tar
+            docker tag ${IMAGE_ROOT}-do netdisco/${IMAGE_ROOT}-do
+            docker tag ${IMAGE_ROOT}-do latest-do
+      - run:
+          name: Upload all images
+          command: |
+            source /tmp/workspace/bash_env
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker push netdisco/${IMAGE_ROOT}-postgresql
+            docker push netdisco/${IMAGE_ROOT}-base
+            docker push netdisco/${IMAGE_ROOT}-backend
+            docker push netdisco/${IMAGE_ROOT}-web
+            docker push netdisco/${IMAGE_ROOT}-do
+
 workflows:
   version: 2
   build-netdisco:
     jobs:
       - environment-setup
+      - build-netdisco-postgresql:
+          requires:
+            - environment-setup
       - build-netdisco-base:
           requires:
             - environment-setup
+      - build-netdisco-backend:
+          requires:
+            - build-netdisco-base
+      - build-netdisco-web:
+          requires:
+            - build-netdisco-base
       - build-netdisco-do:
           requires:
             - build-netdisco-base
+      - upload-netdisco:
+          requires:
+            - build-netdisco-backend
+            - build-netdisco-web
+            - build-netdisco-do
+            - build-netdisco-postgresql
