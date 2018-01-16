@@ -31,7 +31,7 @@ jobs:
           command: |
             source /tmp/workspace/bash_env
             cd /home/circleci/project/netdisco-base
-            docker build -t ${IMAGE_ROOT}-base .
+            docker build -t ${IMAGE_ROOT}-base -t netdisco/${IMAGE_ROOT}-base .
             docker save -o /tmp/workspace/netdisco-base.tar ${IMAGE_ROOT}-base
       - persist_to_workspace:
           root: /tmp/workspace
@@ -54,7 +54,7 @@ jobs:
           command: |
             source /tmp/workspace/bash_env
             cd /home/circleci/project/netdisco-do
-            docker build --cache-from ${IMAGE_ROOT}-base -t ${IMAGE_ROOT}-do .
+            docker build --cache-from ${IMAGE_ROOT}-base -t ${IMAGE_ROOT}-do -t netdisco/${IMAGE_ROOT}-do .
             docker save -o /tmp/workspace/netdisco-do.tar ${IMAGE_ROOT}-do
       - persist_to_workspace:
           root: /tmp/workspace
