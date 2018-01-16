@@ -1,63 +1,71 @@
-defaults: &defaults
-  docker:
-    - image: circleci/ruby:2.4.1
+version: 2.0
 
-version: 2
+references:
+  container_config: &container_config
+    docker:
+      - image: circleci/ruby:2.4.1
+
+  workspace_root: &workspace_root
+  
+  attach_workspace: &attach_workspace
+    attach_workspace:
+      at: *workspace_root
+
 jobs:
   environment-setup:
-    <<: *defaults
+    <<: *container_config
     steps:
       - checkout
-      - attach_workspace:
-          at: /tmp/workspace
+      - *attach_workspace
       - run: |
           cd /home/circleci/project
           TAG=$(git tag -l | grep -E '^2\.[0-9]{6}' | sort -gr | head -n1 | sed -E 's/\.[0-9]{3}$//')
+          echo "export TAG=\"${TAG}\"" >> /tmp/workspace/bash_env
           echo "export IMAGE_ROOT=\"netdisco:${TAG}\"" >> /tmp/workspace/bash_env
       - persist_to_workspace:
-          root: /tmp/workspace
+          root: *workspace_root
           paths:
             - bash_env
 
   build-netdisco-base:
-    <<: *defaults
+    <<: *container_config
     steps:
       - setup_remote_docker
       - checkout
-      - attach_workspace:
-          at: /tmp/workspace
+      - *attach_workspace
       - run:
           name: Build netdisco-base
           command: |
             source /tmp/workspace/bash_env
             cd /home/circleci/project/netdisco-base
-            docker build -t ${IMAGE_ROOT}-base -t netdisco/${IMAGE_ROOT}-base .
+            docker build -t ${IMAGE_ROOT}-base .
             docker save -o /tmp/workspace/netdisco-base.tar ${IMAGE_ROOT}-base
       - persist_to_workspace:
-          root: /tmp/workspace
+          root: *workspace_root
           paths:
             - netdisco-base.tar
 
   build-netdisco-do:
-    <<: *defaults
+    <<: *container_config
     steps:
       - setup_remote_docker
       - checkout
-      - attach_workspace:
-          at: /tmp/workspace
+      - *attach_workspace
       - run:
           name: Restore netdisco-base
           command: |
+            source /tmp/workspace/bash_env
             docker load -i /tmp/workspace/netdisco-base.tar
+            docker tag ${IMAGE_ROOT}-base netdisco/${IMAGE_ROOT}-base
       - run:
           name: Build netdisco-do
           command: |
             source /tmp/workspace/bash_env
             cd /home/circleci/project/netdisco-do
-            docker build --cache-from ${IMAGE_ROOT}-base -t ${IMAGE_ROOT}-do -t netdisco/${IMAGE_ROOT}-do .
+            docker build -t ${IMAGE_ROOT}-do --build-arg TAG=${TAG}.
             docker save -o /tmp/workspace/netdisco-do.tar ${IMAGE_ROOT}-do
       - persist_to_workspace:
-          root: /tmp/workspace
+          root: *workspace_root
           paths:
             - netdisco-do.tar
 

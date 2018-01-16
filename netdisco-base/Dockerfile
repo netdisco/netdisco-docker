@@ -1,5 +1,5 @@
 # vim: ft=Dockerfile
-FROM docker.io/alpine:latest as netdisco-builder-image
+FROM docker.io/alpine:3.6 as netdisco-builder-image
 
 RUN apk add --no-cache \
       ca-certificates \
@@ -32,7 +32,8 @@ RUN curl -sL https://api.github.com/repos/netdisco/netdisco/tags | \
   PERL5LIB='.' xargs -n1 /tmp/cpanm --quiet --notest --local-lib ./perl5 && \
   mv /home/netdisco /home/netdisco-build
 
-FROM docker.io/alpine:latest as netdisco-base-image
+# ----------------------------------------------------------------------------
+FROM docker.io/alpine:3.6
 
 ARG TAG
 ENV TAG ${TAG:-master}
@@ -53,25 +54,21 @@ RUN apk add --no-cache \
 RUN groupadd -r netdisco -g 901 && \
     useradd -u 901 -r -p x -g netdisco -m -d /home/netdisco -s /bin/ash -c "netdisco user" netdisco
 
+USER netdisco:netdisco
 RUN for tgt in bin environments nd-site-local logs; \
       do mkdir /home/netdisco/$tgt; done
 
-COPY deployment.yml /home/netdisco/environments/
-COPY wait_to_start.sh /home/netdisco/bin/
+COPY --chown=netdisco:netdisco deployment.yml /home/netdisco/environments/
+COPY --chown=netdisco:netdisco wait_to_start.sh /home/netdisco/bin/
 
-# Docker Cloud is a bit rubbish and does not support COPY --chown
-# or build --squash, so the image is too large.
+COPY --chown=netdisco:netdisco --from=netdisco-builder-image \
+  /home/netdisco-build /home/netdisco/
 
-FROM netdisco-base-image
-
-COPY --from=netdisco-builder-image /home/netdisco-build /home/netdisco/
 RUN for tgt in /home/netdisco/perl5/bin/netdisco-*; \
       do ln -sf $tgt /home/netdisco/bin/; done && \
     ln -sf /home/netdisco/perl5/bin/localenv /home/netdisco/bin/
-RUN chown -R netdisco:netdisco /home/netdisco
 
 WORKDIR /home/netdisco
-USER netdisco:netdisco
 ENV PATH "/home/netdisco/bin:$PATH"
 ENV SHELL /bin/ash
 
