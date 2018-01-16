@@ -7,7 +7,9 @@ jobs:
   environment-setup:
     <<: *defaults
     steps:
+      - checkout
       - run: |
+          cd /home/circleci/project
           TAG=$(git tag -l | grep -E '^2\.[0-9]{6}' | sort -gr | head -n1 | sed -E 's/\.[0-9]{3}$//')
           echo "export IMAGE_ROOT=\"netdisco:${TAG}\"" >> $BASH_ENV
 
