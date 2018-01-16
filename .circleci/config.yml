@@ -6,6 +6,7 @@ references:
       - image: circleci/ruby:2.4.1
 
   workspace_root: &workspace_root
+    /tmp/workspace
   
   attach_workspace: &attach_workspace
     attach_workspace:
