@@ -45,6 +45,6 @@ workflows:
   build-netdisco:
     jobs:
       - build-netdisco-base
-      - inspect-netdisco-base
+      - inspect-netdisco-base:
           requires:
             - build-netdisco-base
