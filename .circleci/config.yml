@@ -1,22 +1,50 @@
+defaults: &defaults
+  docker:
+    - image: ruby:2.4.1
+
 version: 2
 jobs:
   build-netdisco-base:
-    docker:
-      - image: docker:stable-git
+    <<: *defaults
     steps:
+      - setup_remote_docker
       - checkout
-      - run: cd /root/project && echo "export HEAD_TAG=$(git tag -l | grep -E '^2\.\d{6}' | sort -gr | head -n1)" >> $BASH_ENV
-      - run: . $BASH_ENV && cd /root/project && echo "export TAG=$(echo $HEAD_TAG | sed -E 's/\.\d{3}$//')" >> $BASH_ENV
-      - run: cat $BASH_ENV
-      - run: . $BASH_ENV && env
+      - run: mkdir -p /tmp/workspace | true
+      - run:
+          name: Build netdisco-base
+          command: |
+            if [ -z $CIRCLE_TAG ]; then exit 1; fi
+            TAG="netdisco/netdisco:${CIRCLE_TAG}-base"
+            cd /root/project/netdisco-base
+            docker build -t $TAG .
+            docker save -o /tmp/workspace/netdisco-base.tar $TAG
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths:
+            - netdisco-base.tar
+
+  inspect-netdisco-base:
+    <<: *defaults
+    steps:
+      - setup_remote_docker
+      - checkout
+      - attach_workspace:
+          at: /tmp/workspace
+      - run:
+          name: Restore netdisco-base
+          command: |
+            if [ -z $CIRCLE_TAG ]; then exit 1; fi
+            TAG="netdisco/netdisco:${CIRCLE_TAG}-base"
+            docker load -i /tmp/workspace/netdisco-base.tar
+            docker inspect $TAG
+            docker history $TAG
+            docker images | head
+
 workflows:
   version: 2
   build-netdisco:
     jobs:
-      - build-netdisco-base:
-          filters:
-            tags:
-              only: /^2\.\d{6}/
-            branches:
-              only: master
-#              ignore: /.*/
+      - build-netdisco-base
+      - inspect-netdisco-base
+          requires:
+            - build-netdisco-base
