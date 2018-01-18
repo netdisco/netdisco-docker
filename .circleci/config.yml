@@ -145,31 +145,20 @@ jobs:
           name: Restore all images
           command: |
             source /tmp/workspace/bash_env
-            docker load -i /tmp/workspace/netdisco-postgresql.tar
-            docker tag ${IMAGE_ROOT}-postgresql netdisco/${IMAGE_ROOT}-postgresql
-            docker tag ${IMAGE_ROOT}-postgresql latest-postgresql
-            docker load -i /tmp/workspace/netdisco-base.tar
-            docker tag ${IMAGE_ROOT}-base netdisco/${IMAGE_ROOT}-base
-            docker tag ${IMAGE_ROOT}-base latest-base
-            docker load -i /tmp/workspace/netdisco-backend.tar
-            docker tag ${IMAGE_ROOT}-backend netdisco/${IMAGE_ROOT}-backend
-            docker tag ${IMAGE_ROOT}-backend latest-backend
-            docker load -i /tmp/workspace/netdisco-web.tar
-            docker tag ${IMAGE_ROOT}-web netdisco/${IMAGE_ROOT}-web
-            docker tag ${IMAGE_ROOT}-web latest-web
-            docker load -i /tmp/workspace/netdisco-do.tar
-            docker tag ${IMAGE_ROOT}-do netdisco/${IMAGE_ROOT}-do
-            docker tag ${IMAGE_ROOT}-do latest-do
+            for image in postgresql base backend web do; do
+              docker load -i /tmp/workspace/netdisco-$image.tar
+              docker tag ${IMAGE_ROOT}-$image netdisco/${IMAGE_ROOT}-$image
+              docker tag ${IMAGE_ROOT}-$image netdisco:latest-$image
+            done
       - run:
           name: Upload all images
           command: |
             source /tmp/workspace/bash_env
             docker login -u $DOCKER_USER -p $DOCKER_PASS
-            docker push netdisco/${IMAGE_ROOT}-postgresql
-            docker push netdisco/${IMAGE_ROOT}-base
-            docker push netdisco/${IMAGE_ROOT}-backend
-            docker push netdisco/${IMAGE_ROOT}-web
-            docker push netdisco/${IMAGE_ROOT}-do
+            for image in postgresql base backend web do; do
+              docker push netdisco/${IMAGE_ROOT}-$image
+              docker push netdisco:latest-$image
+            done
 
 workflows:
   version: 2
