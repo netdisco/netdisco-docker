@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
 
-su=( su-exec "${PGUSER:-postgres}" )
-psql=( psql -X -v ON_ERROR_STOP=0 -v ON_ERROR_ROLLBACK=on )
-psql+=( --username netdisco --dbname netdisco )
-
+NETDISCO_DB_NAME="${NETDISCO_DB_NAME:-netdisco}"
+NETDISCO_DB_USER="${NETDISCO_DB_USER:-${DB_ENV_POSTGRES_USER:-netdisco}}"
+NETDISCO_DB_PASS="${NETDISCO_DB_PASS:-${DB_ENV_POSTGRES_PASSWORD:-netdisco}}"
 NETDISCO_ADMIN_USER="${NETDISCO_ADMIN_USER:-guest}"
 
+su=( su-exec "${PGUSER:-postgres}" )
+psql=( psql -X -v ON_ERROR_STOP=0 -v ON_ERROR_ROLLBACK=on )
+psql+=( --username ${NETDISCO_DB_USER} --dbname ${NETDISCO_DB_NAME} )
+
 if [ "$1" = 'postgres' ]; then
-  if [ ! -s "$PGDATA/PG_VERSION" ]; then
+  if [ ! -s "${PGDATA}/PG_VERSION" ]; then
     echo >&2 "netdisco-db-entrypoint: copying initial database files"
     chmod 700 /var/lib/postgresql/data
     chown postgres /var/lib/postgresql/data
@@ -18,17 +21,17 @@ if [ "$1" = 'postgres' ]; then
   "${su[@]}" pg_ctl -D "$PGDATA" -o "-c listen_addresses='localhost'" -w start
 
   echo >&2 "netdisco-db-entrypoint: configuring Netdisco db user"
-  echo "*:*:netdisco:netdisco:netdisco" > ~/.pgpass
+  echo "*:*:${NETDISCO_DB_NAME}:${NETDISCO_DB_USER}:${NETDISCO_DB_PASS}" > ~/.pgpass
   chmod 0600 ~/.pgpass
-  "${su[@]}" createuser -DRSw netdisco
-  "${su[@]}" createdb -O netdisco netdisco
+  "${su[@]}" createuser -DRSw ${NETDISCO_DB_USER}
+  "${su[@]}" createdb -O ${NETDISCO_DB_USER} ${NETDISCO_DB_NAME}
 
   echo >&2 "netdisco-db-entrypoint: bringing schema up-to-date"
   ls -1 /var/lib/postgresql/netdisco-sql/App-Netdisco-DB-* | \
-  xargs -n1 basename | sort -n -t '-' -k4 | \
-  while read file; do
-    "${psql[@]}" -f "/var/lib/postgresql/netdisco-sql/$file"
-  done
+    xargs -n1 basename | sort -n -t '-' -k4 | \
+    while read file; do
+      "${psql[@]}" -f "/var/lib/postgresql/netdisco-sql/$file"
+    done
 
   echo >&2 "netdisco-db-entrypoint: importing OUI"
   NUMOUI=$("${psql[@]}" -A -t -c "SELECT count(oui) FROM oui")
@@ -43,11 +46,11 @@ if [ "$1" = 'postgres' ]; then
   "${psql[@]}" -c "INSERT INTO dbix_class_schema_versions VALUES ('${MAXSCHEMA}', '${STAMP}')"
 
   echo >&2 "netdisco-db-entrypoint: adding admin user if none exists"
-  if [ -z $("${psql[@]}" -tAc "SELECT 1 FROM users WHERE admin") ]; then
+  if [ -z $("${psql[@]}" -A -t -c "SELECT 1 FROM users WHERE admin") ]; then
     "${psql[@]}" -c "INSERT INTO users (username, port_control, admin) VALUES ('${NETDISCO_ADMIN_USER}', true, true)"
   fi
 
-  echo >&2 "netdisco-db-entrypoint: shutting down pg (will restart listening for clients)"
+  echo >&2 "netdisco-db-entrypoint: shutting down pg (will restart, listening for clients)"
   "${su[@]}" pg_ctl -D "$PGDATA" -m fast -w stop
 fi
 
