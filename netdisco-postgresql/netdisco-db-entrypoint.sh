@@ -4,6 +4,8 @@ su=( su-exec "${PGUSER:-postgres}" )
 psql=( psql -X -v ON_ERROR_STOP=0 -v ON_ERROR_ROLLBACK=on )
 psql+=( --username netdisco --dbname netdisco )
 
+NETDISCO_ADMIN_USER="${NETDISCO_ADMIN_USER:-guest}"
+
 if [ "$1" = 'postgres' ]; then
   if [ ! -s "$PGDATA/PG_VERSION" ]; then
     echo >&2 "netdisco-db-entrypoint: copying initial database files"
@@ -39,6 +41,11 @@ if [ "$1" = 'postgres' ]; then
   STAMP=$(date '+v%Y%m%d_%H%M%S.000')
   "${psql[@]}" -c "CREATE TABLE dbix_class_schema_versions (version varchar(10) PRIMARY KEY, installed varchar(20) NOT NULL)"
   "${psql[@]}" -c "INSERT INTO dbix_class_schema_versions VALUES ('${MAXSCHEMA}', '${STAMP}')"
+
+  echo >&2 "netdisco-db-entrypoint: adding admin user if none exists"
+  if [ -z $("${psql[@]}" -tAc "SELECT 1 FROM users WHERE admin") ]; then
+    "${psql[@]}" -c "INSERT INTO users (username, port_control, admin) VALUES ('${NETDISCO_ADMIN_USER}', true, true)"
+  fi
 
   echo >&2 "netdisco-db-entrypoint: shutting down pg (will restart listening for clients)"
   "${su[@]}" pg_ctl -D "$PGDATA" -m fast -w stop
