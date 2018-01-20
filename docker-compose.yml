@@ -1,42 +1,37 @@
-version: '3.4'
+version: '2.3'
 services:
   netdisco-postgresql:
-    image: netdisco-postgresql:latest
+    image: netdisco:latest-postgresql
     build:
       context: netdisco-postgresql
     volumes:
       - "./netdisco/pgdata:/var/lib/postgresql/data"
-  netdisco-base:
-    image: netdisco-base:latest
-    build:
-      context: netdisco-base
+#  netdisco-base:
+#    image: netdisco:latest-base
+#    build:
+#      context: netdisco-base
   netdisco-backend:
-    image: netdisco-backend:latest
+    image: netdisco:latest-backend
     build:
       context: netdisco-backend
     volumes:
       - "./netdisco/config:/home/netdisco/environments"
+    environment:
+      NETDISCO_DB_HOST: netdisco-postgresql
     depends_on:
-      - netdisco-base
-    links:
-      - netdisco-postgresql:db
+      - netdisco-postgresql
   netdisco-web:
-    image: netdisco-web:latest
+    image: netdisco:latest-web
     build:
       context: netdisco-web
     volumes:
       - "./netdisco/config:/home/netdisco/environments"
+    environment:
+      NETDISCO_DB_HOST: netdisco-postgresql
+    ports:
+      - "5000:5000"
     depends_on:
-      - netdisco-base
-    links:
-      - netdisco-postgresql:db
-  netdisco-do:
-    image: netdisco-do:latest
-    build:
-      context: netdisco-do
-    volumes:
-      - "./netdisco/config:/home/netdisco/environments"
-    depends_on:
-      - netdisco-base
-    links:
-      - netdisco-postgresql:db
+      - netdisco-postgresql
+#networks:
+#  default:
+#    enable_ipv6: true
