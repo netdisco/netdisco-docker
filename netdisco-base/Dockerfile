@@ -71,6 +71,7 @@ RUN for tgt in /home/netdisco/perl5/bin/netdisco-*; \
 WORKDIR /home/netdisco
 ENV PATH "/home/netdisco/bin:$PATH"
 ENV SHELL /bin/ash
+ENV NETDISCO_DOMAIN discover
 
 VOLUME ["/home/netdisco/environments", "/home/netdisco/nd-site-local", "/home/netdisco/logs"]
 
