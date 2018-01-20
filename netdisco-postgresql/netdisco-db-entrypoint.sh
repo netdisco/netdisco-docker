@@ -50,6 +50,11 @@ if [ "$1" = 'postgres' ]; then
     "${psql[@]}" -c "INSERT INTO users (username, port_control, admin) VALUES ('${NETDISCO_ADMIN_USER}', true, true)"
   fi
 
+  echo >&2 "netdisco-db-entrypoint: adding session key if none exists"
+  if [ -z $("${psql[@]}" -A -t -c "SELECT 1 FROM sessions WHERE id = 'dancer_session_cookie_key'") ]; then
+    "${psql[@]}" -c "INSERT INTO sessions (id, a_session) VALUES ('dancer_session_cookie_key', md5(random()::text))"
+  fi
+
   echo >&2 "netdisco-db-entrypoint: shutting down pg (will restart, listening for clients)"
   "${su[@]}" pg_ctl -D "$PGDATA" -m fast -w stop
 fi
