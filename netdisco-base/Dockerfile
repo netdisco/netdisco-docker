@@ -1,13 +1,15 @@
 # vim: ft=Dockerfile
 FROM docker.io/alpine:3.6 as netdisco-builder-image
 
+ARG TAG
+ENV TAG ${TAG:-HEAD}
+
 RUN apk add --no-cache \
       ca-certificates \
       curl \
       g++ \
       gcc \
       git \
-      jq \
       libc6-compat \
       make \
       net-snmp-perl \
@@ -26,17 +28,15 @@ RUN curl -sL -o /tmp/cpanm https://cpanmin.us/ && \
   chmod +x /tmp/cpanm
 
 WORKDIR /home/netdisco
-RUN curl -sL https://api.github.com/repos/netdisco/netdisco/tags | \
-  jq '.[]|.name|select(test("^\\d+\\.\\d+$"))|"https://github.com/netdisco/netdisco.git@"+.' | \
-  sort -rg | head -n1 | \
-  PERL5LIB='.' xargs -n1 /tmp/cpanm --quiet --notest --local-lib ./perl5 && \
+RUN PERL5LIB='.' /tmp/cpanm --quiet --notest --local-lib ./perl5 \
+  "https://github.com/netdisco/netdisco.git@${TAG}" && \
   mv /home/netdisco /home/netdisco-build
 
 # ----------------------------------------------------------------------------
 FROM docker.io/alpine:3.6
 
 ARG TAG
-ENV TAG ${TAG:-master}
+ENV TAG ${TAG:-HEAD}
 
 LABEL org.netdisco.maintainer="The Netdisco Project"
 LABEL org.netdisco.version=${TAG}

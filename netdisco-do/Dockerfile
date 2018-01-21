@@ -1,5 +1,5 @@
 # vim: ft=Dockerfile
-ARG TAG=master
+ARG TAG=HEAD
 FROM docker.io/netdisco/netdisco:${TAG}-backend
 
 LABEL org.netdisco.maintainer="The Netdisco Project"
