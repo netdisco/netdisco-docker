@@ -58,7 +58,10 @@ jobs:
           command: |
             source /tmp/workspace/bash_env
             cd /home/circleci/project/netdisco-base
-            docker build -t ${IMAGE_ROOT}-base --build-arg TAG=${TAG} --build-arg COMMITTISH=${CIRCLE_TAG} .
+            docker build -t ${IMAGE_ROOT}-base \
+              --build-arg BUILD_DATE=`date -u +”%Y-%m-%dT%H:%M:%SZ”` \
+              --build-arg TAG=${TAG} \
+              --build-arg COMMITTISH=${CIRCLE_TAG} .
             docker save -o /tmp/workspace/netdisco-base.tar ${IMAGE_ROOT}-base
       - persist_to_workspace:
           root: *workspace_root
@@ -82,7 +85,10 @@ jobs:
           command: |
             source /tmp/workspace/bash_env
             cd /home/circleci/project/netdisco-backend
-            docker build -t ${IMAGE_ROOT}-backend --build-arg TAG=${TAG} --build-arg COMMITTISH=${CIRCLE_TAG} .
+            docker build -t ${IMAGE_ROOT}-backend \
+              --build-arg BUILD_DATE=`date -u +”%Y-%m-%dT%H:%M:%SZ”` \
+              --build-arg TAG=${TAG} \
+              --build-arg COMMITTISH=${CIRCLE_TAG} .
             docker save -o /tmp/workspace/netdisco-backend.tar ${IMAGE_ROOT}-backend
       - persist_to_workspace:
           root: *workspace_root
@@ -106,7 +112,10 @@ jobs:
           command: |
             source /tmp/workspace/bash_env
             cd /home/circleci/project/netdisco-web
-            docker build -t ${IMAGE_ROOT}-web --build-arg TAG=${TAG} --build-arg COMMITTISH=${CIRCLE_TAG} .
+            docker build -t ${IMAGE_ROOT}-web \
+              --build-arg BUILD_DATE=`date -u +”%Y-%m-%dT%H:%M:%SZ”` \
+              --build-arg TAG=${TAG} \
+              --build-arg COMMITTISH=${CIRCLE_TAG} .
             docker save -o /tmp/workspace/netdisco-web.tar ${IMAGE_ROOT}-web
       - persist_to_workspace:
           root: *workspace_root
@@ -130,7 +139,10 @@ jobs:
           command: |
             source /tmp/workspace/bash_env
             cd /home/circleci/project/netdisco-do
-            docker build -t ${IMAGE_ROOT}-do --build-arg TAG=${TAG} --build-arg COMMITTISH=${CIRCLE_TAG} .
+            docker build -t ${IMAGE_ROOT}-do \
+              --build-arg BUILD_DATE=`date -u +”%Y-%m-%dT%H:%M:%SZ”` \
+              --build-arg TAG=${TAG} \
+              --build-arg COMMITTISH=${CIRCLE_TAG} .
             docker save -o /tmp/workspace/netdisco-do.tar ${IMAGE_ROOT}-do
       - persist_to_workspace:
           root: *workspace_root

@@ -2,8 +2,8 @@
 ARG TAG=latest
 FROM docker.io/netdisco/netdisco:${TAG}-backend
 
-LABEL org.netdisco.maintainer="The Netdisco Project"
-LABEL org.netdisco.version=${TAG}
+LABEL org.label-schema.name="netdisco-do" \
+      org.label-schema.description="CLI App for Netdisco"
 
 ENTRYPOINT ["/home/netdisco/bin/netdisco-do"]
 CMD [""]
