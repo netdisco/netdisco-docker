@@ -1,8 +1,7 @@
 # vim: ft=Dockerfile
 FROM docker.io/alpine:3.6 as netdisco-builder-image
 
-ARG TAG
-ENV TAG ${TAG:-HEAD}
+ARG COMMITTISH=HEAD
 
 RUN apk add --no-cache \
       ca-certificates \
@@ -29,14 +28,13 @@ RUN curl -sL -o /tmp/cpanm https://cpanmin.us/ && \
 
 WORKDIR /home/netdisco
 RUN PERL5LIB='.' /tmp/cpanm --quiet --notest --local-lib ./perl5 \
-  "https://github.com/netdisco/netdisco.git@${TAG}" && \
+  "https://github.com/netdisco/netdisco.git@${COMMITTISH}" && \
   mv /home/netdisco /home/netdisco-build
 
 # ----------------------------------------------------------------------------
 FROM docker.io/alpine:3.6
 
-ARG TAG
-ENV TAG ${TAG:-HEAD}
+ARG TAG=latest
 
 LABEL org.netdisco.maintainer="The Netdisco Project"
 LABEL org.netdisco.version=${TAG}

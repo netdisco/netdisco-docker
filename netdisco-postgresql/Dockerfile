@@ -1,8 +1,8 @@
 # vim: ft=Dockerfile
 FROM docker.io/postgres:9.6.6-alpine
 
-ARG TAG
-ENV TAG ${TAG:-HEAD}
+ARG TAG=latest
+ARG COMMITTISH=HEAD
 
 LABEL org.netdisco.maintainer="The Netdisco Project"
 LABEL org.netdisco.version=${TAG}
@@ -17,7 +17,7 @@ RUN chmod +x /usr/local/bin/netdisco-db-entrypoint.sh
 RUN PGDATA=/var/lib/postgresql/netdisco-pgdata /usr/local/bin/docker-entrypoint.sh postgres --version
 
 WORKDIR /var/lib/postgresql/netdisco-sql
-RUN curl -sL "https://api.github.com/repos/netdisco/netdisco/tarball/${TAG}" | \
+RUN curl -sL "https://api.github.com/repos/netdisco/netdisco/tarball/${COMMITTISH}" | \
   tar --wildcards --strip-components=3 -zx '*App-Netdisco-DB-*' && \
   curl -sLO "https://raw.githubusercontent.com/netdisco/upstream-sources/master/ieee/oui.sql" && \
   curl -sLO "https://raw.githubusercontent.com/netdisco/netdisco/master/lib/App/Netdisco/DB.pm"
