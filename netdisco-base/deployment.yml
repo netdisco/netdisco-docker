@@ -14,6 +14,11 @@ database:
   pass: 'netdisco'
   #host: 'localhost'
 
+# set to true to globally disable authentication/login.
+# the user called "guest" has full admin/port-control rights.
+# ```````````````````````````````````````````````````````````
+no_auth: true
+
 # --------------------
 # RECOMMENDED SETTINGS
 # --------------------
@@ -29,6 +34,10 @@ device_auth:
 #    community: 'private'
 #    read: false
 #    write: true
+
+# Allows you to put plugin code in /lib, and templates in /share/views,
+# within the nd-site-local directory.
+site_local_files: true
 
 # will be stripped from fqdn when displayed in the web UI
 # also, do not forget the leading dot.
@@ -81,11 +90,6 @@ device_auth:
 # `````````````````````````````````````````````
 #dns:
 #  max_outstanding: 50
-
-# set to true to globally disable authentication/login.
-# create a user called "guest" if you want to assign port/admin rights.
-# `````````````````````````````````````````````````````````````````````
-no_auth: true
 
 # set to false if you MUST maintain backwards compatibility
 # with Netdisco 1.x web frontend.
