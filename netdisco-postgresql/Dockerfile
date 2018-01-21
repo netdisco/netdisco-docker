@@ -11,10 +11,9 @@ RUN apk add --no-cache \
   curl \
   tar
 
-COPY netdisco-db-entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/netdisco-db-entrypoint.sh
-
-RUN PGDATA=/var/lib/postgresql/netdisco-pgdata /usr/local/bin/docker-entrypoint.sh postgres --version
+COPY netdisco-initdb.sh /docker-entrypoint-initdb.d/
+COPY netdisco-db-entrypoint.sh netdisco-updatedb.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/netdisco-*
 
 WORKDIR /var/lib/postgresql/netdisco-sql
 RUN curl -sL "https://api.github.com/repos/netdisco/netdisco/tarball/${COMMITTISH}" | \
