@@ -37,3 +37,6 @@ echo >&2 "netdisco-db-entrypoint: adding session key if none exists"
 if [ -z $("${psql[@]}" -A -t -c "SELECT 1 FROM sessions WHERE id = 'dancer_session_cookie_key'") ]; then
   "${psql[@]}" -c "INSERT INTO sessions (id, a_session) VALUES ('dancer_session_cookie_key', md5(random()::text))"
 fi
+
+echo >&2 "netdisco-db-entrypoint: queueing stats job"
+"${psql[@]}" -c "INSERT INTO admin (action) VALUES ('stats')"
