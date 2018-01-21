@@ -6,16 +6,14 @@ services:
       context: netdisco-postgresql
     volumes:
       - "./netdisco/pgdata:/var/lib/postgresql/data"
-#  netdisco-base:
-#    image: netdisco:latest-base
-#    build:
-#      context: netdisco-base
   netdisco-backend:
     image: netdisco:latest-backend
     build:
       context: netdisco-backend
     volumes:
+      - "./netdisco/nd-site-local:/home/netdisco/nd-site-local"
       - "./netdisco/config:/home/netdisco/environments"
+      - "./netdisco/logs:/home/netdisco/logs"
     environment:
       NETDISCO_DB_HOST: netdisco-postgresql
     depends_on:
@@ -25,7 +23,9 @@ services:
     build:
       context: netdisco-web
     volumes:
+      - "./netdisco/nd-site-local:/home/netdisco/nd-site-local"
       - "./netdisco/config:/home/netdisco/environments"
+      - "./netdisco/logs:/home/netdisco/logs"
     environment:
       NETDISCO_DB_HOST: netdisco-postgresql
     ports:
