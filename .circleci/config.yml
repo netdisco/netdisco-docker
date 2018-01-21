@@ -19,8 +19,9 @@ jobs:
       - checkout
       - *attach_workspace
       - run: |
+          if [ ! -z ${CIRCLE_TAG} ]; then exit 1; fi
           cd /home/circleci/project
-          TAG=$(git tag -l | grep -E '^2\.[0-9]{6}' | sort -gr | head -n1 | sed -E 's/\.[0-9]{3}$//')
+          TAG=$(echo ${CIRCLE_TAG} | sed -E 's/\.[0-9]{3}$//')
           echo "export TAG=\"${TAG}\"" >> /tmp/workspace/bash_env
           echo "export IMAGE_ROOT=\"netdisco:${TAG}\"" >> /tmp/workspace/bash_env
       - persist_to_workspace:
@@ -57,7 +58,7 @@ jobs:
           command: |
             source /tmp/workspace/bash_env
             cd /home/circleci/project/netdisco-base
-            docker build -t ${IMAGE_ROOT}-base .
+            docker build -t ${IMAGE_ROOT}-base --build-arg TAG=${TAG} --build-arg COMMITTISH=${CIRCLE_TAG} .
             docker save -o /tmp/workspace/netdisco-base.tar ${IMAGE_ROOT}-base
       - persist_to_workspace:
           root: *workspace_root
@@ -81,7 +82,7 @@ jobs:
           command: |
             source /tmp/workspace/bash_env
             cd /home/circleci/project/netdisco-backend
-            docker build -t ${IMAGE_ROOT}-backend --build-arg TAG=${TAG} .
+            docker build -t ${IMAGE_ROOT}-backend --build-arg TAG=${TAG} --build-arg COMMITTISH=${CIRCLE_TAG} .
             docker save -o /tmp/workspace/netdisco-backend.tar ${IMAGE_ROOT}-backend
       - persist_to_workspace:
           root: *workspace_root
@@ -105,7 +106,7 @@ jobs:
           command: |
             source /tmp/workspace/bash_env
             cd /home/circleci/project/netdisco-web
-            docker build -t ${IMAGE_ROOT}-web --build-arg TAG=${TAG} .
+            docker build -t ${IMAGE_ROOT}-web --build-arg TAG=${TAG} --build-arg COMMITTISH=${CIRCLE_TAG} .
             docker save -o /tmp/workspace/netdisco-web.tar ${IMAGE_ROOT}-web
       - persist_to_workspace:
           root: *workspace_root
@@ -129,7 +130,7 @@ jobs:
           command: |
             source /tmp/workspace/bash_env
             cd /home/circleci/project/netdisco-do
-            docker build -t ${IMAGE_ROOT}-do --build-arg TAG=${TAG} .
+            docker build -t ${IMAGE_ROOT}-do --build-arg TAG=${TAG} --build-arg COMMITTISH=${CIRCLE_TAG} .
             docker save -o /tmp/workspace/netdisco-do.tar ${IMAGE_ROOT}-do
       - persist_to_workspace:
           root: *workspace_root
@@ -147,8 +148,16 @@ jobs:
             source /tmp/workspace/bash_env
             for image in postgresql base backend web do; do
               docker load -i /tmp/workspace/netdisco-$image.tar
+            done
+      - run:
+          name: Retag all images
+          command: |
+            source /tmp/workspace/bash_env
+            for image in postgresql base backend web do; do
               docker tag ${IMAGE_ROOT}-$image netdisco/${IMAGE_ROOT}-$image
-              docker tag ${IMAGE_ROOT}-$image netdisco:latest-$image
+              if [ "${TAG}" == "${CIRCLE_TAG}" ]; then
+                docker tag ${IMAGE_ROOT}-$image netdisco:latest-$image
+              fi
             done
       - run:
           name: Upload all images
@@ -157,7 +166,9 @@ jobs:
             docker login -u $DOCKER_USER -p $DOCKER_PASS
             for image in postgresql base backend web do; do
               docker push netdisco/${IMAGE_ROOT}-$image
-              docker push netdisco:latest-$image
+              if [ "${TAG}" == "${CIRCLE_TAG}" ]; then
+                docker push netdisco:latest-$image
+              fi
             done
 
 workflows:
