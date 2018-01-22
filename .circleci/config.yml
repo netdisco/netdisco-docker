@@ -162,17 +162,17 @@ jobs:
           name: Restore all images
           command: |
             source /tmp/workspace/bash_env
-            for image in postgresql base backend web do; do
+            for image in postgresql backend web do; do
               docker load -i /tmp/workspace/netdisco-$image.tar
             done
       - run:
           name: Retag all images
           command: |
             source /tmp/workspace/bash_env
-            for image in postgresql base backend web do; do
+            for image in postgresql backend web do; do
               docker tag ${IMAGE_ROOT}-$image netdisco/${IMAGE_ROOT}-$image
               #if [ "${TAG}" == "${CIRCLE_TAG}" ]; then
-              docker tag ${IMAGE_ROOT}-$image netdisco:latest-$image
+              docker tag ${IMAGE_ROOT}-$image netdisco/netdisco:latest-$image
               #fi
             done
       - run:
@@ -180,10 +180,10 @@ jobs:
           command: |
             source /tmp/workspace/bash_env
             docker login -u $DOCKER_USER -p $DOCKER_PASS
-            for image in postgresql base backend web do; do
+            for image in postgresql backend web do; do
               docker push netdisco/${IMAGE_ROOT}-$image
               #if [ "${TAG}" == "${CIRCLE_TAG}" ]; then
-              docker push netdisco:latest-$image
+              docker push netdisco/netdisco:latest-$image
               #fi
             done
 
