@@ -186,6 +186,9 @@ jobs:
               docker push netdisco/netdisco:latest-$image
               #fi
             done
+      - run:
+          name: Trigger MicroBadger Index
+          command: curl -sL -X POST https://hooks.microbadger.com/images/netdisco/netdisco/FEWdjAR4kuQy3PyifBYgkGZoFsE=
 
 workflows:
   version: 2
