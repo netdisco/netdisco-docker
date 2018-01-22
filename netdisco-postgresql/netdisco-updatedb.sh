@@ -39,4 +39,4 @@ if [ -z $("${psql[@]}" -A -t -c "SELECT 1 FROM sessions WHERE id = 'dancer_sessi
 fi
 
 echo >&2 "netdisco-db-entrypoint: queueing stats job"
-"${psql[@]}" -c "INSERT INTO admin (action) VALUES ('stats')"
+"${psql[@]}" -c "INSERT INTO admin (action, status) VALUES ('stats', 'queued')"

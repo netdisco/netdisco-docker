@@ -1,0 +1,20 @@
+version: '2.3'
+services:
+  netdisco-postgresql:
+    image: netdisco/netdisco:latest-postgresql
+  netdisco-do:
+    image: netdisco/netdisco:latest-do
+    volumes:
+      - "./netdisco/nd-site-local:/home/netdisco/nd-site-local"
+      - "./netdisco/config:/home/netdisco/environments"
+    environment:
+      NETDISCO_DOMAIN:  discover
+      NETDISCO_DB_HOST: netdisco-postgresql
+    depends_on:
+      - netdisco-postgresql
+#    scale: 0
+#    build:
+#      context: netdisco-do
+#networks:
+#  default:
+#    enable_ipv6: true
