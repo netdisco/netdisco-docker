@@ -133,11 +133,11 @@ jobs:
       - checkout
       - *attach_workspace
       - run:
-          name: Restore netdisco-base
+          name: Restore netdisco-backend
           command: |
             source /tmp/workspace/bash_env
-            docker load -i /tmp/workspace/netdisco-base.tar
-            docker tag ${IMAGE_ROOT}-base netdisco/${IMAGE_ROOT}-base
+            docker load -i /tmp/workspace/netdisco-backend.tar
+            docker tag ${IMAGE_ROOT}-backend netdisco/${IMAGE_ROOT}-backend
       - run:
           name: Build netdisco-do
           command: |
@@ -171,9 +171,9 @@ jobs:
             source /tmp/workspace/bash_env
             for image in postgresql base backend web do; do
               docker tag ${IMAGE_ROOT}-$image netdisco/${IMAGE_ROOT}-$image
-              if [ "${TAG}" == "${CIRCLE_TAG}" ]; then
-                docker tag ${IMAGE_ROOT}-$image netdisco:latest-$image
-              fi
+              #if [ "${TAG}" == "${CIRCLE_TAG}" ]; then
+              docker tag ${IMAGE_ROOT}-$image netdisco:latest-$image
+              #fi
             done
       - run:
           name: Upload all images
@@ -182,9 +182,9 @@ jobs:
             docker login -u $DOCKER_USER -p $DOCKER_PASS
             for image in postgresql base backend web do; do
               docker push netdisco/${IMAGE_ROOT}-$image
-              if [ "${TAG}" == "${CIRCLE_TAG}" ]; then
-                docker push netdisco:latest-$image
-              fi
+              #if [ "${TAG}" == "${CIRCLE_TAG}" ]; then
+              docker push netdisco:latest-$image
+              #fi
             done
 
 workflows:
