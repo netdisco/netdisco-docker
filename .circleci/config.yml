@@ -206,7 +206,7 @@ workflows:
             - build-netdisco-base
       - build-netdisco-do:
           requires:
-            - build-netdisco-base
+            - build-netdisco-backend
       - upload-netdisco:
           requires:
             - build-netdisco-backend
