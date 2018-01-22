@@ -179,7 +179,7 @@ jobs:
           name: Upload all images
           command: |
             source /tmp/workspace/bash_env
-            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
             for image in postgresql backend web do; do
               docker push netdisco/${IMAGE_ROOT}-$image
               #if [ "${TAG}" == "${CIRCLE_TAG}" ]; then
@@ -188,7 +188,7 @@ jobs:
             done
       - run:
           name: Trigger MicroBadger Index
-          command: curl -sL -X POST https://hooks.microbadger.com/images/netdisco/netdisco/FEWdjAR4kuQy3PyifBYgkGZoFsE=
+          command: curl -sL -X POST ${MICROBADGER_TRIGGER}
 
 workflows:
   version: 2
