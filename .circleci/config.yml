@@ -41,7 +41,7 @@ jobs:
           command: |
             source /tmp/workspace/bash_env
             cd /home/circleci/project/netdisco-postgresql
-            docker build -t ${IMAGE_ROOT}-postgresql
+            docker build -t ${IMAGE_ROOT}-postgresql \
               --build-arg BUILD_DATE=`date -u +”%Y-%m-%dT%H:%M:%SZ”` \
               --build-arg TAG=${TAG} \
               --build-arg COMMITTISH=${TAG} .
