@@ -2,19 +2,17 @@ version: '2.3'
 services:
   netdisco-postgresql:
     image: netdisco/netdisco:latest-postgresql
-    build:
-      context: netdisco-postgresql
     volumes:
       - "./netdisco/pgdata:/var/lib/postgresql/data"
-  netdisco-base:
-    image: netdisco/netdisco:latest-base
-    build:
-      context: netdisco-base
-    scale: 0
+#    build:
+#      context: netdisco-postgresql
+#  netdisco-base:
+#    image: netdisco/netdisco:latest-base
+#    build:
+#      context: netdisco-base
+#    scale: 0
   netdisco-backend:
     image: netdisco/netdisco:latest-backend
-    build:
-      context: netdisco-backend
     volumes:
       - "./netdisco/nd-site-local:/home/netdisco/nd-site-local"
       - "./netdisco/config:/home/netdisco/environments"
@@ -24,10 +22,10 @@ services:
       NETDISCO_DB_HOST: netdisco-postgresql
     depends_on:
       - netdisco-postgresql
+#    build:
+#      context: netdisco-backend
   netdisco-web:
     image: netdisco/netdisco:latest-web
-    build:
-      context: netdisco-web
     volumes:
       - "./netdisco/nd-site-local:/home/netdisco/nd-site-local"
       - "./netdisco/config:/home/netdisco/environments"
@@ -39,19 +37,21 @@ services:
       - "5000:5000"
     depends_on:
       - netdisco-postgresql
-  netdisco-do:
-    image: netdisco/netdisco:latest-do
-    build:
-      context: netdisco-do
-    volumes:
-      - "./netdisco/nd-site-local:/home/netdisco/nd-site-local"
-      - "./netdisco/config:/home/netdisco/environments"
-    environment:
-      NETDISCO_DOMAIN:  discover
-      NETDISCO_DB_HOST: netdisco-postgresql
-    depends_on:
-      - netdisco-postgresql
-    scale: 0
+#    build:
+#      context: netdisco-web
+#  netdisco-do:
+#    image: netdisco/netdisco:latest-do
+#    volumes:
+#      - "./netdisco/nd-site-local:/home/netdisco/nd-site-local"
+#      - "./netdisco/config:/home/netdisco/environments"
+#    environment:
+#      NETDISCO_DOMAIN:  discover
+#      NETDISCO_DB_HOST: netdisco-postgresql
+#    depends_on:
+#      - netdisco-postgresql
+#    scale: 0
+#    build:
+#      context: netdisco-do
 #networks:
 #  default:
 #    enable_ipv6: true

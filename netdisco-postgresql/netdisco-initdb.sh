@@ -6,10 +6,10 @@ NETDISCO_DB_PASS="${NETDISCO_DB_PASS:-netdisco}"
 
 PGUSER="${PGUSER:-postgres}"
 psql=( psql -X -v ON_ERROR_STOP=0 -v ON_ERROR_ROLLBACK=on )
-psql+=( --username ${PGUSER} --dbname template1 )
+psql+=( --username=${PGUSER} )
 
 echo >&2 "netdisco-db-entrypoint: configuring Netdisco user and db"
-"${psql[@]}" -c "CREATE ROLE ${NETDISCO_DB_USER} WITH NOSUPERUSER NOCREATEDB NOCREATEROLE PASSWORD '${NETDISCO_DB_PASS}'"
-createdb -O ${NETDISCO_DB_USER} ${NETDISCO_DB_NAME}
+"${psql[@]}" -c "CREATE ROLE ${NETDISCO_DB_USER} WITH LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE PASSWORD '${NETDISCO_DB_PASS}'"
+createdb --username=${PGUSER} -O ${NETDISCO_DB_USER} ${NETDISCO_DB_NAME}
 
 /usr/local/bin/netdisco-updatedb.sh
