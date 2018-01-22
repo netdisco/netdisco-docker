@@ -19,9 +19,10 @@ jobs:
       - checkout
       - *attach_workspace
       - run: |
-          if [ -z "${CIRCLE_TAG}" ]; then exit 1; fi
+          # if [ -z "${CIRCLE_TAG}" ]; then exit 1; fi
           cd /home/circleci/project
-          TAG=$(echo ${CIRCLE_TAG} | sed -E 's/\.[0-9]{3}$//')
+          TAG=$(git tag -l | grep -E '^2\.[0-9]{6}' | sort -gr | head -n1 | sed -E 's/\.[0-9]{3}$//')
+          # TAG=$(echo ${CIRCLE_TAG} | sed -E 's/\.[0-9]{3}$//')
           echo "export TAG=\"${TAG}\"" >> /tmp/workspace/bash_env
           echo "export IMAGE_ROOT=\"netdisco:${TAG}\"" >> /tmp/workspace/bash_env
       - persist_to_workspace:
