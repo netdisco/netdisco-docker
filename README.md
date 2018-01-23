@@ -46,7 +46,7 @@ You can also speak to someone in the [`#netdisco@freenode`](https://webchat.free
 
 ## Upgrading
 
-Downloading new images is good enough. When our database image starts it always updates the DB schema to the latest release. To upgrade your own PostgreSQL database (after setting environment variables in the compose file), run:
+Downloading new images is good enough. When our database image starts it always updates the DB schema to the latest release. To upgrade your own PostgreSQL database, run:
 
     docker-compose run --entrypoint=bin/netdisco-db-deploy netdisco-backend
 
