@@ -25,7 +25,7 @@ Netdisco includes a lightweight web server for the interface, a backend daemon t
 
 This will start the database, backend daemon, and web frontend listening on port 5000. If you have a device using the SNMP community `public`, enter it in the Netdisco homepage and click "Discover".
 
-The default configuration is available in `netdisco/config/deployment.yml`. The backend and web daemons will automatically restart when you save cahnges to this file. Logs are available in `netdisco/logs/netdisco-{backend,web}.log`.
+The default configuration is available in `netdisco/config/deployment.yml`. The backend and web daemons will automatically restart when you save changes to this file. Logs are available in `netdisco/logs/netdisco-{backend,web}.log`.
 
 You can also [download `dc-netdisco-do.yml`](https://raw.githubusercontent.com/netdisco/netdisco-docker/master/dc-netdisco-do.yml) for command-line management of Netdisco:
 
