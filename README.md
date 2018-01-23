@@ -25,12 +25,12 @@ Netdisco includes a lightweight web server for the interface, a backend daemon t
 
 This will start the database, backend daemon, and web frontend listening on port 5000. If you have a device using the SNMP community `public`, enter it in the Netdisco homepage and click "Discover".
 
+The default configuration is available in `netdisco/config/deployment.yml`. The backend and web daemons will automatically restart when you save cahnges to this file. Logs are available in `netdisco/logs/netdisco-{backend,web}.log`.
+
 You can also [download `dc-netdisco-do.yml`](https://raw.githubusercontent.com/netdisco/netdisco-docker/master/dc-netdisco-do.yml) for command-line management of Netdisco:
 
     docker-compose -f dc-netdisco-do.yml netdisco-do <action>
     # run it without <action> to get help
-
-The default configuration is available in `netdisco/config/deployment.yml`. The backend and web daemons will automatically restart when you save cahnges to this file. Logs are available in `netdisco/logs/netdisco-{backend,web}.log`.
 
 Local web or backend plugins can be installed into `netdisco/nd-site-local/` as per our documentation. Finally, the PostgreSQL data files are stored in `netdisco/pgdata/` and we do not advise touching them (unless you wish to reinitialize the system).
 
