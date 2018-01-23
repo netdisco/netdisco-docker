@@ -23,21 +23,20 @@ Netdisco includes a lightweight web server for the interface, a backend daemon t
 
     docker-compose up
 
-This will start the database, backend daemon, and web frontend listening on port 5000. If you have a device using the SNMP community `public`, enter it in the Netdisco homepage and click Discover.
+This will start the database, backend daemon, and web frontend listening on port 5000. If you have a device using the SNMP community `public`, enter it in the Netdisco homepage and click "Discover".
 
-You can also [download `dc-netdisco-do.yml`](https://raw.githubusercontent.com/netdisco/netdisco-docker/master/dc-netdisco-do.yml) for command-line management of Netdisco (run without an action to get help):
+You can also [download `dc-netdisco-do.yml`](https://raw.githubusercontent.com/netdisco/netdisco-docker/master/dc-netdisco-do.yml) for command-line management of Netdisco:
 
     docker-compose -f dc-netdisco-do.yml netdisco-do <action>
+    # run it without <action> to get help
 
-The default configuration is available in `netdisco/config/deployment.yml`. The backend and web daemons will automatically restart when you save cahnges to this file.
-
-Logs are available in `netdisco/logs/netdisco-{backend,web}.log`. You can increase the log level by changing settings in `deployment.yml`.
+The default configuration is available in `netdisco/config/deployment.yml`. The backend and web daemons will automatically restart when you save cahnges to this file. Logs are available in `netdisco/logs/netdisco-{backend,web}.log`.
 
 Local web or backend plugins can be installed into `netdisco/nd-site-local/` as per our documentation. Finally, the PostgreSQL data files are stored in `netdisco/pgdata/` and we do not advise touching them (unless you wish to reinitialize the system).
 
 The web frontend is configured to allow unauthenticated access with full admin rights. We suggest you visit the `Admin -> User Management` menu item, and edit `no_auth` in `deployment.yml`, to remove this guest account and set up authenticated user access.
 
-Other username, password, database connection, and file locations, can all be set using environment variables described in our wiki.
+Other username, password, database connection, and file locations, can all be set using [environment variables](https://github.com/netdisco/netdisco/wiki/Environment-Variables) described in our wiki. Of course the database container is optional and you can connect to an existing or external PostgreSQL server instead.
 
 ## Getting Support
 
