@@ -12,6 +12,13 @@ references:
     attach_workspace:
       at: *workspace_root
 
+  tag_filter: &tag_filter
+    filters:
+      tags:
+        only: /^2\.[0-9]{6}/
+      branches:
+        ignore: /.*/
+
 jobs:
   environment-setup:
     <<: *container_config
@@ -19,10 +26,8 @@ jobs:
       - checkout
       - *attach_workspace
       - run: |
-          # if [ -z "${CIRCLE_TAG}" ]; then exit 1; fi
           cd /home/circleci/project
           TAG=$(git tag -l | grep -E '^2\.[0-9]{6}' | sort -gr | head -n1 | sed -E 's/\.[0-9]{3}$//')
-          # TAG=$(echo ${CIRCLE_TAG} | sed -E 's/\.[0-9]{3}$//')
           echo "export TAG=\"${TAG}\"" >> /tmp/workspace/bash_env
           echo "export IMAGE_ROOT=\"netdisco:${TAG}\"" >> /tmp/workspace/bash_env
       - persist_to_workspace:
@@ -171,9 +176,7 @@ jobs:
             source /tmp/workspace/bash_env
             for image in postgresql backend web do; do
               docker tag ${IMAGE_ROOT}-$image netdisco/${IMAGE_ROOT}-$image
-              #if [ "${TAG}" == "${CIRCLE_TAG}" ]; then
               docker tag ${IMAGE_ROOT}-$image netdisco/netdisco:latest-$image
-              #fi
             done
       - run:
           name: Upload all images
@@ -182,9 +185,7 @@ jobs:
             docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
             for image in postgresql backend web do; do
               docker push netdisco/${IMAGE_ROOT}-$image
-              #if [ "${TAG}" == "${CIRCLE_TAG}" ]; then
               docker push netdisco/netdisco:latest-$image
-              #fi
             done
       - run:
           name: Trigger MicroBadger Index
@@ -194,23 +195,30 @@ workflows:
   version: 2
   build-netdisco:
     jobs:
-      - environment-setup
+      - environment-setup:
+          <<: *tag_filter
       - build-netdisco-postgresql:
+          <<: *tag_filter
           requires:
             - environment-setup
       - build-netdisco-base:
+          <<: *tag_filter
           requires:
             - environment-setup
       - build-netdisco-backend:
+          <<: *tag_filter
           requires:
             - build-netdisco-base
       - build-netdisco-web:
+          <<: *tag_filter
           requires:
             - build-netdisco-base
       - build-netdisco-do:
+          <<: *tag_filter
           requires:
             - build-netdisco-backend
       - upload-netdisco:
+          <<: *tag_filter
           requires:
             - build-netdisco-backend
             - build-netdisco-web
