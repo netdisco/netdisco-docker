@@ -1,6 +1,10 @@
 [![Build Status](https://travis-ci.org/netdisco/netdisco.svg?branch=master)](https://travis-ci.org/netdisco/netdisco)
 [![CPAN version](https://badge.fury.io/pl/App-Netdisco.svg)](https://metacpan.org/pod/App::Netdisco)
 
+[![Docker netdisco-backend Image](https://img.shields.io/microbadger/image-size/netdisco/netdisco/latest-backend.svg?label=netdisco-backend)](https://store.docker.com/community/images/netdisco/netdisco)
+[![Docker netdisco-web Image](https://img.shields.io/microbadger/image-size/netdisco/netdisco/latest-web.svg?label=netdisco-web)](https://store.docker.com/community/images/netdisco/netdisco)
+[![Docker PostgreSQL Image](https://img.shields.io/microbadger/image-size/netdisco/netdisco/latest-postgresql.svg?label=PostgreSQL&logo=postgresql)](https://store.docker.com/community/images/netdisco/netdisco)
+[![Docker netdisco-do Image](https://img.shields.io/microbadger/image-size/netdisco/netdisco/latest-do.svg?label=netdisco-do)](https://store.docker.com/community/images/netdisco/netdisco)
 
 **Netdisco** is a web-based network management tool suitable for small to very large networks. IP and MAC address data is collected into a PostgreSQL database using SNMP, CLI, or device APIs. Some of the things you can do with Netdisco:
 
@@ -11,13 +15,39 @@
 
 See the demo at: [https://netdisco2-demo.herokuapp.com/](https://netdisco2-demo.herokuapp.com/)
 
-##  Installation
+##  Docker Deployment
 
-Netdisco is written in Perl and is self-contained apart from the PostgreSQL database, so is very easy to install and runs well on any linux or unix system.
+Netdisco includes a lightweight web server for the interface, a backend daemon to gather data from your network, and a command line interface for troubleshooting. There is a simple configuration file in YAML format. If you do not have your own PostgreSQL database, we also have an image for that. All images work well together, sharing configuration and logs.
 
-It includes a lightweight web server for the interface, a backend daemon to gather data from your network, and a command line interface for troubleshooting. There is a simple configuration file in YAML format.
+Download the `docker-compose.yml` file and run:
 
-Please check out the [installation instructions](https://metacpan.org/pod/App::Netdisco) on CPAN.
+    docker-compose up
+
+This will start the database, backend daemon, and web frontend listening on port 5000. If you have a device using the SNMP community `public`, enter it in the Netdisco homepage and click Discover.
+
+You can also download `dc-netdisco-do.yml` for command-line management of Netdisco (run without an action to get help):
+
+    docker-compose -f dc-netdisco-do.yml netdisco-do <action>
+
+When you start these containers the directory `netdisco` will contain logs, configuration, and PostgreSQL data files. This is configurable within the `.yml` configuration file.
+
+The default configuration is available in `netdisco/config/deployment.yml`. The backend and web daemons will automatically restart when you save cahnges to this file.
+
+Logs are available in `netdisco/logs/netdisco-{backend,web}.log`. You can increase the log level by changing settings in `deployment.yml`.
+
+Local web or backend plugins can be installed into `netdisco/nd-site-local/` as per our documentation. Finally, the PostgreSQL data files are stored in `netdisco/pgdata/` and we do not advise touching them (unless you wish to reinitialize the system).
+
+The web frontend is configured to allow unauthenticated access with full admin rights. We suggest you visit the `Admin -> User Management` menu item, and edit `no_auth` in `deployment.yml`, to remove this guest account and set up authenticated user access.
+
+Other username, password, database connection, and file locations, can all be set using environment variables described in our wiki.
+
+## Getting Support
+
+We have several other pages with tips for
+L<alternate deployment scenarios|https://github.com/netdisco/netdisco/wiki/Install-Tips>,
+L<understanding and troubleshooting Netdisco|https://github.com/netdisco/netdisco/wiki/Troubleshooting>,
+L<tips and tricks for specific platforms|https://github.com/netdisco/netdisco/wiki/Vendor-Tips>,
+and L<all the configuration options|https://github.com/netdisco/netdisco/wiki/Configuration>.
 
 You can also speak to someone in the [`#netdisco@freenode`](https://webchat.freenode.net/?randomnick=1&prompt=1&channels=%23netdisco) IRC channel, or on the [community email list](https://lists.sourceforge.net/lists/listinfo/netdisco-users).
 
