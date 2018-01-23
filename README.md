@@ -29,7 +29,7 @@ The default configuration is available in `netdisco/config/deployment.yml`. The 
 
 You can also [download `dc-netdisco-do.yml`](https://raw.githubusercontent.com/netdisco/netdisco-docker/master/dc-netdisco-do.yml) for command-line management of Netdisco:
 
-    docker-compose -f dc-netdisco-do.yml netdisco-do <action>
+    docker-compose -f dc-netdisco-do.yml run netdisco-do <action>
     # run it without <action> to get help
 
 Local web or backend plugins can be installed into `netdisco/nd-site-local/` as per our documentation. Finally, the PostgreSQL data files are stored in `netdisco/pgdata/` and we do not advise touching them (unless you wish to reinitialize the system).
