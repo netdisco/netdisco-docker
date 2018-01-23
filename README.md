@@ -44,6 +44,16 @@ We have several other pages with tips for [understanding and troubleshooting Net
 
 You can also speak to someone in the [`#netdisco@freenode`](https://webchat.freenode.net/?randomnick=1&prompt=1&channels=%23netdisco) IRC channel, or on the [community email list](https://lists.sourceforge.net/lists/listinfo/netdisco-users).
 
+## Upgrading
+
+Downloading new images is good enough. When our database image starts it always updates the DB schema to the latest release. To upgrade your own PostgreSQL database, run:
+
+    docker-compose run --entrypoint=bin/netdisco-db-deploy netdisco-backend
+
+To supply the Netdisco database name and credentials in environment variables, use the `-e` parameter on `docker-compose`:
+
+    docker-compose run -e NETDISCO_DB_USER=changeme -e NETDISCO_DB_PASS=changeme --entrypoint=bin/netdisco-db-deploy netdisco-backend
+
 ## Credits
 
 Thanks to Ira W. Snyder and LBegnaud for inspiration. Thanks also to the PostgreSQL project for great examples of docker magic. We build with the support of the excellent [Circle CI](https://circleci.com/) service. 
