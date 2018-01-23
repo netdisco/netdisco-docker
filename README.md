@@ -44,3 +44,6 @@ We have several other pages with tips for [alternate deployment scenarios](https
 
 You can also speak to someone in the [`#netdisco@freenode`](https://webchat.freenode.net/?randomnick=1&prompt=1&channels=%23netdisco) IRC channel, or on the [community email list](https://lists.sourceforge.net/lists/listinfo/netdisco-users).
 
+## Credits
+
+Thanks to Ira W. Snyder and LBegnaud for inspiration. Thanks also to the PostgreSQL project for great examples of docker magic. We build with the support of the excellent [Circle CI](https://circleci.com/) service. 
