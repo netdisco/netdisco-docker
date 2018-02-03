@@ -9,7 +9,7 @@ fi
 
 if [ "$1" = 'postgres' ]; then
   echo >&2 "netdisco-db-entrypoint: starting pg privately to container"
-  "${su[@]}" pg_ctl -D "$PGDATA" -o "-c listen_addresses='localhost'" -w start
+  "${su[@]}" pg_ctl -D "$PGDATA" -o "-c listen_addresses='localhost' -c log_min_error_statement=LOG -c log_min_messages=LOG" -w start
 
   /usr/local/bin/netdisco-updatedb.sh
 
