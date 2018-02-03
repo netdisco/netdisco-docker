@@ -12,7 +12,7 @@ echo >&2 "netdisco-db-entrypoint: bringing schema up-to-date"
 ls -1 /var/lib/postgresql/netdisco-sql/App-Netdisco-DB-* | \
   xargs -n1 basename | sort -n -t '-' -k4 | \
   while read file; do
-    "${psql[@]}" -f "/var/lib/postgresql/netdisco-sql/$file"
+    "${psql[@]}" -f "/var/lib/postgresql/netdisco-sql/$file" >/dev/null 2>&1
   done
 
 echo >&2 "netdisco-db-entrypoint: importing OUI"
@@ -25,8 +25,8 @@ fi
 echo >&2 "netdisco-db-entrypoint: marking schema as up-to-date"
 MAXSCHEMA=$(grep VERSION /var/lib/postgresql/netdisco-sql/DB.pm | sed 's/[^0-9]//g')
 STAMP=$(date '+v%Y%m%d_%H%M%S.000')
-"${psql[@]}" -c "CREATE TABLE dbix_class_schema_versions (version varchar(10) PRIMARY KEY, installed varchar(20) NOT NULL)"
-"${psql[@]}" -c "INSERT INTO dbix_class_schema_versions VALUES ('${MAXSCHEMA}', '${STAMP}')"
+"${psql[@]}" -c "CREATE TABLE dbix_class_schema_versions (version varchar(10) PRIMARY KEY, installed varchar(20) NOT NULL)" >/dev/null 2>&1
+"${psql[@]}" -c "INSERT INTO dbix_class_schema_versions VALUES ('${MAXSCHEMA}', '${STAMP}')" >/dev/null 2>&1
 
 echo >&2 "netdisco-db-entrypoint: adding admin user if none exists"
 if [ -z $("${psql[@]}" -A -t -c "SELECT 1 FROM users WHERE admin") ]; then
