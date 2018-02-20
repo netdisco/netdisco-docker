@@ -16,11 +16,16 @@ Netdisco includes a lightweight web server for the interface, a backend daemon t
 
 ##  Docker Deployment
 
-    curl -Ls -o docker-compose.yml https://tinyurl.com/nd2-dockercompose
+Only if you are on Linux:
+
     sudo groupadd netdisco -g 901
     sudo useradd -u 901 -p x -g netdisco netdisco
     mkdir -p netdisco/{logs,config,nd-site-local}
     sudo chown -R netdisco:netdisco netdisco
+
+And then (for everyone):
+
+    curl -Ls -o docker-compose.yml https://tinyurl.com/nd2-dockercompose
     docker-compose up
 
 This will start the database, backend daemon, and web frontend listening on port 5000. If you have a device using the SNMP community `public`, enter it in the Netdisco homepage and click "Discover".
