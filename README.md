@@ -16,7 +16,7 @@ Netdisco includes a lightweight web server for the interface, a backend daemon t
 
 ##  Docker Deployment
 
-    curl -sLO https://tinyurl.com/netdisco-docker-compose-yml
+    curl -Ls -o docker-compose.yml https://tinyurl.com/nd2-dockercompose
     sudo groupadd netdisco -g 901
     sudo useradd -u 901 -p x -g netdisco netdisco
     mkdir -p netdisco/{logs,config,nd-site-local}
