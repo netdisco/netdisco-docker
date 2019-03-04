@@ -47,7 +47,7 @@ jobs:
             source /tmp/workspace/bash_env
             cd /home/circleci/project/netdisco-postgresql
             docker build -t ${IMAGE_ROOT}-postgresql \
-              --build-arg BUILD_DATE=`date -u +”%Y-%m-%dT%H:%M:%SZ”` \
+              --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
               --build-arg TAG=${TAG} \
               --build-arg COMMITTISH=${TAG} .
             docker save -o /tmp/workspace/netdisco-postgresql.tar ${IMAGE_ROOT}-postgresql
@@ -68,7 +68,7 @@ jobs:
             source /tmp/workspace/bash_env
             cd /home/circleci/project/netdisco-base
             docker build -t ${IMAGE_ROOT}-base \
-              --build-arg BUILD_DATE=`date -u +”%Y-%m-%dT%H:%M:%SZ”` \
+              --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
               --build-arg TAG=${TAG} \
               --build-arg COMMITTISH=${TAG} .
             docker save -o /tmp/workspace/netdisco-base.tar ${IMAGE_ROOT}-base
@@ -95,7 +95,7 @@ jobs:
             source /tmp/workspace/bash_env
             cd /home/circleci/project/netdisco-backend
             docker build -t ${IMAGE_ROOT}-backend \
-              --build-arg BUILD_DATE=`date -u +”%Y-%m-%dT%H:%M:%SZ”` \
+              --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
               --build-arg TAG=${TAG} \
               --build-arg COMMITTISH=${TAG} .
             docker save -o /tmp/workspace/netdisco-backend.tar ${IMAGE_ROOT}-backend
@@ -122,7 +122,7 @@ jobs:
             source /tmp/workspace/bash_env
             cd /home/circleci/project/netdisco-web
             docker build -t ${IMAGE_ROOT}-web \
-              --build-arg BUILD_DATE=`date -u +”%Y-%m-%dT%H:%M:%SZ”` \
+              --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
               --build-arg TAG=${TAG} \
               --build-arg COMMITTISH=${TAG} .
             docker save -o /tmp/workspace/netdisco-web.tar ${IMAGE_ROOT}-web
@@ -149,7 +149,7 @@ jobs:
             source /tmp/workspace/bash_env
             cd /home/circleci/project/netdisco-do
             docker build -t ${IMAGE_ROOT}-do \
-              --build-arg BUILD_DATE=`date -u +”%Y-%m-%dT%H:%M:%SZ”` \
+              --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
               --build-arg TAG=${TAG} \
               --build-arg COMMITTISH=${TAG} .
             docker save -o /tmp/workspace/netdisco-do.tar ${IMAGE_ROOT}-do
