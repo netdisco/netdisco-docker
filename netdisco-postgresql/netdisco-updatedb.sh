@@ -4,12 +4,17 @@ NETDISCO_DB_NAME="${NETDISCO_DB_NAME:-netdisco}"
 NETDISCO_DB_USER="${NETDISCO_DB_USER:-netdisco}"
 NETDISCO_DB_PASS="${NETDISCO_DB_PASS:-netdisco}"
 NETDISCO_ADMIN_USER="${NETDISCO_ADMIN_USER:-guest}"
+NETDISCO_DB_CONNSTR="${NETDISCO_DB_CONNSTR:-''}"
 
 export COL='\033[0;35m'
 export NC='\033[0m'
 
 psql=( psql -X -v ON_ERROR_STOP=0 -v ON_ERROR_ROLLBACK=on )
-psql+=( --username ${NETDISCO_DB_USER} --dbname ${NETDISCO_DB_NAME} )
+if [[ -z "$NETDISCO_DB_CONNSTR" ]]; then
+  psql+=( ${NETDISCO_DB_CONNSTR} )
+else
+  psql+=( --username ${NETDISCO_DB_USER} --dbname ${NETDISCO_DB_NAME} )
+fi
 
 echo >&2 -e "${COL}netdisco-db-entrypoint: bringing schema up-to-date${NC}"
 ls -1 /var/lib/postgresql/netdisco-sql/App-Netdisco-DB-* | \
