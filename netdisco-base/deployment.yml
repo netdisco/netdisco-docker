@@ -2,7 +2,9 @@
 # NETDISCO 2 CONFIGURATION FILE
 #
 # Settings in this file override share/config.yml
-# See App::Netdisco::Manual::Configuration for more info.
+#
+# https://github.com/netdisco/netdisco/wiki/Configuration has
+# in depth explanations about each setting.
 
 # ------------------
 # ESSENTIAL SETTINGS
@@ -14,17 +16,26 @@ database:
   pass: 'netdisco'
   #host: 'localhost'
 
+# ------------------------
+# DOCKER SPECIFIC SETTINGS
+# ------------------------
+
+# Allows you to put plugin code in /lib, and templates in /share/views,
+# within the nd-site-local directory.
+site_local_files: true
+
 # set to true to globally disable authentication/login.
 # the user called "guest" has full admin/port-control rights.
-# ```````````````````````````````````````````````````````````
+# this user will be created by default on your first deploy.
 no_auth: true
 
 # --------------------
 # RECOMMENDED SETTINGS
 # --------------------
 
-# SNMP community string(s)
-# ````````````````````````
+# Device authentication settings
+# define snmp communities and ssh credentials here
+# ````````````````````````````````````````````````
 device_auth:
   - tag: 'default_v2_readonly'
     community: 'public'
@@ -35,9 +46,7 @@ device_auth:
 #    read: false
 #    write: true
 
-# Allows you to put plugin code in /lib, and templates in /share/views,
-# within the nd-site-local directory.
-site_local_files: true
+
 
 # will be stripped from fqdn when displayed in the web UI
 # also, do not forget the leading dot.
@@ -53,13 +62,12 @@ site_local_files: true
 # OTHER INTERESTING SETTINGS WHERE THE DEFAULTS ARE PROBABLY OKAY
 # ---------------------------------------------------------------
 
-# do not discover IP Phones or Wireless Access Points.
+# discover Wireless Access Points, but not IP Phones
 # usually these are visible as device neighbors but don't support
 # SNMP, which just clogs up the job queue.
 # ```````````````````````````````````````````````````````````````
-#discover_no_type:
-#  - '(?i)phone'
-#  - '(?i)(?:wap|wireless)'
+#discover_waps: true
+#discover_phones: false
 
 # this is the schedule for automatically keeping netdisco up-to-date;
 # these are good defaults, so only uncomment if needing to change.
@@ -90,9 +98,3 @@ site_local_files: true
 # `````````````````````````````````````````````
 #dns:
 #  max_outstanding: 50
-
-# set to false if you MUST maintain backwards compatibility
-# with Netdisco 1.x web frontend.
-# `````````````````````````````````````````````````````````
-#safe_password_store: true
-
