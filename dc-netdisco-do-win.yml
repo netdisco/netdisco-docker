@@ -1,0 +1,17 @@
+version: '2.3'
+
+services:
+  netdisco-do:
+    image: netdisco/netdisco:latest-do
+    volumes:
+      - nd-sitelocal-volume:/home/netdisco/nd-site-local:Z
+      - nd-config-volume:/home/netdisco/environments:Z
+    environment:
+      NETDISCO_DOMAIN:  discover
+      NETDISCO_DB_HOST: netdisco-postgresql
+
+volumes:
+  nd-sitelocal-volume:
+    external: true
+  nd-config-volume:
+    external: true
