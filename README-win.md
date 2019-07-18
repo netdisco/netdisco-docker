@@ -2,16 +2,20 @@
 
 ## requirements
 
-* windows 10 x64, version 1903
+* windows 10 x64, version 1903, pro, enterprise or education edition.
   * nested virtualization needs to be enabled in the bios
   * the following features need to be enabled in windows:
     * containers
     * hyper-v
     * virtual machine platform
     * windows hypervisor platform 
-* docker version 19.03.0-rc2 (dockerdesktop)
+* docker desktop for windows 2.0.5.0 (edge), community edition
   * docker must be set to use linux containers
-* docker-compose version 1.24.0
+  * in the edge edition it's not possible to turn of metrics
+  * disable outstart of the docker / container services.
+    * local volumes take some time to come online. if containers start before the volumes are online this can result in data loss.
+    * not autostarting the netdisco containers is another option.
+  * enabling "experimental features" might be required.
 
 ## limitations / work in progress
 
@@ -81,6 +85,7 @@ this can be used to edit configuration files or run "netdisco-do", but has not b
 ```
 
 ## upgrading to newer netdisco versions. this has not yet been tested, but i assume it will go something like:
+
 * stop containers
 * pull newest images
   * docker pull netdisco/netdisco:latest-postgresql
