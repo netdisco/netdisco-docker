@@ -9,9 +9,17 @@
     * hyper-v
     * virtual machine platform
     * windows hypervisor platform 
-* docker version 19.03.0-rc2
+* docker version 19.03.0-rc2 (dockerdesktop)
   * docker must be set to use linux containers
 * docker-compose version 1.24.0
+
+## limitations / work in progress
+
+* unlike linux we use local volumes on windows, this takes care of differences in userid/acl handling.
+* ipv6 support not tested
+* openssh support not tested (ssh does not seem to be installed in the container image)
+* very basic docker support, stuff like docker swarm etc will most likely not work
+* upgrade procedure still needs to be figured out
 
 ## installing netdisco-docker on windows
 
@@ -75,10 +83,8 @@ this can be used to edit configuration files or run "netdisco-do", but has not b
   * docker pull netdisco/netdisco:latest-postgresql
   * docker pull netdisco/netdisco:latest-backend
   * docker pull netdisco/netdisco:latest-web
-* figure out how to link volumes to new images if not done automically
+  * figure out how to link volumes to new images if not done automically
 * start new containers
   * must make sure our container startup doesn't execute scripts that could overwrite existing data
 * follow normal update procedure next (netdisco-deploy)?
 * the provided docker-compose example for initial installation does not seem to update images to newer versions.
-
-
