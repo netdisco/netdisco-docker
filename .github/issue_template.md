@@ -60,6 +60,6 @@ remove this but let us know if you did so
 change 1.1.1.1 in the below example with the problematic device's ip
 
 a containerized version of netdisco-do is available:
-`curl -Ls -o dc-netdisco-do.yml https://raw.githubusercontent.com/netdisco/netdisco-docker/master/dc-netdisco-do.yml`
-`docker-compose -f dc-netdisco-do.yml run netdisco-do show -d 1.1.1.1 -e specify -DI`
+  curl -Ls -o dc-netdisco-do.yml https://raw.githubusercontent.com/netdisco/netdisco-docker/master/dc-netdisco-do.yml
+  docker-compose -f dc-netdisco-do.yml run netdisco-do show -d 1.1.1.1 -e specify -DI
 -->
