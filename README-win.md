@@ -34,14 +34,14 @@ unlike linux we use local volumes on windows, this takes care of differences in
 userid/acl handling.
 
 * first create local volumes for netdisco's storage
-```
+```shell script
     docker volume create -d local nd-pgdata-volume
     docker volume create -d local nd-sitelocal-volume
     docker volume create -d local nd-config-volume
     docker volume create -d local nd-logs-volume
 ```
 * fetch the windows specific compose file:
-```
+```shell script
     curl -Ls -o docker-compose.yml https://raw.githubusercontent.com/netdisco/netdisco-docker/master/docker-compose-win.yml
     docker-compose up
 ```
@@ -49,11 +49,11 @@ userid/acl handling.
 ## starting/stopping containers after the initial install can be done with:
 
 * find out container id, add --all to also show stopped containers.
-```
+```shell script
     docker ps
 ```
 * starting/stopping containers
-```
+```shell script
     docker stop __containerid__
     docker start __containerid__
 ```
@@ -61,7 +61,7 @@ userid/acl handling.
 ## netdisco-do support
 
 * fetch the windows specific compose file:
-```
+```shell script
     curl -Ls -o dc-netdisco-do.yml https://raw.githubusercontent.com/netdisco/netdisco-docker/master/dc-netdisco-do-win.yml
     docker-compose -f dc-netdisco-do.yml run netdisco-do <action>
 ```
@@ -72,15 +72,15 @@ userid/acl handling.
 this can be used to edit configuration files or run "netdisco-do", but has not been fully tested yet. 
 
 * find out the container id of netdisco-backend
-```
+```shell script
     docker ps
 ```
 * connect to shell, replace __containerid__  with the actual id
-```
+```shell script
     docker exec -it __containerid__ /bin/ash
 ```
 * exit shell
-```
+```shell script
     exit
 ```
 
