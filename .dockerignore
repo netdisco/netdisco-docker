@@ -1,6 +1,9 @@
 .dockerignore
 .git
+.idea
 docker-compose.yml
+docker-compose-win.yml
 LICENSE
 netdisco
 README.md
+README-win.md
