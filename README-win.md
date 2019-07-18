@@ -20,6 +20,9 @@
 * openssh support not tested (ssh does not seem to be installed in the container image)
 * very basic docker support, stuff like docker swarm etc will most likely not work
 * upgrade procedure still needs to be figured out
+* timezones don't match between windows host & containers, so scheduling/logging/etc is not exact.
+* not yet tested with extended runtimes
+* what happens when multiple containers try to use the same docker volumes?
 
 ## installing netdisco-docker on windows
 
