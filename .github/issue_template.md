@@ -45,6 +45,9 @@ this should preserve spaces in the issue tracker and make troubleshooting quicke
 ## Your Environment
 <!--- Include as many relevant details about the environment you experienced the bug in -->
 * netdisco container versions: 
+  * netdisco-postgresql: 
+  * netdisco-backend: 
+  * netdisco-web: 
 * docker engine version: 
 * docker-compose version: 
 * host operating system: 
