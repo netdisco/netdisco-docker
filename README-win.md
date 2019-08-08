@@ -48,9 +48,9 @@ userid/acl handling.
 
 ## starting/stopping containers after the initial install can be done with:
 
-* find out container id, add --all to also show stopped containers.
+* find out container id.
 ```shell script
-    docker ps
+    docker ps --all
 ```
 * starting/stopping containers
 ```shell script
