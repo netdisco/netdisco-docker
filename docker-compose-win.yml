@@ -34,10 +34,10 @@ services:
 
 volumes:
   nd-pgdata-volume:
-    external: true
+    external: false
   nd-sitelocal-volume:
-    external: true
+    external: false
   nd-config-volume:
-    external: true
+    external: false
   nd-logs-volume:
-    external: true
+    external: false

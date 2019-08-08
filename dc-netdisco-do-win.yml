@@ -12,6 +12,6 @@ services:
 
 volumes:
   nd-sitelocal-volume:
-    external: true
+    external: false
   nd-config-volume:
-    external: true
+    external: false

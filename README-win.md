@@ -12,7 +12,7 @@
 * docker desktop for windows 2.0.5.0 (edge), community edition
   * docker must be set to use linux containers
   * in the edge edition it's not possible to turn of metrics
-  * disable outstart of the docker / container services.
+  * disable autostart of the docker / container services.
     * local volumes take some time to come online. if containers start before the volumes are online this can result in data loss.
     * not autostarting the netdisco containers is another option.
   * enabling "experimental features" might be required.
@@ -33,16 +33,15 @@
 unlike linux we use local volumes on windows, this takes care of differences in
 userid/acl handling.
 
-* first create local volumes for netdisco's storage
-```shell script
-    docker volume create -d local nd-pgdata-volume
-    docker volume create -d local nd-sitelocal-volume
-    docker volume create -d local nd-config-volume
-    docker volume create -d local nd-logs-volume
-```
 * fetch the windows specific compose file:
 ```shell script
     curl -Ls -o docker-compose.yml https://raw.githubusercontent.com/netdisco/netdisco-docker/master/docker-compose-win.yml
+```
+* then run docker-compose to get everything set up, this will:
+  * create storage volumes if none exist yet
+  * download the latest version of all components
+  * start the containers 
+```shell script
     docker-compose up
 ```
 
@@ -91,7 +90,7 @@ this can be used to edit configuration files or run "netdisco-do", but has not b
   * docker pull netdisco/netdisco:latest-postgresql
   * docker pull netdisco/netdisco:latest-backend
   * docker pull netdisco/netdisco:latest-web
-  * figure out how to link volumes to new images if not done automically
+  * figure out how to link volumes to new images if not done automatically
 * start new containers
   * must make sure our container startup doesn't execute scripts that could overwrite existing data
 * follow normal update procedure next (netdisco-deploy)?
