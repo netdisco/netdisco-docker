@@ -10,6 +10,7 @@ RUN apk add --no-cache \
       ca-certificates \
       curl \
       jq \
+      openssh-client \
       tar
 
 WORKDIR /home/netdisco/netdisco-mibs
