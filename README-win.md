@@ -83,15 +83,11 @@ this can be used to edit configuration files or run "netdisco-do", but has not b
     exit
 ```
 
-## upgrading to newer netdisco versions. this has not yet been tested, but i assume it will go something like:
+## upgrading to newer netdisco versions.
 
-* stop containers
-* pull newest images
-  * docker pull netdisco/netdisco:latest-postgresql
-  * docker pull netdisco/netdisco:latest-backend
-  * docker pull netdisco/netdisco:latest-web
-  * figure out how to link volumes to new images if not done automatically
-* start new containers
-  * must make sure our container startup doesn't execute scripts that could overwrite existing data
-* follow normal update procedure next (netdisco-deploy)?
-* the provided docker-compose example for initial installation does not seem to update images to newer versions.
+* pull the newest containers & let docker-compose restart everything in order.
+```shell script
+    docker-compose pull
+    docker-compose down
+    docker-compose up -d
+```
