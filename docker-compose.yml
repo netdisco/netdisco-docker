@@ -29,7 +29,8 @@ services:
     volumes:
       - "./netdisco/nd-site-local:/home/netdisco/nd-site-local"
       - "./netdisco/config:/home/netdisco/environments"
-      - "./netdisco/logs:/home/netdisco/logs"
+# logs are symlinked to stdout
+#      - "./netdisco/logs:/home/netdisco/logs"
     environment:
       NETDISCO_DOMAIN:  discover
       NETDISCO_DB_HOST: netdisco-postgresql

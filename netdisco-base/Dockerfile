@@ -66,7 +66,10 @@ RUN groupadd -r netdisco -g 901 && \
 
 USER netdisco:netdisco
 RUN for tgt in bin environments nd-site-local logs; \
-      do mkdir /home/netdisco/$tgt; done
+      do mkdir /home/netdisco/$tgt; done && \
+      ln -s /dev/stdout /home/netdisco/logs/netdisco-backend.log && \
+      ln -s /dev/stdout /home/netdisco/logs/netdisco-web.log
+
 
 COPY --chown=netdisco:netdisco --from=netdisco-builder-image \
   /home/netdisco-build /home/netdisco/
@@ -84,6 +87,7 @@ WORKDIR /home/netdisco
 ENV PATH "/home/netdisco/bin:$PATH"
 ENV SHELL /bin/ash
 
-VOLUME ["/home/netdisco/environments", "/home/netdisco/nd-site-local", "/home/netdisco/logs"]
+## volumes can be optional, and controlled by docker-compose file
+# VOLUME ["/home/netdisco/environments", "/home/netdisco/nd-site-local", "/home/netdisco/logs"]
 
 CMD ["ash"]
