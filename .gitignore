@@ -4,3 +4,4 @@ test.pl
 *.tar.gz
 netdisco
 !netdisco-*/hooks/*
+.idea
