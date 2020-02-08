@@ -26,6 +26,8 @@ WORKDIR /tmp
 RUN curl -sL -o /tmp/cpanm https://cpanmin.us/ && \
   chmod +x /tmp/cpanm
 
+COPY file.h /usr/include/sys/file.h
+
 WORKDIR /home/netdisco
 RUN PERL5LIB='.' /tmp/cpanm --quiet --notest --local-lib ./perl5 \
   "https://github.com/netdisco/netdisco.git@${COMMITTISH}" && \
