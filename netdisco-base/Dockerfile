@@ -1,5 +1,5 @@
 # vim: ft=Dockerfile
-FROM docker.io/alpine:3.6 as netdisco-builder-image
+FROM docker.io/alpine:latest as netdisco-builder-image
 
 ARG COMMITTISH=HEAD
 
@@ -16,6 +16,7 @@ RUN apk add --no-cache \
       perl-crypt-rijndael \
       perl-dbd-pg \
       perl-dev \
+      perl-encode \
       perl-io-socket-ssl \
       perl-ldap \
       postgresql-client \
@@ -33,7 +34,7 @@ RUN PERL5LIB='.' /tmp/cpanm --quiet --notest --local-lib ./perl5 \
   mv /home/netdisco /home/netdisco-build
 
 # ----------------------------------------------------------------------------
-FROM docker.io/alpine:3.6
+FROM docker.io/alpine:latest
 
 ARG BUILD_DATE
 ARG COMMITTISH=HEAD
@@ -56,6 +57,7 @@ RUN apk add --no-cache \
       net-snmp-perl \
       perl-crypt-rijndael \
       perl-dbd-pg \
+      perl-encode \
       perl-io-socket-ssl \
       perl-ldap \
       postgresql-client \
