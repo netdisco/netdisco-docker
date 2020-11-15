@@ -9,14 +9,13 @@ USER root
 RUN apk add --no-cache \
       ca-certificates \
       curl \
-      jq \
       openssh-client \
       tar
 
 WORKDIR /home/netdisco/netdisco-mibs
-RUN curl -sL https://api.github.com/repos/netdisco/netdisco-mibs/tags | \
-  jq '.[]|.tarball_url|select(test("tarball/\\d+\\.\\d+$"))' | \
-  sort -rg | head -n1 | xargs -n1 curl -sL | tar --strip-components=1 -zxf - && \
+RUN curl -sL https://api.github.com/repos/netdisco/netdisco-mibs/releases/latest | \
+  grep browser_download_url | xargs printf "curl -sL %s\n" | tail -1 | \
+  sh | tar --strip-components=1 -zxf - && \
   chown -R netdisco:netdisco /home/netdisco/netdisco-mibs
 
 USER netdisco:netdisco
