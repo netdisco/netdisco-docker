@@ -20,6 +20,7 @@ Only if you are on Linux:
 
     sudo groupadd netdisco -g 901
     sudo useradd -u 901 -p x -g netdisco netdisco
+    su - netdisco
     mkdir -p netdisco/{logs,config,nd-site-local}
     sudo chown -R netdisco:netdisco netdisco
 
