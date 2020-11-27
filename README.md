@@ -18,14 +18,15 @@ Netdisco includes a lightweight web server for the interface, a backend daemon t
 
 Only if you are on Linux:
 
-    sudo groupadd netdisco -g 901
-    sudo useradd -u 901 -p x -g netdisco netdisco
+    # become root user
+    groupadd netdisco -g 901
+    useradd -u 901 -p x -g netdisco netdisco
     su - netdisco
-    mkdir -p netdisco/{logs,config,nd-site-local}
-    sudo chown -R netdisco:netdisco netdisco
+    mkdir ./{logs,config,nd-site-local}
 
 And then (for everyone):
 
+    # become the user running docker
     curl -Ls -o docker-compose.yml https://tinyurl.com/nd2-dockercompose
     docker-compose up
 
