@@ -22,7 +22,7 @@ Only if you are on Linux:
     groupadd netdisco -g 901
     useradd -u 901 -p x -g netdisco netdisco
     sudo mkdir -p ~netdisco/{logs,bin,environment,config,nd-site-local}
-    sudo chown -R netdisco:netdisco ~netdiscosu - netdisco
+    sudo chown -R netdisco:netdisco ~netdisco
 
 And then (for everyone):
 
