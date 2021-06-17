@@ -26,7 +26,7 @@ Only if you are on Linux:
 
 And then (for everyone):
 
-    # become the user running docker
+    # become the user running docker
     curl -Ls -o docker-compose.yml https://tinyurl.com/nd2-dockercompose
     docker-compose up
 

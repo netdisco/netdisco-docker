@@ -24,7 +24,7 @@ ls -1 /var/lib/postgresql/netdisco-sql/App-Netdisco-DB-* | \
   done
 
 echo >&2 -e "${COL}netdisco-db-entrypoint: importing OUI${NC}"
-# TODO a way to refresh/update oui
+# TODO a way to refresh/update oui
 NUMOUI=$("${psql[@]}" -A -t -c "SELECT count(oui) FROM oui")
 if [ "$NUMOUI" -eq 0 ]; then
   "${psql[@]}" -f /var/lib/postgresql/netdisco-sql/oui.sql

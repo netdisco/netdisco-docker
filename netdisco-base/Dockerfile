@@ -76,7 +76,7 @@ RUN for tgt in bin environments nd-site-local logs; \
 COPY --chown=netdisco:netdisco --from=netdisco-builder-image \
   /home/netdisco-build /home/netdisco/
 
-# replace default config with one that works better for docker install
+# replace default config with one that works better for docker install
 COPY --chown=netdisco:netdisco deployment.yml \
   /home/netdisco/perl5/lib/perl5/auto/share/dist/App-Netdisco/environments/deployment.yml
 COPY --chown=netdisco:netdisco wait_to_start.sh /home/netdisco/bin/
