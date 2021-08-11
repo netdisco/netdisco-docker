@@ -21,7 +21,7 @@ Only if you are on Linux:
     # become root user
     groupadd netdisco -g 901
     useradd -u 901 -p x -g netdisco netdisco
-    sudo mkdir -p ~netdisco/{logs,bin,environment,config,nd-site-local}
+    sudo mkdir -p ~netdisco/{logs,bin,environments,config,nd-site-local}
     sudo chown -R netdisco:netdisco ~netdisco
 
 And then (for everyone):
