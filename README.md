@@ -59,4 +59,4 @@ Downloading new images is good enough. When our database image starts it always 
 
 ## Credits
 
-Thanks to Ira W. Snyder and LBegnaud for inspiration. Thanks also to the PostgreSQL project for great examples of docker magic. We build with the support of the excellent [Circle CI](https://circleci.com/) service. 
+Thanks to Ira W. Snyder and LBegnaud for inspiration. Thanks also to the PostgreSQL project for great examples of docker magic. We build with the support of the excellent GitHub Actions service. 
