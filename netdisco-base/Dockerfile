@@ -56,7 +56,6 @@ RUN apk add --no-cache \
       net-snmp-perl \
       perl-crypt-rijndael \
       perl-dbd-pg \
-      perl-encode \
       perl-io-socket-ssl \
       perl-ldap \
       postgresql-client \
