@@ -22,6 +22,11 @@ services:
       NETDISCO_DB_HOST: netdisco-postgresql
     depends_on:
       - netdisco-postgresql
+    dns_opt:
+      - 'ndots:1'
+      - 'timeout:1'
+      - 'retries:0'
+      - 'attempts:1'
 #    build:
 #      context: netdisco-backend
   netdisco-web:
@@ -38,6 +43,11 @@ services:
       - "5000:5000"
     depends_on:
       - netdisco-postgresql
+    dns_opt:
+      - 'ndots:1'
+      - 'timeout:1'
+      - 'retries:0'
+      - 'attempts:1'
 #    build:
 #      context: netdisco-web
 #networks:
