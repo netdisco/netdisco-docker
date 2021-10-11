@@ -23,10 +23,12 @@ services:
     depends_on:
       - netdisco-postgresql
     dns_opt:
-      - 'ndots:1'
+      - 'ndots:0'
       - 'timeout:1'
       - 'retries:0'
       - 'attempts:1'
+      - edns0
+      - trustad
 #    build:
 #      context: netdisco-backend
   netdisco-web:
@@ -44,10 +46,12 @@ services:
     depends_on:
       - netdisco-postgresql
     dns_opt:
-      - 'ndots:1'
+      - 'ndots:0'
       - 'timeout:1'
       - 'retries:0'
       - 'attempts:1'
+      - edns0
+      - trustad
 #    build:
 #      context: netdisco-web
 #networks:
