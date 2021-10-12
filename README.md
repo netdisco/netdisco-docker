@@ -27,6 +27,7 @@ Only if you are on Linux:
 And then (for everyone):
 
     # become the user running docker
+    cd ~netdisco
     curl -Ls -o docker-compose.yml https://tinyurl.com/nd2-dockercompose
     docker-compose up
 
