@@ -18,7 +18,7 @@ Netdisco includes a lightweight web server for the interface, a backend daemon t
 
 The containers need some directories present in the mounted volume. In a directory of your choice, create this structure and allow the netdisco uid in the container (901) to write into it:
 
-    cd $directoy_of_your_choice
+    cd $directory_of_your_choice
     mkdir -p netdisco/{logs,config,nd-site-local} 
     sudo chown -R 901:901 netdisco
 
