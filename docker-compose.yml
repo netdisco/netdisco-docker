@@ -1,16 +1,11 @@
 version: '2.3'
 services:
+
   netdisco-postgresql:
     image: netdisco/netdisco:latest-postgresql
     volumes:
       - "./netdisco/pgdata:/var/lib/postgresql/data"
-#    build:
-#      context: netdisco-postgresql
-#  netdisco-base:
-#    image: netdisco/netdisco:latest-base
-#    build:
-#      context: netdisco-base
-#    scale: 0
+      
   netdisco-backend:
     image: netdisco/netdisco:latest-backend
     volumes:
@@ -29,15 +24,12 @@ services:
       - 'attempts:1'
       - edns0
       - trustad
-#    build:
-#      context: netdisco-backend
+
   netdisco-web:
     image: netdisco/netdisco:latest-web
     volumes:
       - "./netdisco/nd-site-local:/home/netdisco/nd-site-local"
       - "./netdisco/config:/home/netdisco/environments"
-# logs are symlinked to stdout
-#      - "./netdisco/logs:/home/netdisco/logs"
     environment:
       NETDISCO_DOMAIN:  discover
       NETDISCO_DB_HOST: netdisco-postgresql
@@ -52,8 +44,7 @@ services:
       - 'attempts:1'
       - edns0
       - trustad
-#    build:
-#      context: netdisco-web
+      
   netdisco-do:
     image: netdisco/netdisco:latest-do
     volumes:
@@ -67,6 +58,3 @@ services:
     profiles:
       - cli-manual
 
-#networks:
-#  default:
-#    enable_ipv6: true
