@@ -16,18 +16,16 @@ Netdisco includes a lightweight web server for the interface, a backend daemon t
 
 ##  Docker Deployment
 
-Only if you are on Linux:
+The containers need some directories present in the mounted volume. In a directory of your choice, create this structure and allow the netdisco uid in the container (901) to write into it:
 
-    # become root user
-    groupadd netdisco -g 901
-    useradd -u 901 -p x -g netdisco netdisco
-    sudo mkdir -p ~netdisco/netdisco/{logs,bin,environments,config,nd-site-local}
-    sudo chown -R netdisco:netdisco ~netdisco/netdisco
+    cd $directoy_of_your_choice
+    mkdir -p netdisco/{logs,config,nd-site-local} 
+    sudo chown -R 901:901 netdisco
 
-And then (for everyone):
+*(this step is necessary on Linux hosts and can be omitted in the OS X and Windows versions of Docker)*
 
-    # become the user running docker
-    cd ~netdisco
+Download docker-compose.yml into the same directory and start everything 
+
     curl -Ls -o docker-compose.yml https://tinyurl.com/nd2-dockercompose
     docker-compose up
 
