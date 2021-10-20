@@ -43,6 +43,11 @@ The web frontend is configured to allow unauthenticated access with full admin r
 
 Other username, password, database connection, and file locations, can all be set using [environment variables](https://github.com/netdisco/netdisco/wiki/Environment-Variables) described in our wiki. Of course the database container is optional and you can connect to an existing or external PostgreSQL server instead.
 
+##  Docker Requirements
+
+ * Docker 20.10.0 (Linux) or Docker Desktop 3.3.0 (Win/Mac) 
+ * docker-compose 1.28
+
 ## Getting Support
 
 We have several other pages with tips for [understanding and troubleshooting Netdisco](https://github.com/netdisco/netdisco/wiki/Troubleshooting), [tips and tricks for specific platforms](https://github.com/netdisco/netdisco/wiki/Vendor-Tips), and [all the configuration options](https://github.com/netdisco/netdisco/wiki/Configuration).
