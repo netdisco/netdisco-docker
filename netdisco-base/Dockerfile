@@ -19,6 +19,7 @@ RUN apk add --no-cache \
       perl-io-socket-ssl \
       perl-ldap \
       postgresql-client \
+      tzdata \
       openssh-client \
       wget && \
     apk fix --no-cache perl perl-dev
