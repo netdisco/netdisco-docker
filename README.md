@@ -56,7 +56,7 @@ You can also speak to someone in the [`#netdisco@libera`](https://kiwiirc.com/ne
 
 ## Upgrading
 
-Downloading new images is good enough. When our database image starts it always updates the DB schema to the latest release. To upgrade your own PostgreSQL database, run:
+Downloading new images with `docker-compose pull` is all there is to it. When our database image starts it always updates the DB schema to the latest release. To upgrade your own PostgreSQL database, run:
 
     docker-compose run --entrypoint=bin/netdisco-db-deploy netdisco-backend
 
