@@ -29,7 +29,7 @@ RUN curl -sL -o /tmp/cpanm https://cpanmin.us/ && \
   chmod +x /tmp/cpanm
 
 WORKDIR /home/netdisco
-RUN PERL5LIB='.' /tmp/cpanm --quiet --notest --from 'https://cpan.metacpan.org/' --local-lib ./perl5 \
+RUN PERL5LIB='.' /tmp/cpanm --quiet --notest --local-lib ./perl5 \
   "https://github.com/netdisco/netdisco.git@${COMMITTISH}" && \
   mv /home/netdisco /home/netdisco-build
 
