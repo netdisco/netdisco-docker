@@ -33,6 +33,7 @@ services:
     environment:
       NETDISCO_DOMAIN:  discover
       NETDISCO_DB_HOST: netdisco-postgresql
+      IPV: 4
     ports:
       - "5000:5000"
     depends_on:
