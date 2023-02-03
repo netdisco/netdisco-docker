@@ -8,6 +8,7 @@ services:
       
   netdisco-backend:
     image: netdisco/netdisco:latest-backend
+    init: true
     volumes:
       - "./netdisco/nd-site-local:/home/netdisco/nd-site-local"
       - "./netdisco/config:/home/netdisco/environments"
@@ -27,6 +28,7 @@ services:
 
   netdisco-web:
     image: netdisco/netdisco:latest-web
+    init: true
     volumes:
       - "./netdisco/nd-site-local:/home/netdisco/nd-site-local"
       - "./netdisco/config:/home/netdisco/environments"
