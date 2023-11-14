@@ -28,7 +28,7 @@ RUN chmod +x /usr/local/bin/netdisco-*
 WORKDIR /var/lib/postgresql/netdisco-sql
 RUN curl -sL "https://api.github.com/repos/netdisco/netdisco/tarball/${COMMITTISH}" | \
   tar --wildcards --strip-components=3 -zx '*App-Netdisco-DB-*' && \
-  curl -sLO "https://raw.githubusercontent.com/netdisco/upstream-sources/master/ieee/oui.sql" && \
+  curl -sLO "https://raw.githubusercontent.com/netdisco/upstream-sources/master/ieee/manufacturer.sql" && \
   curl -sLO "https://raw.githubusercontent.com/netdisco/netdisco/master/lib/App/Netdisco/DB.pm"
 
 VOLUME ["/var/lib/postgresql/data"]

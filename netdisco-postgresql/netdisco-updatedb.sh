@@ -24,11 +24,7 @@ ls -1 /var/lib/postgresql/netdisco-sql/App-Netdisco-DB-* | \
   done
 
 echo >&2 -e "${COL}netdisco-db-entrypoint: importing OUI${NC}"
-# TODO a way to refresh/update oui
-NUMOUI=$("${psql[@]}" -A -t -c "SELECT count(oui) FROM oui")
-if [ "$NUMOUI" -eq 0 ]; then
-  "${psql[@]}" -f /var/lib/postgresql/netdisco-sql/oui.sql
-fi
+"${psql[@]}" -f /var/lib/postgresql/netdisco-sql/manufacturer.sql
 
 echo >&2 -e "${COL}netdisco-db-entrypoint: marking schema as up-to-date${NC}"
 MAXSCHEMA=$(grep VERSION /var/lib/postgresql/netdisco-sql/DB.pm | sed 's/[^0-9]//g')
