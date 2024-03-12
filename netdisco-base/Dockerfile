@@ -30,7 +30,10 @@ RUN curl -sL -o /tmp/cpanm https://cpanmin.us/ && \
 
 WORKDIR /home/netdisco
 RUN PERL5LIB='.' /tmp/cpanm --quiet --notest --local-lib ./perl5 \
-  "https://github.com/netdisco/netdisco.git@${COMMITTISH}" && \
+  "https://github.com/netdisco/netdisco.git@${COMMITTISH}" \
+   Dancer::Debug \
+   URL::Encode \
+   REST::Client && \
   mv /home/netdisco /home/netdisco-build
 
 # ----------------------------------------------------------------------------
@@ -59,6 +62,13 @@ RUN apk add --no-cache \
       perl-dbd-pg \
       perl-io-socket-ssl \
       perl-ldap \
+      perl-json \
+      perl-lwp-protocol-https \
+      perl-file-slurp \
+      perl-regexp-common \
+      perl-regexp-common-net-cidr \
+      perl-regexp-ipv6 \
+      perl-file-sharedir \
       postgresql-client \
       shadow
 
