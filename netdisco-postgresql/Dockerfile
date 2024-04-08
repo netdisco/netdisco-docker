@@ -19,6 +19,7 @@ LABEL org.label-schema.docker.schema-version="1.0" \
 
 RUN apk add --no-cache \
   curl \
+  tzdata \
   tar
 
 COPY netdisco-initdb.sh /docker-entrypoint-initdb.d/
