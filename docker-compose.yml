@@ -3,11 +3,13 @@ services:
 
   netdisco-postgresql:
     image: netdisco/netdisco:latest-postgresql
+    hostname: netdisco-postgresql
     volumes:
       - "./netdisco/pgdata:/var/lib/postgresql/data"
       
   netdisco-backend:
     image: netdisco/netdisco:latest-backend
+    hostname: netdisco-backend
     init: true
     volumes:
       - "./netdisco/nd-site-local:/home/netdisco/nd-site-local"
@@ -28,6 +30,7 @@ services:
 
   netdisco-web:
     image: netdisco/netdisco:latest-web
+    hostname: netdisco-web
     init: true
     volumes:
       - "./netdisco/nd-site-local:/home/netdisco/nd-site-local"
@@ -50,6 +53,8 @@ services:
       
   netdisco-do:
     image: netdisco/netdisco:latest-do
+    # use same hostname as backend to satisfy skiplist check (#68)
+    hostname: netdisco-backend
     volumes:
       - "./netdisco/nd-site-local:/home/netdisco/nd-site-local"
       - "./netdisco/config:/home/netdisco/environments"
