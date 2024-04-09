@@ -72,6 +72,7 @@ RUN apk add --no-cache \
       perl-regexp-ipv6 \
       perl-file-sharedir \
       postgresql-client \
+      tzdata \
       shadow
 
 RUN groupadd -r netdisco -g 901 && \
