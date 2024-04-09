@@ -58,6 +58,8 @@ LABEL org.label-schema.docker.schema-version="1.0" \
 RUN apk add --no-cache \
       libc6-compat \
       net-snmp-perl \
+      expect \
+      expect-dev \
       perl-crypt-rijndael \
       perl-dbd-pg \
       perl-io-socket-ssl \
