@@ -10,6 +10,8 @@ RUN apk add --no-cache \
       gcc \
       git \
       libc6-compat \
+      musl-dev \
+      musl-obstack-dev \
       make \
       net-snmp-perl \
       openssl-dev \
@@ -57,6 +59,8 @@ LABEL org.label-schema.docker.schema-version="1.0" \
 
 RUN apk add --no-cache \
       libc6-compat \
+      musl-dev \
+      musl-obstack-dev \
       net-snmp-perl \
       expect \
       expect-dev \
