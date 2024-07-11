@@ -21,6 +21,7 @@ RUN apk add --no-cache \
       perl-io-socket-ssl \
       perl-ldap \
       postgresql-client \
+      python3 \
       tzdata \
       openssh-client \
       wget && \
