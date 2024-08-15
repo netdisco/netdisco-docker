@@ -32,8 +32,9 @@ RUN curl -sL -o /tmp/cpanm https://cpanmin.us/ && \
   chmod +x /tmp/cpanm
 
 WORKDIR /home/netdisco
-RUN PERL5LIB='.' /tmp/cpanm --quiet --notest --local-lib ./perl5 \
-  "https://github.com/netdisco/netdisco.git@${COMMITTISH}" \
+RUN POETRY_CACHE_DIR="./python/cache/pypoetry" PERL5LIB='.' \
+   /tmp/cpanm --quiet --notest --local-lib ./perl5 \
+   "https://github.com/netdisco/netdisco.git@${COMMITTISH}" \
    Dancer::Debug \
    URL::Encode \
    REST::Client && \
