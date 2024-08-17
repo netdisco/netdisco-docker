@@ -104,6 +104,11 @@ RUN for tgt in /home/netdisco/perl5/bin/netdisco-*; \
       do ln -sf $tgt /home/netdisco/bin/; done && \
     ln -sf /home/netdisco/perl5/bin/localenv /home/netdisco/bin/
 
+RUN POETRY_CACHE_DIR="/home/netdisco/python/cache/pypoetry" \
+      `/home/netdisco/bin/localenv perl -MAlien::poetry -e 'print Alien::poetry->poetry'` \
+      -C `/home/netdisco/bin/localenv perl -MFile::ShareDir -e 'print File::ShareDir::dist_dir("App-Netdisco") ."/python/netdisco"'` \
+      install --sync
+
 WORKDIR /home/netdisco
 ENV PATH "/home/netdisco/bin:$PATH"
 ENV SHELL /bin/ash
