@@ -78,6 +78,7 @@ RUN apk add --no-cache \
       perl-regexp-ipv6 \
       perl-file-sharedir \
       postgresql-client \
+      python3 \
       tzdata \
       shadow
 
