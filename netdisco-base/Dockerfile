@@ -1,5 +1,5 @@
 # vim: ft=Dockerfile
-FROM docker.io/alpine:latest as netdisco-builder-image
+FROM docker.io/alpine:latest AS netdisco-builder-image
 
 ARG COMMITTISH=HEAD
 
@@ -110,8 +110,8 @@ RUN POETRY_CACHE_DIR="/home/netdisco/python/cache/pypoetry" \
       install --sync
 
 WORKDIR /home/netdisco
-ENV PATH "/home/netdisco/bin:$PATH"
-ENV SHELL /bin/ash
+ENV PATH="/home/netdisco/bin:$PATH"
+ENV SHELL=/bin/ash
 
 ## volumes can be optional, and controlled by docker-compose file
 # VOLUME ["/home/netdisco/environments", "/home/netdisco/nd-site-local", "/home/netdisco/logs"]
