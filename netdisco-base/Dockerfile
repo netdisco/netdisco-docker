@@ -6,6 +6,7 @@ ARG COMMITTISH=HEAD
 RUN apk add --no-cache \
       ca-certificates \
       curl \
+      findutils \
       g++ \
       gcc \
       git \
@@ -61,6 +62,7 @@ LABEL org.label-schema.docker.schema-version="1.0" \
       org.netdisco.version=${COMMITTISH}
 
 RUN apk add --no-cache \
+      findutils \
       jq \
       libc6-compat \
       musl-dev \
