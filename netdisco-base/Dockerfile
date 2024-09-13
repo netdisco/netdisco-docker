@@ -9,6 +9,7 @@ RUN apk add --no-cache \
       g++ \
       gcc \
       git \
+      jq \
       libc6-compat \
       musl-dev \
       musl-obstack-dev \
@@ -60,6 +61,7 @@ LABEL org.label-schema.docker.schema-version="1.0" \
       org.netdisco.version=${COMMITTISH}
 
 RUN apk add --no-cache \
+      jq \
       libc6-compat \
       musl-dev \
       musl-obstack-dev \
