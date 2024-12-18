@@ -10,6 +10,11 @@ if [ ! -s "${PGDATA}/PG_VERSION" ]; then
     /usr/local/bin/docker-entrypoint.sh "$@"
 fi
 
+if ! grep -q "17" "${PGDATA}/PG_VERSION" ; then
+  cat /README_UPGRADE.md
+  exit 1
+fi
+
 if [ "$1" = 'postgres' ]; then
   echo >&2 -e "${COL}netdisco-db-entrypoint: starting pg privately to container${NC}"
   "${su[@]}" pg_ctl -D "$PGDATA" -o "-c listen_addresses='localhost' -c log_min_error_statement=LOG -c log_min_messages=LOG" -w start

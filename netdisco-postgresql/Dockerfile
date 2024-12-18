@@ -25,6 +25,7 @@ RUN apk add --no-cache \
 
 COPY netdisco-initdb.sh /docker-entrypoint-initdb.d/
 COPY netdisco-db-entrypoint.sh netdisco-updatedb.sh /usr/local/bin/
+COPY README_UPGRADE.md /
 RUN chmod +x /usr/local/bin/netdisco-*
 
 WORKDIR /var/lib/postgresql/netdisco-sql
