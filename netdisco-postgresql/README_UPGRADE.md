@@ -12,8 +12,8 @@ docker run --name pgauto -it \
   pgautoupgrade/pgautoupgrade:17-alpine
 ```
 
-Before doing so, please make sure to have a working backup. A simple way
-to create one is:
+Before doing so, please make sure to have a working backup. If you don't
+have one already, a simple way to create one is:
 
 ```
 docker-compose exec -u postgres netdisco-postgresql \
@@ -32,5 +32,15 @@ Postgres 13:
     image: netdisco/netdisco:2.080003-do
 ```
 
-We apologize for the inconvenience.
+When you are ready to use Postgres 17, set the version numbers in image:
+to `latest` again.
+
+```
+    image: netdisco/netdisco:latest-postgresql
+    etc...
+```
+
+We apologize for the inconvenience. While we can not offer full
+Postgres DBA support or any responsibility for data loss, we try to
+help with reported issues on github or the IRC channel. 
 
