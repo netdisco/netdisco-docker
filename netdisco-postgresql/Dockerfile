@@ -1,5 +1,5 @@
 # vim: ft=Dockerfile
-FROM docker.io/postgres:13.4-alpine
+FROM docker.io/postgres:17.2-alpine
 
 ARG BUILD_DATE
 ARG COMMITTISH=HEAD
@@ -18,6 +18,7 @@ LABEL org.label-schema.docker.schema-version="1.0" \
       org.netdisco.version=${COMMITTISH}
 
 RUN apk add --no-cache \
+  su-exec \
   curl \
   tzdata \
   tar
