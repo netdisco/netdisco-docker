@@ -3,10 +3,11 @@ Beginning from version 2.09000 netdisco-docker includes Postgres 17,
 while the existing database is an older major version.
 
 It's possible to upgrade the old database in-place using pgautoupgrade, 
-executed in the directory where docker-compose.yml is located:
+executed in the directory where docker-compose.yml is located. Make 
+sure all other netdisco containers are stopped.
 
 ```
-docker run --name pgauto -it \
+docker run --rm -it \
   --mount type=bind,source=$PWD/netdisco/pgdata,target=/var/lib/postgresql/data \
   -e PGAUTO_ONESHOT=yes \
   pgautoupgrade/pgautoupgrade:17-alpine
