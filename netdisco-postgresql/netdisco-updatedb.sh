@@ -24,7 +24,7 @@ ls -1 /var/lib/postgresql/netdisco-sql/App-Netdisco-DB-* | \
   done
 
 echo >&2 -e "${COL}netdisco-db-entrypoint: importing OUI${NC}"
-"${psql[@]}" -f /var/lib/postgresql/netdisco-sql/manufacturer.sql
+"${psql[@]}" -f /var/lib/postgresql/netdisco-sql/netdisco-lookup-tables.sql
 
 echo >&2 -e "${COL}netdisco-db-entrypoint: marking schema as up-to-date${NC}"
 MAXSCHEMA=$(grep VERSION /var/lib/postgresql/netdisco-sql/DB.pm | sed 's/[^0-9]//g')
