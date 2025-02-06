@@ -34,7 +34,7 @@ RUN curl -sL -o /tmp/cpanm https://cpanmin.us/ && \
   chmod +x /tmp/cpanm
 
 WORKDIR /home/netdisco
-RUN POETRY_CACHE_DIR="./python/cache/pypoetry" PERL5LIB='.' \
+RUN PERL5LIB='.' \
    /tmp/cpanm --quiet --notest --local-lib ./perl5 \
    "https://github.com/netdisco/netdisco.git@${COMMITTISH}" \
    Dancer::Debug \
@@ -108,10 +108,10 @@ RUN for tgt in /home/netdisco/perl5/bin/netdisco-*; \
       do ln -sf $tgt /home/netdisco/bin/; done && \
     ln -sf /home/netdisco/perl5/bin/localenv /home/netdisco/bin/
 
-RUN POETRY_CACHE_DIR="/home/netdisco/python/cache/pypoetry" \
-      `/home/netdisco/bin/localenv perl -MAlien::poetry -e 'print Alien::poetry->poetry'` \
-      -C `/home/netdisco/bin/localenv perl -MFile::ShareDir -e 'print File::ShareDir::dist_dir("App-Netdisco") ."/python/netdisco"'` \
-      install --sync
+RUN `/home/netdisco/bin/localenv perl -MAlien::ultraviolet -e 'print Alien::ultraviolet->uv'` \
+      --no-cache --no-progress --quiet --project \
+      `/home/netdisco/bin/localenv perl -MFile::ShareDir -e 'print File::ShareDir::dist_dir("App-Netdisco") ."/python/netdisco"'` \
+      sync
 
 WORKDIR /home/netdisco
 ENV PATH="/home/netdisco/bin:$PATH"
