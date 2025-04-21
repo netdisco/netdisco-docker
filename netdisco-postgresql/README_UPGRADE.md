@@ -1,16 +1,42 @@
-# Postgres upgrade required
+# Postgres upgrade required!
 
 Beginning from version 2.09000 netdisco-docker includes Postgres 17, 
-while the existing database is an older major version.
+while the existing database is an older major version. A conversion is required.
+
+(This document can also be viewed markdown-formatted at:
+https://github.com/netdisco/netdisco-docker/blob/master/netdisco-postgresql/README_UPGRADE.md)
+
+## Prepare for pgupgrade or continue using an older version
+
+To start Postgres 13 once more to create a backup before attempting the conversion, 
+or to avoid upgrading right now, edit `docker-compose.yml` to use the last version
+of the images that support Postgres 13:
+
+```
+    image: netdisco/netdisco:2.084002-postgresql
+    image: netdisco/netdisco:2.084002-backend
+    image: netdisco/netdisco:2.084002-web
+    image: netdisco/netdisco:2.084002-do
+```
+
+Then a backup can be produced with:
+
+```
+docker-compose down ; docker-compose up -d netdisco-postgresql  
+docker-compose exec -u postgres netdisco-postgresql \
+    pg_dump -c -d netdisco -C --format=p > $HOME/my-netdisco-backup.sql
+```
+
+Verify this file and proceed to the pgautoupgrade step.
 
 ## Upgrade with pgautoupgrade
 
-It's possible to upgrade the old database in-place using pgautoupgrade, 
+It's possible to upgrade the old database in-place using `pgautoupgrade`, 
 executed in the directory where docker-compose.yml is located. Make 
 sure all other netdisco containers are stopped.
 
-Before doing so, please make sure to have a working backup. If you don't
-have one already, see the chapter below.
+To stress it once more, please make sure to have a working backup. If you don't
+have one already, see the chapter above.
 
 Afterwards, run pgautoupgrade:
 
@@ -23,38 +49,15 @@ docker run --rm -it \
   pgautoupgrade/pgautoupgrade:17-alpine
 ```
 
-Now you should be able to start the netdisco/netdisco:latest-... containers again.
-
-## Backup or continue using an older version
-
-
-To start Postgres 13 once more to create a backup, or to avoid upgrading right now, edit
-`docker-compose.yml` to use the last version of the images that used
-Postgres 13:
-
-```
-    image: netdisco/netdisco:2.084002-postgresql
-    image: netdisco/netdisco:2.084002-backend
-    image: netdisco/netdisco:2.084002-web
-    image: netdisco/netdisco:2.084002-do
-```
-
-Then a backup can be produced with:
-
-```
-docker-compose down ; docker-compose up netdisco-postgresql -d  
-docker-compose exec -u postgres netdisco-postgresql \
-    pg_dump -c -d netdisco -C --format=p > $HOME/netdisco-backup.sql
-```
-
-Verify this file and proceed to the pgautoupgrade step.
-
-When you are ready to use Postgres 17, set the version numbers in image:
-to `latest` again.
+Now you should be able to start the netdisco/netdisco:latest-postgresql container
+again. If you have edited `docker-compose.yml`, set the images back to `latest` 
+and restart:
 
 ```
     image: netdisco/netdisco:latest-postgresql
     etc...
+
+    docker-compose down ; docker-compose up -d
 ```
 
 ## Support
