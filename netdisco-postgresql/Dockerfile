@@ -1,5 +1,5 @@
 # vim: ft=Dockerfile
-FROM docker.io/postgres:17.2-alpine
+FROM docker.io/postgres:17.4-alpine
 
 ARG BUILD_DATE
 ARG COMMITTISH=HEAD
