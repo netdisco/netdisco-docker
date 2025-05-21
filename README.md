@@ -41,6 +41,8 @@ The web frontend is initally configured to allow unauthenticated access with ful
 
 Other username, password, database connection, and file locations, can all be set using [environment variables](https://github.com/netdisco/netdisco/wiki/Environment-Variables) described in our wiki. Of course the database container is optional and you can connect to an existing or external PostgreSQL server instead.
 
+You can change the password of the netdisco PostgreSQL user with `docker-compose exec netdisco-postgresql psql -U postgres -c "alter role netdisco password 'your new password';"` and updating it in `docker-compose.yml`.
+
 ##  Docker Requirements
 
  * Docker 20.10.0 (Linux) or Docker Desktop 3.3.0 (Win/Mac) 
