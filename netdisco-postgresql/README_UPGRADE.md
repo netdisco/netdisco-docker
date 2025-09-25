@@ -1,6 +1,6 @@
 # Postgres upgrade required!
 
-Beginning from version 2.09000 netdisco-docker includes Postgres 17, 
+Beginning from version 2.090000 netdisco-docker includes Postgres 17, 
 while the existing database is an older major version. A conversion is required.
 
 (This document can also be viewed markdown-formatted at:
