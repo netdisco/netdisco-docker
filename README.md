@@ -41,9 +41,11 @@ Pulling new images and recreate the containers:
 
 When our database image starts it always updates the DB schema to the latest release.
 
-You can use the following command to re-run the database schema and update supporting data files (MAC address vendors, device vendors, and SNMP MIBs) any time:
+If using your own database server or image, then you have to also run:
 
     docker-compose exec netdisco-backend bin/netdisco-deploy
+
+You can also use that command to update the supporting data files (MAC address vendors, device vendors, and SNMP MIBs) any other time.
 
 ## Tips
 
