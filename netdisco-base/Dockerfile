@@ -111,7 +111,7 @@ RUN for tgt in /home/netdisco/perl5/bin/netdisco-*; \
 RUN `/home/netdisco/bin/localenv perl -MAlien::ultraviolet -e 'print Alien::ultraviolet->uv'` \
       --no-cache --no-progress --quiet --project \
       `/home/netdisco/bin/localenv perl -MFile::ShareDir -e 'print File::ShareDir::dist_dir("App-Netdisco") ."/python/netdisco"'` \
-      sync
+      sync --link-mode=copy
 
 WORKDIR /home/netdisco
 ENV PATH="/home/netdisco/bin:$PATH"
