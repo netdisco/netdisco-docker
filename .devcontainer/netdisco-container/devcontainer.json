@@ -1,4 +1,5 @@
 {
+  "name": "netdisco-do Container",
   "image": "ghcr.io/netdisco/netdisco:latest-do",
   "features": {}
 }

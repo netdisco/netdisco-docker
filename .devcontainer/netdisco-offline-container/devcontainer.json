@@ -1,0 +1,6 @@
+{
+  "name": "netdisco-do Offline Container",
+  "image": "ghcr.io/netdisco/netdisco:latest-do",
+  "runArgs": ["--network=none"],
+  "features": {}
+}
