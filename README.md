@@ -31,17 +31,33 @@ This will start the database, backend daemon, and web frontend listening on port
 
 The default configuration is available in `netdisco/config/deployment.yml`. The backend and web daemons will automatically restart when you save changes to this file. Logs are available in `netdisco/logs/`.
 
-The [netdisco-do](https://metacpan.org/dist/App-Netdisco/view/bin/netdisco-do) utility can be run like this (run it without `<action>` to get help):
-
-    docker-compose run netdisco-do <action>
-
-Local web or backend plugins can be installed into `netdisco/nd-site-local/` as per [our documentation](https://github.com/netdisco/netdisco/wiki). Finally, the PostgreSQL data files are stored in `netdisco/pgdata/` and we do not advise touching them (unless you wish to reinitialize the system).
-
 The web frontend is initally configured to allow unauthenticated access with full admin rights. We suggest you visit the `Admin -> User Management` menu item, and set `no_auth: false` in `deployment.yml`, to remove this guest account and set up authenticated user access.
 
-Other username, password, database connection, and file locations, can all be set using [environment variables](https://github.com/netdisco/netdisco/wiki/Environment-Variables) described in our wiki. Of course the database container is optional and you can connect to an existing or external PostgreSQL server instead.
+## Upgrading
 
-You can change the password of the netdisco PostgreSQL user with `docker-compose exec netdisco-postgresql psql -U postgres -c "alter role netdisco password 'your new password';"` and updating it in `docker-compose.yml`.
+Pulling new images and recreate the containers:
+
+    docker-compose pull ; docker-compose down ; docker-compose up --force-recreate
+
+When our database image starts it always updates the DB schema to the latest release.
+
+You can use the following command to re-run the database schema and update supporting data files (MAC address vendors, device vendors, and SNMP MIBs) any time:
+
+    docker-compose exec netdisco-backend bin/netdisco-deploy
+
+## Tips
+
+The [netdisco-do](https://metacpan.org/dist/App-Netdisco/view/bin/netdisco-do) utility can be run like this (or without `<action>` to get help):
+
+    docker-compose run netdisco-do <action> ...
+
+Database username, password, database connection, and file locations, can all be set using [environment variables](https://github.com/netdisco/netdisco/wiki/Environment-Variables) described in our wiki. Of course the database container is optional and you can connect to an existing or external PostgreSQL server instead.
+
+You can change the password of the netdisco PostgreSQL user with this command (and update in `netdisco/config/deployment.yml` too!):
+
+    docker-compose exec netdisco-postgresql psql -U postgres -c "alter role netdisco password 'your new password';"
+
+Local web or backend plugins can be installed into `netdisco/nd-site-local/` as per [our documentation](https://github.com/netdisco/netdisco/wiki). The PostgreSQL data files are stored in `netdisco/pgdata/` and we do not advise touching them (unless you wish to reinitialize the system).
 
 ##  Docker Requirements
 
@@ -53,12 +69,6 @@ You can change the password of the netdisco PostgreSQL user with `docker-compose
 We have several other pages with tips for [understanding and troubleshooting Netdisco](https://github.com/netdisco/netdisco/wiki/Troubleshooting), [tips and tricks for specific platforms](https://github.com/netdisco/netdisco/wiki/Vendor-Tips), and [all the configuration options](https://github.com/netdisco/netdisco/wiki/Configuration).
 
 You can also speak to someone in the [`#netdisco@libera`](https://kiwiirc.com/nextclient/irc.libera.chat/netdisco) IRC channel, or on the [community email list](https://lists.sourceforge.net/lists/listinfo/netdisco-users).
-
-## Upgrading
-
-Pulling new images and recreating the containers with `docker-compose down ; docker-compose pull ; docker-compose up --force-recreate` is all there is to it. When our database image starts it always updates the DB schema to the latest release. To upgrade your own PostgreSQL database, run:
-
-    docker-compose run --entrypoint=bin/netdisco-db-deploy netdisco-backend
 
 ## Credits
 
