@@ -49,7 +49,7 @@ You can also use that command to update the supporting data files (MAC address v
 
 See [Headless Update](https://github.com/netdisco/netdisco/wiki/Headless-Update) if you need to update these files in an automated way or without internet access.
 
-## Tips
+##  Tips
 
 The [netdisco-do](https://metacpan.org/dist/App-Netdisco/view/bin/netdisco-do) utility can be run like this (or without `<action>` to get help):
 
