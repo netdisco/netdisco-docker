@@ -108,6 +108,7 @@ RUN for tgt in /home/netdisco/perl5/bin/netdisco-*; \
       do ln -sf $tgt /home/netdisco/bin/; done && \
     ln -sf /home/netdisco/perl5/bin/localenv /home/netdisco/bin/
 
+RUN rm -f /home/netdisco/perl5/lib/perl5/auto/share/dist/App-Netdisco/python/netdisco/uv.lock
 RUN `/home/netdisco/bin/localenv perl -MAlien::ultraviolet -e 'print Alien::ultraviolet->uv'` \
       --no-cache --no-progress --quiet --project \
       `/home/netdisco/bin/localenv perl -MFile::ShareDir -e 'print File::ShareDir::dist_dir("App-Netdisco") ."/python/netdisco"'` \
