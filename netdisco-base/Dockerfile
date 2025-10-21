@@ -1,6 +1,10 @@
 # vim: ft=Dockerfile
 FROM docker.io/alpine:latest AS netdisco-builder-image
 
+# temporary bloated image used for building Netdisco
+# in github actions the COMMITTISH is set to latest release version
+# netdisco-base will copy the built Netdisco files from this image
+
 ARG COMMITTISH=HEAD
 
 RUN apk add --no-cache \
@@ -95,24 +99,17 @@ RUN for tgt in bin environments nd-site-local logs; \
       ln -s /dev/stdout /home/netdisco/logs/netdisco-backend.log && \
       ln -s /dev/stdout /home/netdisco/logs/netdisco-web.log
 
-
+# copy Netdisco from the bloated build image
 COPY --chown=netdisco:netdisco --from=netdisco-builder-image \
   /home/netdisco-build /home/netdisco/
 
 # replace default config with one that works better for docker install
 COPY --chown=netdisco:netdisco deployment.yml \
   /home/netdisco/perl5/lib/perl5/auto/share/dist/App-Netdisco/environments/deployment.yml
-COPY --chown=netdisco:netdisco wait_to_start.sh /home/netdisco/bin/
 
 RUN for tgt in /home/netdisco/perl5/bin/netdisco-*; \
       do ln -sf $tgt /home/netdisco/bin/; done && \
     ln -sf /home/netdisco/perl5/bin/localenv /home/netdisco/bin/
-
-RUN rm -f /home/netdisco/perl5/lib/perl5/auto/share/dist/App-Netdisco/python/netdisco/uv.lock
-RUN `/home/netdisco/bin/localenv perl -MAlien::ultraviolet -e 'print Alien::ultraviolet->uv'` \
-      --no-cache --no-progress --quiet --project \
-      `/home/netdisco/bin/localenv perl -MFile::ShareDir -e 'print File::ShareDir::dist_dir("App-Netdisco") ."/python/netdisco"'` \
-      sync --link-mode=copy
 
 WORKDIR /home/netdisco
 ENV PATH="/home/netdisco/bin:$PATH"

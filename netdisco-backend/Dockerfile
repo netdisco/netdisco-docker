@@ -18,6 +18,12 @@ RUN curl -sL https://api.github.com/repos/netdisco/netdisco-mibs/releases/latest
   sh | tar --strip-components=1 -zxf - && \
   chown -R netdisco:netdisco /home/netdisco/netdisco-mibs
 
+RUN rm -f /home/netdisco/perl5/lib/perl5/auto/share/dist/App-Netdisco/python/netdisco/uv.lock
+RUN `/home/netdisco/bin/localenv perl -MAlien::ultraviolet -e 'print Alien::ultraviolet->uv'` \
+      --no-cache --no-progress --quiet --project \
+      `/home/netdisco/bin/localenv perl -MFile::ShareDir -e 'print File::ShareDir::dist_dir("App-Netdisco") ."/python/netdisco"'` \
+      sync --link-mode=copy
+
 USER netdisco:netdisco
 WORKDIR /home/netdisco
 ENTRYPOINT ["/home/netdisco/bin/netdisco-backend"]
