@@ -1,0 +1,14 @@
+services:
+
+  netdisco-postgresql:
+    build: "./netdisco-postgresql"
+
+  netdisco-backend:
+    build: "./netdisco-backend"
+
+  netdisco-web:
+    build: "./netdisco-web"
+
+  netdisco-do:
+    build: "./netdisco-do"
+

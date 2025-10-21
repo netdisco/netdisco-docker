@@ -62,6 +62,8 @@ services:
       NETDISCO_DB_HOST: netdisco-postgresql
     depends_on:
       - netdisco-postgresql
+    # the service is not started in the default set, only if profile activated
+    # https://docs.docker.com/reference/compose-file/services/#profiles
     profiles:
       - cli-manual
 

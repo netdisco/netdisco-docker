@@ -1,0 +1,14 @@
+services:
+
+  netdisco-postgresql:
+    network_mode: none
+
+  netdisco-backend:
+    network_mode: none
+
+  netdisco-web:
+    network_mode: none
+
+  netdisco-do:
+    network_mode: none
+
