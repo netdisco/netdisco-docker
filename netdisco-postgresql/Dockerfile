@@ -22,6 +22,6 @@ VOLUME ["/var/lib/postgresql/data"]
 COPY netdisco-initdb.sh /docker-entrypoint-initdb.d/
 
 HEALTHCHECK --interval=3s --timeout=3s --retries=10 --start-period=10s \
-  CMD ["CMD", "pg_isready", "-h", "localhost"]
+  CMD ["CMD", "pg_isready", "-h", "netdisco-postgresql"]
 
 WORKDIR /
