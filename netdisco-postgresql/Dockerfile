@@ -1,5 +1,5 @@
 # vim: ft=Dockerfile
-FROM docker.io/postgres:13.4-alpine
+FROM docker.io/postgres:17.4-alpine
 
 ARG BUILD_DATE
 ARG COMMITTISH=HEAD
@@ -18,12 +18,14 @@ LABEL org.label-schema.docker.schema-version="1.0" \
       org.netdisco.version=${COMMITTISH}
 
 RUN apk add --no-cache \
+  su-exec \
   curl \
   tzdata \
   tar
 
 COPY netdisco-initdb.sh /docker-entrypoint-initdb.d/
 COPY netdisco-db-entrypoint.sh netdisco-updatedb.sh /usr/local/bin/
+COPY README_UPGRADE.md /
 RUN chmod +x /usr/local/bin/netdisco-*
 
 WORKDIR /var/lib/postgresql/netdisco-sql
