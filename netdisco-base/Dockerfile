@@ -115,6 +115,9 @@ WORKDIR /home/netdisco
 ENV PATH="/home/netdisco/bin:$PATH"
 ENV SHELL=/bin/ash
 
+ENV NETDISCO_DOMAIN=discover
+ENV NETDISCO_DB_HOST=netdisco-postgresql
+
 ## volumes can be optional, and controlled by docker-compose file
 # VOLUME ["/home/netdisco/environments", "/home/netdisco/nd-site-local", "/home/netdisco/logs"]
 

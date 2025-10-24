@@ -1,17 +1,41 @@
 services:
 
+  # https://docs.docker.com/compose/how-tos/environment-variables/envvars-precedence/
+  common_environment:
+    image: netdisco/netdisco:latest-do
+    environment:
+      - NETDISCO_DOMAIN
+      - NETDISCO_DB_TENANT
+      - NETDISCO_DB_NAME
+      - NETDISCO_DB_HOST
+      - NETDISCO_DB_PORT
+      - NETDISCO_DB_USER
+      - NETDISCO_DB_PASS
+      - NETDISCO_RO_COMMUNITY
+      - PGDATABASE
+      - PGHOST
+      - PGPORT
+      - PGUSER
+      - PGPASSWORD
+    profiles:
+      - disabled
+
   netdisco-postgresql:
-    image: netdisco:latest-postgresql
+    image: netdisco/netdisco:latest-postgresql
     shm_size: 128mb
     hostname: netdisco-postgresql
     # !! healthcheck is defined in the Dockerfile
     volumes:
       - "./netdisco/pgdata:/var/lib/postgresql/data"
+    extends:
+      service: common_environment
+    profiles: !reset null
     environment:
-      POSTGRES_PASSWORD: rwD62cAVG4eboyM9
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-rwD62cAVG4eboyM9}
+      - NETDISCO_DB_SUPERUSER
 
   netdisco-do:
-    image: netdisco:latest-do
+    image: netdisco/netdisco:latest-do
     # use same hostname as backend to satisfy skiplist check (#68)
     hostname: netdisco-backend
     depends_on:
@@ -20,27 +44,28 @@ services:
     volumes:
       - "./netdisco/nd-site-local:/home/netdisco/nd-site-local"
       - "./netdisco/config:/home/netdisco/environments"
-    environment:
-      NETDISCO_DOMAIN:  discover
-      NETDISCO_DB_HOST: netdisco-postgresql
-    # the service is not started in the default set, only if profile activated
-    # https://docs.docker.com/reference/compose-file/services/#profiles
+    extends:
+      service: common_environment
     profiles:
       - cli-manual
+    # the service is not started in the default set, only if profile activated
+    # https://docs.docker.com/reference/compose-file/services/#profiles
 
   db-init:
-    image: netdisco:latest-do
+    image: netdisco/netdisco:latest-do
     entrypoint: ''
     command: "/home/netdisco/bin/netdisco-env /home/netdisco/bin/netdisco-updatedb.sh"
     depends_on:
       netdisco-postgresql:
         condition: service_healthy
+    extends:
+      service: common_environment
+    profiles: !reset null
     environment:
-      NETDISCO_DOMAIN:  discover
-      NETDISCO_DB_HOST: netdisco-postgresql
+      - NETDISCO_ADMIN_USER
 
   netdisco-backend:
-    image: netdisco:latest-backend
+    image: netdisco/netdisco:latest-backend
     hostname: netdisco-backend
     depends_on:
       db-init:
@@ -50,9 +75,9 @@ services:
       - "./netdisco/nd-site-local:/home/netdisco/nd-site-local"
       - "./netdisco/config:/home/netdisco/environments"
       - "./netdisco/logs:/home/netdisco/logs"
-    environment:
-      NETDISCO_DOMAIN:  discover
-      NETDISCO_DB_HOST: netdisco-postgresql
+    extends:
+      service: common_environment
+    profiles: !reset null
     dns_opt:
       - 'ndots:0'
       - 'timeout:1'
@@ -62,7 +87,7 @@ services:
       - trustad
 
   netdisco-web:
-    image: netdisco:latest-web
+    image: netdisco/netdisco:latest-web
     hostname: netdisco-web
     depends_on:
       db-init:
@@ -71,10 +96,11 @@ services:
     volumes:
       - "./netdisco/nd-site-local:/home/netdisco/nd-site-local"
       - "./netdisco/config:/home/netdisco/environments"
+    extends:
+      service: common_environment
+    profiles: !reset null
     environment:
-      NETDISCO_DOMAIN:  discover
-      NETDISCO_DB_HOST: netdisco-postgresql
-      IPV: 4
+      - IPV
     ports:
       - "5000:5000"
     dns_opt:
