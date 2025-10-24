@@ -64,13 +64,15 @@ Edit the mix-in to point to another location.
 
 ##  Refreshing MAC vendors
 
-The following command can be used to download and update the MAC vendor database:
+The following command will download and update the MAC vendor database:
 
     curl -Ls https://raw.githubusercontent.com/netdisco/upstream-sources/refs/heads/master/bootstrap/netdisco-lookup-tables.sql | docker-compose run -T netdisco-do psql
 
-Each containerised Netdisco release will also include the latest MAC vendors, and automatically update them when starting.
+Each containerised Netdisco release also includes the latest MAC vendors, and automatically updates them when starting.
 
 ##  Tips
+
+When (re-)starting Netdisco services with our `compose.yaml` file, Netdisco always updates the database schema. This may appear to have many errors, but they can be safely ignored (the process is idempotent).
 
 The [netdisco-do](https://metacpan.org/dist/App-Netdisco/view/bin/netdisco-do) utility can be run like this (or without `<action>` to get help):
 
