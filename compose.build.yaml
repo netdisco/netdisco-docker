@@ -1,0 +1,50 @@
+services:
+
+# https://docs.docker.com/compose/how-tos/dependent-images/#use-another-services-image-as-the-base-image
+
+  netdisco-postgresql:
+    image: !reset null
+    build:
+      context: ./netdisco-postgresql
+      tags:
+        - netdisco:latest-postgresql
+    #pull_policy: build
+
+  netdisco-base:
+    image: !reset null
+    build:
+      context: ./netdisco-base
+      tags:
+        - netdisco:latest-base
+    pull_policy: build
+
+  netdisco-backend:
+    image: !reset null
+    build:
+      context: ./netdisco-backend
+      tags:
+        - netdisco:latest-backend
+      additional_contexts:
+        "netdisco:latest-base": "service:netdisco-base"
+    pull_policy: build
+
+  netdisco-web:
+    image: !reset null
+    build:
+      context: ./netdisco-web
+      tags:
+        - netdisco:latest-web
+      additional_contexts:
+        "netdisco:latest-base": "service:netdisco-base"
+    pull_policy: build
+
+  netdisco-do:
+    image: !reset null
+    build:
+      context: ./netdisco-do
+      tags:
+        - netdisco:latest-do
+      additional_contexts:
+        "netdisco:latest-backend": "service:netdisco-backend"
+    pull_policy: build
+

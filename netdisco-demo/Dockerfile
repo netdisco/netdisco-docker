@@ -1,6 +1,6 @@
 # vim: ft=Dockerfile
 ARG TAG=latest
-FROM docker.io/netdisco/netdisco:${TAG}-web
+FROM netdisco:${TAG}-web
 
 LABEL org.label-schema.name="netdisco-demo" \
       org.label-schema.description="Heroku Demo instance for Netdisco"

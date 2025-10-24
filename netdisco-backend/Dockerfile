@@ -1,5 +1,6 @@
 # vim: ft=Dockerfile
-FROM netdisco-base
+ARG TAG=latest
+FROM netdisco:${TAG}-base
 
 LABEL org.label-schema.name="netdisco-backend" \
       org.label-schema.description="Polling Daemon for Netdisco"
@@ -22,6 +23,14 @@ RUN `/home/netdisco/bin/localenv perl -MAlien::ultraviolet -e 'print Alien::ultr
       --no-cache --no-progress --quiet --project \
       `/home/netdisco/bin/localenv perl -MFile::ShareDir -e 'print File::ShareDir::dist_dir("App-Netdisco") ."/python/netdisco"'` \
       sync --link-mode=copy
+
+# https://github.com/astral-sh/uv/issues/9191
+ENV UV_NO_MANAGED_PYTHON=true \
+    UV_SYSTEM_PYTHON=true \
+    UV_LOCKED=1 \
+    UV_NO_SYNC=1 \
+    UV_NO_CACHE=1 \
+    UV_NO_DEV=1
 
 USER netdisco:netdisco
 WORKDIR /home/netdisco

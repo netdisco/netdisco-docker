@@ -16,8 +16,6 @@ services:
         condition: service_completed_successfully
     environment:
       NETDISCO_DB_HOST: host.docker.internal
-    volumes:
-      - "~/environments:/home/netdisco/environments"
 
   db-init:
     depends_on: !override
@@ -25,17 +23,11 @@ services:
         condition: service_completed_successfully
     environment:
       NETDISCO_DB_HOST: host.docker.internal
-    volumes:
-      - "~/environments:/home/netdisco/environments"
 
   netdisco-backend:
     environment:
       NETDISCO_DB_HOST: host.docker.internal
-    volumes:
-      - "~/environments:/home/netdisco/environments"
 
   netdisco-web:
     environment:
       NETDISCO_DB_HOST: host.docker.internal
-    volumes:
-      - "~/environments:/home/netdisco/environments"

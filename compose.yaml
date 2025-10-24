@@ -1,15 +1,17 @@
 services:
 
   netdisco-postgresql:
-    image: netdisco/netdisco:latest-postgresql
-    shm_size: 256mb
+    image: netdisco:latest-postgresql
+    shm_size: 128mb
     hostname: netdisco-postgresql
     # !! healthcheck is defined in the Dockerfile
     volumes:
       - "./netdisco/pgdata:/var/lib/postgresql/data"
+    environment:
+      POSTGRES_PASSWORD: rwD62cAVG4eboyM9
 
   netdisco-do:
-    image: netdisco/netdisco:latest-do
+    image: netdisco:latest-do
     # use same hostname as backend to satisfy skiplist check (#68)
     hostname: netdisco-backend
     depends_on:
@@ -27,7 +29,7 @@ services:
       - cli-manual
 
   db-init:
-    image: netdisco/netdisco:latest-do
+    image: netdisco:latest-do
     entrypoint: ''
     command: "/home/netdisco/bin/netdisco-env /home/netdisco/bin/netdisco-updatedb.sh"
     depends_on:
@@ -38,7 +40,7 @@ services:
       NETDISCO_DB_HOST: netdisco-postgresql
 
   netdisco-backend:
-    image: netdisco/netdisco:latest-backend
+    image: netdisco:latest-backend
     hostname: netdisco-backend
     depends_on:
       db-init:
@@ -60,7 +62,7 @@ services:
       - trustad
 
   netdisco-web:
-    image: netdisco/netdisco:latest-web
+    image: netdisco:latest-web
     hostname: netdisco-web
     depends_on:
       db-init:
