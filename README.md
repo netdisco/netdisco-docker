@@ -14,18 +14,17 @@ Netdisco includes a lightweight web server for the interface, a backend daemon t
 
 ##  Docker Deployment
 
-On Linux hosts, the containers need some directories present in the mounted volume. Create this structure and allow the netdisco uid in the container (`901`) to write into it:
+On Linux hosts, create these directories and allow the service uid (`901`) to write into it:
 
 *(this step is only necessary on Linux hosts and can be omitted in the macOS and Windows versions of Docker)*
 
-    cd $directory_of_your_choice
     mkdir -p netdisco/{logs,config,nd-site-local} 
     sudo chown -R 901:901 netdisco
 
 Download `compose.yaml` and start everything:
 
     curl -Ls -o compose.yaml https://tinyurl.com/nd2-dockercompose
-    docker-compose up
+    docker-compose up --detach
 
 This runs the database, backend daemon, and web frontend listening on port 5000. If you have a device using the SNMP community `public`, enter it in the Netdisco homepage and click "Discover".
 
@@ -37,7 +36,7 @@ The web frontend is initally configured to allow unauthenticated access with ful
 
 Pull new images and recreate the containers:
 
-    docker-compose pull ; docker-compose down ; docker-compose up --force-recreate
+    docker-compose pull ; docker-compose down ; docker-compose up --force-recreate --detach
 
 With our standard `compose.yaml` file (as above), the database schema is automatically upgraded.
 
@@ -48,7 +47,9 @@ We have a [mix-in Docker Compose file](https://raw.githubusercontent.com/netdisc
 Download the mix-in and start the services:
 
     curl -Ls -O https://raw.githubusercontent.com/netdisco/netdisco-docker/refs/heads/master/compose.mixin.extpg.yaml
-    docker-compose -f compose.yaml -f compose.mixin.extpg.yaml up
+    docker-compose -f compose.yaml -f compose.mixin.extpg.yaml up --detach
+
+If the database is on the same host as your Docker service, then use `host.docker.internal` for its hostname (either in the configuration file or with the `NETDISCO_DB_HOST` environment variable).
 
 ##  Pointing at a different configuration file
 
@@ -57,7 +58,7 @@ We have an example [mix-in Docker Compose file](https://raw.githubusercontent.co
 Download the mix-in and start the services:
 
     curl -Ls -O https://raw.githubusercontent.com/netdisco/netdisco-docker/refs/heads/master/compose.mixin.extpg.yaml
-    docker-compose -f compose.yaml -f compose.mixin.homeenv.yaml up
+    docker-compose -f compose.yaml -f compose.mixin.homeenv.yaml up --detach
 
 Edit the mix-in to point to another location.
 
@@ -65,7 +66,7 @@ Edit the mix-in to point to another location.
 
 The following command can be used to download and update the MAC vendor database:
 
-    curl -Ls https://raw.githubusercontent.com/netdisco/upstream-sources/refs/heads/master/bootstrap/netdisco-lookup-tables.sql | docker-compose run netdisco-do psql
+    curl -Ls https://raw.githubusercontent.com/netdisco/upstream-sources/refs/heads/master/bootstrap/netdisco-lookup-tables.sql | docker-compose run -T netdisco-do psql
 
 Each containerised Netdisco release will also include the latest MAC vendors, and automatically update them when starting.
 
@@ -76,6 +77,8 @@ The [netdisco-do](https://metacpan.org/dist/App-Netdisco/view/bin/netdisco-do) u
     docker-compose run netdisco-do <action> ...
 
 Local web or backend plugins can be installed into `netdisco/nd-site-local/` as per [our documentation](https://github.com/netdisco/netdisco/wiki). The PostgreSQL data files are stored in `netdisco/pgdata/` and we do not advise touching them (unless you wish to reinitialize the system).
+
+The `NETDISCO_RO_COMMUNITY` environment variable allows you to override the default of `public` (and avoiding the need to edit the configuration file).
 
 ## Getting Support
 
