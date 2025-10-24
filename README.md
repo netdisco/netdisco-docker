@@ -14,32 +14,32 @@ Netdisco includes a lightweight web server for the interface, a backend daemon t
 
 ##  Docker Deployment
 
-On Linxu hosts, the containers need some directories present in the mounted volume. In a directory of your choice, create this structure and allow the netdisco uid in the container (901) to write into it:
+On Linux hosts, the containers need some directories present in the mounted volume. Create this structure and allow the netdisco uid in the container (`901`) to write into it:
+
+*(this step is only necessary on Linux hosts and can be omitted in the macOS and Windows versions of Docker)*
 
     cd $directory_of_your_choice
     mkdir -p netdisco/{logs,config,nd-site-local} 
     sudo chown -R 901:901 netdisco
 
-*(this step is only necessary on Linux hosts and can be omitted in the macOS and Windows versions of Docker)*
-
-Download `compose.yaml` into the same directory and start everything:
+Download `compose.yaml` and start everything:
 
     curl -Ls -o compose.yaml https://tinyurl.com/nd2-dockercompose
     docker-compose up
 
-This will start the database, backend daemon, and web frontend listening on port 5000. If you have a device using the SNMP community `public`, enter it in the Netdisco homepage and click "Discover".
+This runs the database, backend daemon, and web frontend listening on port 5000. If you have a device using the SNMP community `public`, enter it in the Netdisco homepage and click "Discover".
 
-The default configuration is available in `netdisco/config/deployment.yml`. The backend and web daemons will automatically restart when you save changes to this file. Logs are available in `netdisco/logs/`.
+The default configuration is available in `netdisco/config/deployment.yml`. The daemons automatically restart when you save changes to this file. Logs are available in `netdisco/logs/`.
 
 The web frontend is initally configured to allow unauthenticated access with full admin rights. We suggest you visit the `Admin -> User Management` menu item, and set `no_auth: false` in `deployment.yml`, to remove this guest account and set up authenticated user access.
 
 ##  Upgrading
 
-Pulling new images and recreate the containers:
+Pull new images and recreate the containers:
 
     docker-compose pull ; docker-compose down ; docker-compose up --force-recreate
 
-With our standard `compose.yaml` file (downloaded as above), the database schema is automatically upgraded.
+With our standard `compose.yaml` file (as above), the database schema is automatically upgraded.
 
 ##  Using an external PostgreSQL database
 
@@ -59,32 +59,23 @@ Download the mix-in and start the services:
     curl -Ls -O https://raw.githubusercontent.com/netdisco/netdisco-docker/refs/heads/master/compose.mixin.extpg.yaml
     docker-compose -f compose.yaml -f compose.mixin.homeenv.yaml up
 
+Edit the mix-in to point to another location.
+
 ##  Refreshing MAC vendors
 
 The following command can be used to download and update the MAC vendor database:
 
-    docker-compose exec netdisco-backend bin/netdisco-deploy
+    curl -Ls https://raw.githubusercontent.com/netdisco/upstream-sources/refs/heads/master/bootstrap/netdisco-lookup-tables.sql | docker-compose run netdisco-do psql
 
-See [Headless Update](https://github.com/netdisco/netdisco/wiki/Headless-Update) if you need to update these files in an automated way or without internet access.
+Each containerised Netdisco release will also include the latest MAC vendors, and automatically update them when starting.
 
-##  Tips
+##  Tips
 
 The [netdisco-do](https://metacpan.org/dist/App-Netdisco/view/bin/netdisco-do) utility can be run like this (or without `<action>` to get help):
 
     docker-compose run netdisco-do <action> ...
 
-Database username, password, database connection, and file locations, can all be set using [environment variables](https://github.com/netdisco/netdisco/wiki/Environment-Variables) described in our wiki. Of course the database container is optional and you can connect to an existing or external PostgreSQL server instead.
-
-You can change the password of the netdisco PostgreSQL user with this command (and update in `netdisco/config/deployment.yml` too!):
-
-    docker-compose exec netdisco-postgresql psql -U postgres -c "alter role netdisco password 'your new password';"
-
 Local web or backend plugins can be installed into `netdisco/nd-site-local/` as per [our documentation](https://github.com/netdisco/netdisco/wiki). The PostgreSQL data files are stored in `netdisco/pgdata/` and we do not advise touching them (unless you wish to reinitialize the system).
-
-##  Docker Requirements
-
- * Docker 20.10.0 (Linux) or Docker Desktop 3.3.0 (Win/Mac) 
- * docker-compose 1.28
 
 ## Getting Support
 
