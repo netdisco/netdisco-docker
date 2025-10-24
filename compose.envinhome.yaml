@@ -4,7 +4,7 @@ services:
     volumes:
       - "~/environments:/home/netdisco/environments"
 
-  db-init:
+  netdisco-db-init:
     volumes:
       - "~/environments:/home/netdisco/environments"
 

@@ -51,7 +51,7 @@ services:
     # the service is not started in the default set, only if profile activated
     # https://docs.docker.com/reference/compose-file/services/#profiles
 
-  db-init:
+  netdisco-db-init:
     image: netdisco/netdisco:latest-do
     entrypoint: ''
     command: "/home/netdisco/bin/netdisco-env /home/netdisco/bin/netdisco-updatedb.sh"
@@ -68,7 +68,7 @@ services:
     image: netdisco/netdisco:latest-backend
     hostname: netdisco-backend
     depends_on:
-      db-init:
+      netdisco-db-init:
         condition: service_completed_successfully
     init: true # run a full process manager to get signals
     volumes:
@@ -90,7 +90,7 @@ services:
     image: netdisco/netdisco:latest-web
     hostname: netdisco-web
     depends_on:
-      db-init:
+      netdisco-db-init:
         condition: service_completed_successfully
     init: true # run a full process manager to get signals
     volumes:

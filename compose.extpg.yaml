@@ -17,7 +17,7 @@ services:
     environment:
       NETDISCO_DB_HOST: host.docker.internal
 
-  db-init:
+  netdisco-db-init:
     depends_on: !override
       external-postgresql:
         condition: service_completed_successfully
