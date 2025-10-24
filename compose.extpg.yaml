@@ -2,32 +2,23 @@ services:
 
   # e.g. set env NETDISCO_DB_HOST=host.docker.internal
 
+  netdisco-postgresql:
+    profiles:
+      - disabled
+
   external-postgresql:
     image: netdisco/netdisco:latest-do
-    hostname: external-postgresql
     entrypoint: ''
-    command: "/bin/ash -c '/usr/bin/pg_isready -h $${NETDISCO_DB_HOST}'"
+    command: "/home/netdisco/bin/netdisco-env /usr/bin/pg_isready"
     environment:
-      NETDISCO_DB_HOST: host.docker.internal
+      - NETDISCO_DB_HOST=${NETDISCO_DB_HOST:-}
 
   netdisco-do:
     depends_on: !override
       external-postgresql:
         condition: service_completed_successfully
-    environment:
-      NETDISCO_DB_HOST: host.docker.internal
 
   netdisco-db-init:
     depends_on: !override
       external-postgresql:
         condition: service_completed_successfully
-    environment:
-      NETDISCO_DB_HOST: host.docker.internal
-
-  netdisco-backend:
-    environment:
-      NETDISCO_DB_HOST: host.docker.internal
-
-  netdisco-web:
-    environment:
-      NETDISCO_DB_HOST: host.docker.internal
