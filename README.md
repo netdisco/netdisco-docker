@@ -41,7 +41,7 @@ Pulling new images and recreate the containers:
 
 With our standard `compose.yaml` file (downloaded as above), the database schema is automatically upgraded.
 
-##  Using an external PostgreSQL database
+##  Using an external PostgreSQL database
 
 We have a [mix-in Docker Compose file](https://raw.githubusercontent.com/netdisco/netdisco-docker/refs/heads/master/compose.mixin.extpg.yaml) for this. It stops our own database container from running and will look to either [environment variables](https://github.com/netdisco/netdisco/wiki/Environment-Variables) or a local `deployment.yml` configuration file for connection details.
 
@@ -50,7 +50,7 @@ Download the mix-in and start the services:
     curl -Ls -O https://raw.githubusercontent.com/netdisco/netdisco-docker/refs/heads/master/compose.mixin.extpg.yaml
     docker-compose -f compose.yaml -f compose.mixin.extpg.yaml up
 
-##  Pointing at a different configuration file
+##  Pointing at a different configuration file
 
 We have an example [mix-in Docker Compose file](https://raw.githubusercontent.com/netdisco/netdisco-docker/refs/heads/master/compose.mixin.homeenv.yaml) for this. The example points to `deployment.yml` in a user's home directory.
 
@@ -59,7 +59,7 @@ Download the mix-in and start the services:
     curl -Ls -O https://raw.githubusercontent.com/netdisco/netdisco-docker/refs/heads/master/compose.mixin.extpg.yaml
     docker-compose -f compose.yaml -f compose.mixin.homeenv.yaml up
 
-##  Refreshing MAC vendors
+##  Refreshing MAC vendors
 
 The following command can be used to download and update the MAC vendor database:
 
