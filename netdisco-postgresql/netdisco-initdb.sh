@@ -11,6 +11,7 @@ set -efuxo pipefail
 # Explicit assign; we don't want to pick up PGUSER from environment
 # because that many be the same as NETDISCO_DB_USER.
 PGUSER="${NETDISCO_DB_SUPERUSER:=postgres}"
+PGDATABASE=template1
 
 export COL='\033[0;35m'
 export NC='\033[0m'
