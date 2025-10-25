@@ -82,6 +82,12 @@ Local web or backend plugins can be installed into `netdisco/nd-site-local/` as 
 
 The `NETDISCO_RO_COMMUNITY` environment variable allows you to override the default of `public` (and avoiding the need to edit the configuration file).
 
+##  Rebuilding
+
+If you wish to build the images locally, use [this compose file](https://raw.githubusercontent.com/netdisco/netdisco-docker/refs/heads/master/compose.build.yaml). Note that it's not a mix-in:
+
+    docker-compose -f compose.rebuild.yaml build --no-cache
+
 ## Getting Support
 
 We have several other pages with tips for [understanding and troubleshooting Netdisco](https://github.com/netdisco/netdisco/wiki/Troubleshooting), [tips and tricks for specific platforms](https://github.com/netdisco/netdisco/wiki/Vendor-Tips), and [all the configuration options](https://github.com/netdisco/netdisco/wiki/Configuration).
