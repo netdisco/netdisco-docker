@@ -26,6 +26,8 @@ RUN apk add --no-cache \
       perl-dev \
       perl-io-socket-ssl \
       perl-ldap \
+      perl-netaddr-ip \
+      perl-io-tty \
       postgresql-client \
       python3 \
       tzdata \
@@ -85,6 +87,8 @@ RUN apk add --no-cache \
       perl-regexp-common-net-cidr \
       perl-regexp-ipv6 \
       perl-file-sharedir \
+      perl-netaddr-ip \
+      perl-io-tty \
       postgresql-client \
       python3 \
       tzdata \
