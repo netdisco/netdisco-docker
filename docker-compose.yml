@@ -62,6 +62,7 @@ services:
       service: common_environment
     profiles: !reset null
     environment:
+      - DEPLOY_ADMIN_USER=${DEPLOY_ADMIN_USER:-YES} # or set to NO
       - NETDISCO_ADMIN_USER
 
   netdisco-backend:

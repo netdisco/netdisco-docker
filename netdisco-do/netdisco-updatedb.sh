@@ -35,7 +35,7 @@ STAMP=$(date '+v%Y%m%d_%H%M%S.000')
 "${psql[@]}" -c "INSERT INTO dbix_class_schema_versions VALUES ('${MAXSCHEMA}', '${STAMP}')"
 
 echo >&2 -e "${COL}netdisco-updatedb: adding admin user if none exists${NC}"
-if [ -z $("${psql[@]}" -A -t -c "SELECT 1 FROM users WHERE admin") ]; then
+if [ "${DEPLOY_ADMIN_USER}" != "NO" ] && [ -z $("${psql[@]}" -A -t -c "SELECT 1 FROM users WHERE admin") ]; then
   "${psql[@]}" -c "INSERT INTO users (username, port_control, admin) VALUES ('${NETDISCO_ADMIN_USER}', true, true)"
 fi
 
