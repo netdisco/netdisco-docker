@@ -1,6 +1,6 @@
 # vim: ft=Dockerfile
 ARG TAG=latest
-FROM netdisco:${TAG}-backend
+FROM localhost:5000/netdisco:${TAG}-backend
 
 LABEL org.label-schema.name="netdisco-do" \
       org.label-schema.description="CLI App for Netdisco"
