@@ -74,8 +74,6 @@ Each containerised Netdisco release also includes the latest MAC vendors, and au
 
 ##  Tips
 
-When (re-)starting Netdisco services with our `compose.yaml` file, Netdisco always updates the database schema. This may appear to have many errors, but they can be safely ignored (the process is idempotent).
-
 The [netdisco-do](https://metacpan.org/dist/App-Netdisco/view/bin/netdisco-do) utility can be run like this (or without `<action>` to get help):
 
     docker-compose run netdisco-do <action> ...
