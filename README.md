@@ -14,6 +14,8 @@ Netdisco includes a lightweight web server for the interface, a backend daemon t
 
 ##  Docker Deployment
 
+Container images are provided for `linux/arm64` and `linux/amd64`.
+
 On Linux hosts, create these directories and allow the service uid (`901`) to write into it:
 
 *(this step is only necessary on Linux hosts and can be omitted in the macOS and Windows versions of Docker)*
