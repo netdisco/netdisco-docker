@@ -101,6 +101,7 @@ services:
     profiles: !reset null
     environment:
       - IPV=${IPV:-4}
+      - PORT
     ports:
       - "5000:5000"
     dns_opt:
