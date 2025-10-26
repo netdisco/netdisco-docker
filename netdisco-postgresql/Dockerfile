@@ -1,6 +1,6 @@
 # vim: ft=Dockerfile
-ARG TAG=18
-FROM docker.io/postgres:${TAG}-alpine
+ARG PGVER=18
+FROM docker.io/postgres:${PGVER}-alpine
 
 ARG BUILD_DATE
 ARG COMMITTISH=HEAD
@@ -23,7 +23,7 @@ COPY netdisco-db-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/netdisco-db-entrypoint.sh
 
 HEALTHCHECK --interval=3s --timeout=3s --retries=10 --start-period=10s \
-  CMD ["pg_isready", "-h", "${NETDISCO_DB_HOST}", "-U", "postgres"]
+  CMD ["pg_isready", "-h", "netdisco-postgresql", "-U", "postgres"]
 
 WORKDIR /
 ENTRYPOINT ["/usr/local/bin/netdisco-db-entrypoint.sh"]

@@ -34,7 +34,7 @@ if [ ! -s "${PGDATA}/PG_VERSION" ]; then exit 0; fi
 TEST_FROM=$(($PG_MAJOR + 1))
 TEST_TO=$(($NETDISCO_CURRENT_PG_VERSION - 1))
 
-if [$TEST_FROM -le $TEST_TO]
+if [ $TEST_FROM -le $TEST_TO ]
 then
   for VER in $(seq $TEST_FROM $TEST_TO)
   do

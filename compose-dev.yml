@@ -40,7 +40,7 @@ services:
     build:
       context: netdisco-postgresql
       args:
-        TAG: 13.4
+        PGVER: 13.4
     shm_size: 128mb
     hostname: netdisco-postgres-13
     volumes:
@@ -53,14 +53,16 @@ services:
 
   netdisco-db-init:
     image: netdisco/netdisco:latest-do
-    entrypoint: ''
-    command: "/home/netdisco/bin/netdisco-env /home/netdisco/bin/netdisco-updatedb.sh"
+    build:
+      context: netdisco-do
+    entrypoint: "/home/netdisco/bin/netdisco-env"
+    command: "/home/netdisco/bin/netdisco-updatedb.sh"
     depends_on:
       netdisco-postgresql:
         condition: service_healthy
     volumes:
-      - "./netdisco/pgdata:/var/lib/postgresql/data"
-      - "./netdisco/postgresql:/var/lib/postgresql"
+      - "./netdisco/pgdata:/var/lib/pgversions/pg13"
+      - "./netdisco/postgresql:/var/lib/pgversions/new"
     extends:
       service: common_environment
     profiles: !reset null
