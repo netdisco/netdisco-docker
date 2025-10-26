@@ -7,33 +7,38 @@ services:
       context: ./netdisco-postgresql
       tags:
         - netdisco/netdisco:latest-postgresql
+        - localhost:5000/netdisco:latest-postgresql
 
   netdisco-base:
     build:
       context: ./netdisco-base
       tags:
         - netdisco/netdisco:latest-base
+        - localhost:5000/netdisco:latest-base
 
   netdisco-backend:
     build:
       context: ./netdisco-backend
       tags:
         - netdisco/netdisco:latest-backend
+        - localhost:5000/netdisco:latest-backend
       additional_contexts:
-        "netdisco:latest-base": "service:netdisco-base"
+        "localhost:5000/netdisco:latest-base": "service:netdisco-base"
 
   netdisco-web:
     build:
       context: ./netdisco-web
       tags:
         - netdisco/netdisco:latest-web
+        - localhost:5000/netdisco:latest-web
       additional_contexts:
-        "netdisco:latest-base": "service:netdisco-base"
+        "localhost:5000/netdisco:latest-base": "service:netdisco-base"
 
   netdisco-do:
     build:
       context: ./netdisco-do
       tags:
         - netdisco/netdisco:latest-do
+        - localhost:5000/netdisco:latest-do
       additional_contexts:
-        "netdisco:latest-backend": "service:netdisco-backend"
+        "localhost:5000/netdisco:latest-backend": "service:netdisco-backend"
