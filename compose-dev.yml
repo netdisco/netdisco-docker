@@ -1,0 +1,52 @@
+services:
+
+  # https://docs.docker.com/compose/how-tos/environment-variables/envvars-precedence/
+  common_environment:
+    image: netdisco/netdisco:latest-do
+    environment:
+      - NETDISCO_DOMAIN=${NETDISCO_DOMAIN:-discover}
+      - NETDISCO_DB_TENANT
+      - NETDISCO_DB_NAME
+      - NETDISCO_DB_HOST=${NETDISCO_DB_HOST:-netdisco-postgresql}
+      - NETDISCO_DB_PORT
+      - NETDISCO_DB_USER
+      - NETDISCO_DB_PASS
+      - NETDISCO_RO_COMMUNITY
+      - PGDATABASE
+      - PGHOST
+      - PGPORT
+      - PGUSER
+      - PGPASSWORD
+      - NETDISCO_CURRENT_PG_VERSION=18
+    profiles:
+      - disabled
+
+  netdisco-postgresql:
+    image: netdisco/netdisco:latest-postgresql
+    shm_size: 128mb
+    hostname: netdisco-postgresql
+    # !! healthcheck is defined in the Dockerfile
+    volumes:
+      - "./netdisco/pgdata:/var/lib/postgresql/data"
+    extends:
+      service: common_environment
+    profiles: !reset null
+    environment:
+      #- POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-rwD62cAVG4eboyM9}
+      - NETDISCO_DB_SUPERUSER
+
+  netdisco-postgresql-18:
+    image: docker.io/postgres:18-alpine
+    shm_size: 128mb
+    hostname: netdisco-postgresql-18
+    # !! healthcheck is defined in the Dockerfile
+    volumes:
+#      - "./netdisco/pgdata:/var/lib/postgresql/13/docker:ro"
+      - "./netdisco/postgresql:/var/lib/postgresql"
+    extends:
+      service: common_environment
+    profiles: !reset null
+    environment:
+      #- POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-rwD62cAVG4eboyM9}
+      - NETDISCO_DB_SUPERUSER
+

@@ -17,6 +17,7 @@ services:
       - PGPORT
       - PGUSER
       - PGPASSWORD
+      - NETDISCO_CURRENT_PG_VERSION=18
     profiles:
       - disabled
 
