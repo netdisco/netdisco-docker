@@ -42,7 +42,7 @@ services:
       args:
         PGVER: 13.4
     shm_size: 128mb
-    hostname: netdisco-postgres-13
+    hostname: netdisco-postgresql-old
     volumes:
       - "./netdisco/pgdata:/var/lib/postgresql/data"
     extends:

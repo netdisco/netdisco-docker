@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -efuxo pipefail
+set -efuo pipefail
 
 export COL='\033[0;35m'
 export NC='\033[0m'

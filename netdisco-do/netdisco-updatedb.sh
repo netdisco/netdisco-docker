@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -uxo pipefail
+set -euo pipefail
 
 # User needs to either set these in docker-compose environment
 # or else run wrapped in netdisco-env
@@ -53,6 +53,19 @@ if [ -z $("${psql[@]}" -A -t -c "SELECT 1 FROM dbix_class_schema_versions WHERE 
       else
         if [ -f "${ROOT}/PG_VERSION" ]; then
           echo >&2 -e "${COL}netdisco-updatedb: found candidate pg version ${VER} to upgrade${NC}"
+
+          echo >&2 -e "${COL}netdisco-updatedb: bringing old pg version up to date${NC}"
+          ls -1 /home/netdisco/perl5/lib/perl5/auto/share/dist/App-Netdisco/schema_versions/App-Netdisco-DB-* | \
+            xargs -n1 basename | sort -n -t '-' -k4 | \
+            while read file; do
+              PGHOST= PGPORT= "${psql[@]}" --port=50432 --host=netdisco-postgresql-old \
+                -f "/home/netdisco/perl5/lib/perl5/auto/share/dist/App-Netdisco/schema_versions/$file"
+            done
+
+          echo >&2 -e "${COL}netdisco-updatedb: copying data${NC}"
+          NEWDBHOST=$PGHOST
+          PGHOST= PGPORT= pg_dump --port=50432 --host=netdisco-postgresql-old -a -x ${PGDATABASE} \
+            | "${psql[@]}" --port=5432 --host=${NEWDBHOST}
 
           echo >&2 -e "${COL}netdisco-updatedb: signalling old pg version to shutdown${NC}"
           touch "${ROOT}/NETDISCO_UPGRADED"
