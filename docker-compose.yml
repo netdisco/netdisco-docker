@@ -17,7 +17,7 @@ services:
       - PGPORT
       - PGUSER
       - PGPASSWORD
-      - NETDISCO_CURRENT_PG_VERSION=18
+      - NETDISCO_CURRENT_PG_VERSION=${NETDISCO_CURRENT_PG_VERSION:-18}
     profiles:
       - disabled
 
@@ -27,12 +27,24 @@ services:
     hostname: netdisco-postgresql
     # !! healthcheck is defined in the Dockerfile
     volumes:
-      - "./netdisco/pgdata:/var/lib/postgresql/data"
+      - "./netdisco/postgresql:/var/lib/postgresql"
     extends:
       service: common_environment
     profiles: !reset null
     environment:
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-rwD62cAVG4eboyM9}
+      - NETDISCO_DB_SUPERUSER
+
+  netdisco-postgresql-13:
+    image: netdisco/netdisco:latest-postgresql-13
+    shm_size: 128mb
+    hostname: netdisco-postgresql-old
+    volumes:
+      - "./netdisco/pgdata:/var/lib/postgresql/data"
+    extends:
+      service: common_environment
+    profiles:
+      - with-pg-upgrade
+    environment:
       - NETDISCO_DB_SUPERUSER
 
   netdisco-do:
@@ -59,6 +71,9 @@ services:
     depends_on:
       netdisco-postgresql:
         condition: service_healthy
+    volumes:
+      - "./netdisco/pgdata:/var/lib/pgversions/pg13"
+      - "./netdisco/postgresql:/var/lib/pgversions/new"
     extends:
       service: common_environment
     profiles: !reset null

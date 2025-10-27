@@ -9,6 +9,13 @@ services:
         - netdisco/netdisco:latest-postgresql
         - localhost:5000/netdisco:latest-postgresql
 
+  netdisco-postgresql-13:
+    image: netdisco/netdisco:latest-postgresql-13
+    build:
+      context: ./netdisco-postgresql
+      args:
+        PGVER: 13.4
+
   netdisco-base:
     build:
       context: ./netdisco-base
@@ -42,3 +49,9 @@ services:
         - localhost:5000/netdisco:latest-do
       additional_contexts:
         "localhost:5000/netdisco:latest-backend": "service:netdisco-backend"
+
+  netdisco-db-init:
+    image: netdisco/netdisco:latest-do
+    build:
+      context: ./netdisco-do
+
