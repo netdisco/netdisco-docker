@@ -37,26 +37,21 @@ if [ -z $("${psql[@]}" -A -t -c "SELECT 1 FROM dbix_class_schema_versions WHERE 
   echo >&2 -e "${COL}netdisco-updatedb: finding upgrade candidate${NC}"
   TEST_TO=$(($NETDISCO_CURRENT_PG_VERSION - 1))
 
-  if [ 13 -le $TEST_TO ]
-  then
-    for ((VER=$TEST_TO;VER>=13;VER--))
-    do
-      if [ $VER -eq 13 ]
-      then
+  if [ 13 -le $TEST_TO ]; then
+    for ((VER=$TEST_TO;VER>=13;VER--)); do
+      if [ $VER -eq 13 ]; then
         ROOT="/var/lib/pgversions/pg13"
       else
         ROOT="/var/lib/pgversions/new/${VER}/docker"
       fi
       echo >&2 -e "${COL}netdisco-updatedb: checking pg ${VER} datadir${NC}"
 
-      if [ -f "${ROOT}/NETDISCO_UPGRADED" ]
-      then
+      if [ -f "${ROOT}/NETDISCO_UPGRADED" ]; then
         echo >&2 -e "${COL}netdisco-updatedb: pg ${VER} already migrated${NC}"
         break
 
       else
-        if [ -f "${ROOT}/PG_VERSION" ]
-        then
+        if [ -f "${ROOT}/PG_VERSION" ]; then
           echo >&2 -e "${COL}netdisco-updatedb: found candidate pg version ${VER} to upgrade${NC}"
 
           echo >&2 -e "${COL}netdisco-updatedb: signalling old pg version to shutdown${NC}"

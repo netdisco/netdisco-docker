@@ -13,11 +13,9 @@ su=( su-exec "${PGUSER}" )
 if [ -f "${PGDATA}/NETDISCO_UPGRADED" ]; then exit 0; fi
 
 # pass through if we're the current latest version
-if [ "$PG_MAJOR" = "$NETDISCO_CURRENT_PG_VERSION" ]
-then
+if [ "$PG_MAJOR" = "$NETDISCO_CURRENT_PG_VERSION" ]; then
   echo >&2 -e "${COL}netdisco-db-entrypoint: starting latest pg version ${PG_MAJOR}${NC}"
-  if [ ! -s "${PGDATA}/PG_VERSION" ]
-  then
+  if [ ! -s "${PGDATA}/PG_VERSION" ]; then
       echo >&2 -e "${COL}netdisco-db-entrypoint: generating random POSTGRES_PASSWORD${NC}"
       export POSTGRES_PASSWORD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
   fi
@@ -34,12 +32,9 @@ if [ ! -s "${PGDATA}/PG_VERSION" ]; then exit 0; fi
 TEST_FROM=$(($PG_MAJOR + 1))
 TEST_TO=$(($NETDISCO_CURRENT_PG_VERSION - 1))
 
-if [ $TEST_FROM -le $TEST_TO ]
-then
-  for VER in $(seq $TEST_FROM $TEST_TO)
-  do
-    if [ -s "/var/lib/postgresql/$VER/docker/PG_VERSION" ]
-    then
+if [ $TEST_FROM -le $TEST_TO ]; then
+  for ((VER=$TEST_FROM;VER<=TEST_TO;VER++)); do
+    if [ -s "/var/lib/postgresql/$VER/docker/PG_VERSION" ]; then
       exit 0
     fi
   done
@@ -53,8 +48,7 @@ NOTIFY_SOCKET= "${su[@]}" \
   -o "-c listen_addresses='*' -p 50432 -c log_min_error_statement=LOG -c log_min_messages=LOG" \
   -w start
 
-while [ ! -f "${PGDATA}/NETDISCO_UPGRADED" ]
-do
+while [ ! -f "${PGDATA}/NETDISCO_UPGRADED" ]; do
    sleep 2
 done
 echo >&2 -e "${COL}netdisco-db-entrypoint: data migration complete; stopping${NC}"
