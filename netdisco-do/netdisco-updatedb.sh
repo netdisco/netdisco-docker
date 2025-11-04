@@ -58,16 +58,16 @@ if [ -z $("${psql[@]}" -A -t -c "SELECT 1 FROM dbix_class_schema_versions WHERE 
           ls -1 /home/netdisco/perl5/lib/perl5/auto/share/dist/App-Netdisco/schema_versions/App-Netdisco-DB-* | \
             xargs -n1 basename | sort -n -t '-' -k4 | \
             while read file; do
-              PGHOST= PGPORT= "${psql[@]}" --port=50432 --host=netdisco-postgresql-old \
+              PGHOST= PGPORT= "${psql[@]}" --port=50432 --host=netdisco-postgresql-${VER} \
                 -f "/home/netdisco/perl5/lib/perl5/auto/share/dist/App-Netdisco/schema_versions/$file"
             done
 
           echo >&2 -e "${COL}netdisco-updatedb: copying data${NC}"
           NEWDBHOST=$PGHOST
-          PGHOST= PGPORT= pg_dump --port=50432 --host=netdisco-postgresql-old -a -x ${PGDATABASE} \
+          PGHOST= PGPORT= "pg_dump" --port=50432 --host=netdisco-postgresql-${VER} -a -x ${PGDATABASE} \
             | "${psql[@]}" --port=5432 --host=${NEWDBHOST}
 
-          echo >&2 -e "${COL}netdisco-updatedb: signalling old pg version to shutdown${NC}"
+          echo >&2 -e "${COL}netdisco-updatedb: signalling old pg version ${VER} to shutdown${NC}"
           touch "${ROOT}/NETDISCO_UPGRADED"
           break
         fi

@@ -37,7 +37,7 @@ services:
   netdisco-postgresql-13:
     image: netdisco/netdisco:latest-postgresql-13
     shm_size: 128mb
-    hostname: netdisco-postgresql-old
+    hostname: netdisco-postgresql-13
     volumes:
       - "./netdisco/pgdata:/var/lib/postgresql/data"
     extends:
