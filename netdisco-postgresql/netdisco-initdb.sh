@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -efuxo pipefail
+set -efuo pipefail
 
 # If running in docker-compose, user gets an initialised database
 # using default username/etc as below.
