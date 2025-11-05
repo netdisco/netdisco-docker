@@ -59,7 +59,7 @@ We have an example [mix-in Docker Compose file](https://raw.githubusercontent.co
 
 Download the mix-in and start the services:
 
-    curl -Ls -O https://raw.githubusercontent.com/netdisco/netdisco-docker/refs/heads/master/compose.mixin.extpg.yaml
+    curl -Ls -O https://raw.githubusercontent.com/netdisco/netdisco-docker/refs/heads/master/compose.mixin.homeenv.yaml
     docker-compose -f compose.yaml -f compose.mixin.homeenv.yaml up --detach
 
 Edit the mix-in to point to another location.

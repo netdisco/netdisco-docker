@@ -16,13 +16,13 @@ services:
   netdisco-do:
     depends_on:
       netdisco-postgresql:
-        required: 'false'
+        required: false
       external-postgresql:
         condition: service_completed_successfully
 
   netdisco-db-init:
     depends_on:
       netdisco-postgresql:
-        required: 'false'
+        required: false
       external-postgresql:
         condition: service_completed_successfully
