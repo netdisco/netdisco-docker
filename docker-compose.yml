@@ -1,18 +1,18 @@
 # https://docs.docker.com/compose/how-tos/environment-variables/envvars-precedence/
 x-common-environment: &common-environment
   NETDISCO_DOMAIN: '${NETDISCO_DOMAIN:-discover}'
-  NETDISCO_DB_TENANT: '${NETDISCO_DB_TENANT:-}'
-  NETDISCO_DB_NAME: '${NETDISCO_DB_NAME:-}'
+  NETDISCO_DB_TENANT:
+  NETDISCO_DB_NAME:
   NETDISCO_DB_HOST: '${NETDISCO_DB_HOST:-netdisco-postgresql}'
-  NETDISCO_DB_PORT: '${NETDISCO_DB_PORT:-}'
-  NETDISCO_DB_USER: '${NETDISCO_DB_USER:-}'
-  NETDISCO_DB_PASS: '${NETDISCO_DB_PASS:-}'
-  NETDISCO_RO_COMMUNITY: '${NETDISCO_RO_COMMUNITY:-}'
-  PGDATABASE: '${PGDATABASE:-}'
-  PGHOST: '${PGHOST:-}'
-  PGPORT: '${PGPORT:-}'
-  PGUSER: '${PGUSER:-}'
-  PGPASSWORD: '${PGPASSWORD:-}'
+  NETDISCO_DB_PORT:
+  NETDISCO_DB_USER:
+  NETDISCO_DB_PASS:
+  NETDISCO_RO_COMMUNITY:
+  PGDATABASE:
+  PGHOST:
+  PGPORT:
+  PGUSER:
+  PGPASSWORD:
 
 services:
 
@@ -26,7 +26,7 @@ services:
     environment:
       <<: *common-environment
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-rwD62cAVG4eboyM9}
-      NETDISCO_DB_SUPERUSER: '${NETDISCO_DB_SUPERUSER:-}'
+      NETDISCO_DB_SUPERUSER:
 
   netdisco-do:
     image: netdisco/netdisco:latest-do
@@ -57,7 +57,7 @@ services:
     environment:
       <<: *common-environment
       DEPLOY_ADMIN_USER: '${DEPLOY_ADMIN_USER:-YES}' # or set to NO
-      NETDISCO_ADMIN_USER: '${NETDISCO_ADMIN_USER:-}'
+      NETDISCO_ADMIN_USER:
 
   netdisco-backend:
     image: netdisco/netdisco:latest-backend
@@ -94,7 +94,7 @@ services:
     environment:
       <<: *common-environment
       IPV: '${IPV:-4}'
-      PORT: '${PORT:-}'
+      PORT:
     ports:
       - "5000:5000"
     dns_opt:
