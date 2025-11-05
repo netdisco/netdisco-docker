@@ -1,0 +1,39 @@
+x-common-environment: &debug-environment
+  NETDISCO_DOMAIN: '${NETDISCO_DOMAIN:-discover}'
+  NETDISCO_DB_TENANT: '${NETDISCO_DB_TENANT:-}'
+  NETDISCO_DB_NAME: '${NETDISCO_DB_NAME:-}'
+  NETDISCO_DB_HOST: '${NETDISCO_DB_HOST:-netdisco-postgresql}'
+  NETDISCO_DB_PORT: '${NETDISCO_DB_PORT:-}'
+  NETDISCO_DB_USER: '${NETDISCO_DB_USER:-}'
+  NETDISCO_DB_PASS: '${NETDISCO_DB_PASS:-}'
+  NETDISCO_RO_COMMUNITY: '${NETDISCO_RO_COMMUNITY:-}'
+  PGDATABASE: '${PGDATABASE:-}'
+  PGHOST: '${PGHOST:-}'
+  PGPORT: '${PGPORT:-}'
+  PGUSER: '${PGUSER:-}'
+  PGPASSWORD: '${PGPASSWORD:-}'
+
+services:
+
+  netdisco-postgresql:
+    environment:
+      <<: *debug-environment
+      NETDISCO_DB_SUPERUSER: '${NETDISCO_DB_SUPERUSER:-}'
+
+  netdisco-do:
+    environment:
+      <<: *debug-environment
+
+  netdisco-db-init:
+    environment:
+      <<: *debug-environment
+      NETDISCO_ADMIN_USER: '${NETDISCO_ADMIN_USER:-}'
+
+  netdisco-backend:
+    environment:
+      <<: *debug-environment
+
+  netdisco-web:
+    environment:
+      <<: *debug-environment
+      PORT: '${PORT:-}'
