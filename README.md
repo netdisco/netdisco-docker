@@ -86,7 +86,7 @@ The `NETDISCO_RO_COMMUNITY` environment variable allows you to override the defa
 
 If you wish to build the images locally, use [this compose file](https://raw.githubusercontent.com/netdisco/netdisco-docker/refs/heads/master/compose.build.yaml). Note that it's not a mix-in:
 
-    docker-compose -f compose.rebuild.yaml build --no-cache
+    docker-compose -f compose.build.yaml build --no-cache
 
 ## Getting Support
 
