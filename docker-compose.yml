@@ -1,25 +1,21 @@
-services:
+# https://docs.docker.com/compose/how-tos/environment-variables/envvars-precedence/
+x-common-environment: &common-environment
+  NETDISCO_DOMAIN: '${NETDISCO_DOMAIN:-discover}'
+  NETDISCO_DB_TENANT:
+  NETDISCO_DB_NAME:
+  NETDISCO_DB_HOST: '${NETDISCO_DB_HOST:-netdisco-postgresql}'
+  NETDISCO_DB_PORT:
+  NETDISCO_DB_USER:
+  NETDISCO_DB_PASS:
+  NETDISCO_RO_COMMUNITY:
+  PGDATABASE:
+  PGHOST:
+  PGPORT:
+  PGUSER:
+  PGPASSWORD:
+  NETDISCO_CURRENT_PG_VERSION: '${NETDISCO_CURRENT_PG_VERSION:-18}'
 
-  # https://docs.docker.com/compose/how-tos/environment-variables/envvars-precedence/
-  common_environment:
-    image: netdisco/netdisco:latest-do
-    environment:
-      - NETDISCO_DOMAIN=${NETDISCO_DOMAIN:-discover}
-      - NETDISCO_DB_TENANT
-      - NETDISCO_DB_NAME
-      - NETDISCO_DB_HOST=${NETDISCO_DB_HOST:-netdisco-postgresql}
-      - NETDISCO_DB_PORT
-      - NETDISCO_DB_USER
-      - NETDISCO_DB_PASS
-      - NETDISCO_RO_COMMUNITY
-      - PGDATABASE
-      - PGHOST
-      - PGPORT
-      - PGUSER
-      - PGPASSWORD
-      - NETDISCO_CURRENT_PG_VERSION=${NETDISCO_CURRENT_PG_VERSION:-18}
-    profiles:
-      - disabled
+services:
 
   netdisco-postgresql:
     image: netdisco/netdisco:latest-postgresql
@@ -28,11 +24,9 @@ services:
     # !! healthcheck is defined in the Dockerfile
     volumes:
       - "./netdisco/postgresql:/var/lib/postgresql"
-    extends:
-      service: common_environment
-    profiles: !reset null
     environment:
-      - NETDISCO_DB_SUPERUSER
+      <<: *common-environment
+      NETDISCO_DB_SUPERUSER:
 
   netdisco-postgresql-13:
     image: netdisco/netdisco:latest-postgresql-13
@@ -40,12 +34,9 @@ services:
     hostname: netdisco-postgresql-13
     volumes:
       - "./netdisco/pgdata:/var/lib/postgresql/data"
-    extends:
-      service: common_environment
-    profiles:
-      - with-pg-upgrade
     environment:
-      - NETDISCO_DB_SUPERUSER
+      <<: *common-environment
+      NETDISCO_DB_SUPERUSER:
 
   netdisco-do:
     image: netdisco/netdisco:latest-do
@@ -57,8 +48,8 @@ services:
     volumes:
       - "./netdisco/nd-site-local:/home/netdisco/nd-site-local"
       - "./netdisco/config:/home/netdisco/environments"
-    extends:
-      service: common_environment
+    environment:
+      <<: *common-environment
     profiles:
       - cli-manual
     # the service is not started in the default set, only if profile activated
@@ -74,12 +65,10 @@ services:
     volumes:
       - "./netdisco/pgdata:/var/lib/pgversions/pg13"
       - "./netdisco/postgresql:/var/lib/pgversions/new"
-    extends:
-      service: common_environment
-    profiles: !reset null
     environment:
-      - DEPLOY_ADMIN_USER=${DEPLOY_ADMIN_USER:-YES} # or set to NO
-      - NETDISCO_ADMIN_USER
+      <<: *common-environment
+      DEPLOY_ADMIN_USER: '${DEPLOY_ADMIN_USER:-YES}' # or set to NO
+      NETDISCO_ADMIN_USER:
 
   netdisco-backend:
     image: netdisco/netdisco:latest-backend
@@ -92,9 +81,8 @@ services:
       - "./netdisco/nd-site-local:/home/netdisco/nd-site-local"
       - "./netdisco/config:/home/netdisco/environments"
       - "./netdisco/logs:/home/netdisco/logs"
-    extends:
-      service: common_environment
-    profiles: !reset null
+    environment:
+      <<: *common-environment
     dns_opt:
       - 'ndots:0'
       - 'timeout:1'
@@ -113,12 +101,11 @@ services:
     volumes:
       - "./netdisco/nd-site-local:/home/netdisco/nd-site-local"
       - "./netdisco/config:/home/netdisco/environments"
-    extends:
-      service: common_environment
-    profiles: !reset null
+      - "./netdisco/logs:/home/netdisco/logs"
     environment:
-      - IPV=${IPV:-4}
-      - PORT
+      <<: *common-environment
+      IPV: '${IPV:-4}'
+      PORT:
     ports:
       - "5000:5000"
     dns_opt:
