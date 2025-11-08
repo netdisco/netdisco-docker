@@ -37,6 +37,8 @@ services:
     environment:
       <<: *common-environment
       NETDISCO_DB_SUPERUSER:
+    profiles:
+      - with-pg-upgrade
 
   netdisco-do:
     image: netdisco/netdisco:latest-do

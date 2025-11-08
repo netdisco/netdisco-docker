@@ -49,9 +49,3 @@ services:
         - localhost:5000/netdisco:latest-do
       additional_contexts:
         "localhost:5000/netdisco:latest-backend": "service:netdisco-backend"
-
-  netdisco-db-init:
-    image: netdisco/netdisco:latest-do
-    build:
-      context: ./netdisco-do
-

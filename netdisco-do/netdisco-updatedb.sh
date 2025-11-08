@@ -20,6 +20,10 @@ psql=( psql -X -v ON_ERROR_STOP=0 -v ON_ERROR_ROLLBACK=on )
 
 echo >&2 -e "${COL}netdisco-updatedb: checking if schema is up-to-date${NC}"
 MAXSCHEMA=$(grep VERSION /home/netdisco/perl5/lib/perl5/App/Netdisco/DB.pm | sed 's/[^0-9]//g')
+
+# FIXME might exist at not latest schema version
+# FIXME might have two databases with data and no NETDISCO_UPGRADED file
+
 if [ -z $("${psql[@]}" -A -t -c "SELECT 1 FROM dbix_class_schema_versions WHERE version = '${MAXSCHEMA}'") ]; then
   echo >&2 -e "${COL}netdisco-updatedb: bringing schema up-to-date${NC}"
 
