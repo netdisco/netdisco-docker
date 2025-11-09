@@ -6,6 +6,10 @@ services:
     profiles:
       - disabled
 
+  netdisco-postgresql-13:
+    profiles:
+      - disabled
+
   external-postgresql:
     image: netdisco/netdisco:latest-do
     entrypoint: ''

@@ -21,9 +21,6 @@ psql=( psql -X -v ON_ERROR_STOP=0 -v ON_ERROR_ROLLBACK=on )
 echo >&2 -e "${COL}netdisco-updatedb: checking if schema is up-to-date${NC}"
 MAXSCHEMA=$(grep VERSION /home/netdisco/perl5/lib/perl5/App/Netdisco/DB.pm | sed 's/[^0-9]//g')
 
-# FIXME might exist at not latest schema version
-# FIXME might have two databases with data and no NETDISCO_UPGRADED file
-
 if [ -z $("${psql[@]}" -A -t -c "SELECT 1 FROM dbix_class_schema_versions WHERE version = '${MAXSCHEMA}'") ]; then
   echo >&2 -e "${COL}netdisco-updatedb: bringing schema up-to-date${NC}"
 
@@ -38,45 +35,47 @@ if [ -z $("${psql[@]}" -A -t -c "SELECT 1 FROM dbix_class_schema_versions WHERE 
   "${psql[@]}" -c "CREATE TABLE dbix_class_schema_versions (version varchar(10) PRIMARY KEY, installed varchar(20) NOT NULL)"
   "${psql[@]}" -c "INSERT INTO dbix_class_schema_versions VALUES ('${MAXSCHEMA}', '${STAMP}')"
 
-  echo >&2 -e "${COL}netdisco-updatedb: finding upgrade candidate${NC}"
-  TEST_TO=$(($NETDISCO_CURRENT_PG_VERSION - 1))
+  if [ -z $("${psql[@]}" -A -t -c "SELECT count(*) FROM sessions") ]; then
+    echo >&2 -e "${COL}netdisco-updatedb: (empty v${NETDISCO_CURRENT_PG_VERSION}) finding upgrade candidate${NC}"
+    TEST_TO=$(($NETDISCO_CURRENT_PG_VERSION - 1))
 
-  if [ 13 -le $TEST_TO ]; then
-    for ((VER=$TEST_TO;VER>=13;VER--)); do
-      if [ $VER -eq 13 ]; then
-        ROOT="/var/lib/pgversions/pg13"
-      else
-        ROOT="/var/lib/pgversions/new/${VER}/docker"
-      fi
-      echo >&2 -e "${COL}netdisco-updatedb: checking pg ${VER} datadir${NC}"
-
-      if [ -f "${ROOT}/NETDISCO_UPGRADED" ]; then
-        echo >&2 -e "${COL}netdisco-updatedb: pg ${VER} already migrated${NC}"
-        break
-
-      else
-        if [ -f "${ROOT}/PG_VERSION" ]; then
-          echo >&2 -e "${COL}netdisco-updatedb: found candidate pg version ${VER} to upgrade${NC}"
-
-          echo >&2 -e "${COL}netdisco-updatedb: bringing old pg version up to date${NC}"
-          ls -1 /home/netdisco/perl5/lib/perl5/auto/share/dist/App-Netdisco/schema_versions/App-Netdisco-DB-* | \
-            xargs -n1 basename | sort -n -t '-' -k4 | \
-            while read file; do
-              PGHOST= PGPORT= "${psql[@]}" --port=50432 --host=netdisco-postgresql-${VER} \
-                -f "/home/netdisco/perl5/lib/perl5/auto/share/dist/App-Netdisco/schema_versions/$file"
-            done
-
-          echo >&2 -e "${COL}netdisco-updatedb: copying data${NC}"
-          NEWDBHOST=$PGHOST
-          PGHOST= PGPORT= "pg_dump" --port=50432 --host=netdisco-postgresql-${VER} -a -x ${PGDATABASE} \
-            | "${psql[@]}" --port=5432 --host=${NEWDBHOST}
-
-          echo >&2 -e "${COL}netdisco-updatedb: signalling old pg version ${VER} to shutdown${NC}"
-          touch "${ROOT}/NETDISCO_UPGRADED"
-          break
+    if [ 13 -le $TEST_TO ]; then
+      for ((VER=$TEST_TO;VER>=13;VER--)); do
+        if [ $VER -eq 13 ]; then
+          ROOT="/var/lib/pgversions/pg13"
+        else
+          ROOT="/var/lib/pgversions/new/${VER}/docker"
         fi
-      fi
-    done
+        echo >&2 -e "${COL}netdisco-updatedb: checking pg ${VER} datadir${NC}"
+
+        if [ -f "${ROOT}/NETDISCO_UPGRADED" ]; then
+          echo >&2 -e "${COL}netdisco-updatedb: pg ${VER} already migrated${NC}"
+          break
+
+        else
+          if [ -f "${ROOT}/PG_VERSION" ]; then
+            echo >&2 -e "${COL}netdisco-updatedb: found candidate pg version ${VER} to upgrade${NC}"
+
+            echo >&2 -e "${COL}netdisco-updatedb: bringing old pg version up to date${NC}"
+            ls -1 /home/netdisco/perl5/lib/perl5/auto/share/dist/App-Netdisco/schema_versions/App-Netdisco-DB-* | \
+              xargs -n1 basename | sort -n -t '-' -k4 | \
+              while read file; do
+                PGHOST= PGPORT= "${psql[@]}" --port=50432 --host=netdisco-postgresql-${VER} \
+                  -f "/home/netdisco/perl5/lib/perl5/auto/share/dist/App-Netdisco/schema_versions/$file"
+              done
+
+            echo >&2 -e "${COL}netdisco-updatedb: copying data${NC}"
+            NEWDBHOST=$PGHOST
+            PGHOST= PGPORT= "pg_dump" --port=50432 --host=netdisco-postgresql-${VER} -a -x ${PGDATABASE} \
+              | "${psql[@]}" --port=5432 --host=${NEWDBHOST}
+
+            echo >&2 -e "${COL}netdisco-updatedb: signalling old pg version ${VER} to shutdown${NC}"
+            touch "${ROOT}/NETDISCO_UPGRADED"
+            break
+          fi
+        fi
+      done
+    fi
   fi
 fi
 
