@@ -38,6 +38,7 @@ The web frontend is initally configured to allow unauthenticated access with ful
 
 Pull new images and recreate the containers:
 
+    curl -Ls --clobber -o compose.yaml https://tinyurl.com/nd2-dockercompose
     docker-compose pull ; docker-compose down ; docker-compose up --force-recreate --detach
 
 With our standard `compose.yaml` file (as above), the database schema is automatically upgraded.
