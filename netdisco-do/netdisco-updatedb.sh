@@ -18,6 +18,11 @@ export NC='\033[0m'
 
 psql=( psql -X -v ON_ERROR_STOP=0 -v ON_ERROR_ROLLBACK=on )
 
+# echo >&2 -e "${COL}netdisco-updatedb: making backup${NC}"
+# DATE=`date +%Y%m%d`
+# PGHOST= PGPORT= "pg_dump" --port=5432 --host=netdisco-postgresql -a -x ${PGDATABASE}
+# /usr/bin/pg_dump -F c --create -f /path/to/backups/netdisco-pgsql-$DATE.dump netdisco
+
 echo >&2 -e "${COL}netdisco-updatedb: checking if schema is up-to-date${NC}"
 MAXSCHEMA=$(grep VERSION /home/netdisco/perl5/lib/perl5/App/Netdisco/DB.pm | sed 's/[^0-9]//g')
 
