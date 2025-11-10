@@ -23,6 +23,8 @@ On Linux hosts, create these directories and allow the service uid (`901`) to wr
     mkdir -p netdisco/{logs,config,nd-site-local} 
     sudo chown -R 901:901 netdisco
 
+###  New Deployments
+
 Download `compose.yaml` and start everything:
 
     curl -Ls -o compose.yaml https://tinyurl.com/nd2-dockercompose
@@ -34,14 +36,16 @@ The default configuration is available in `netdisco/config/deployment.yml`. The 
 
 The web frontend is initally configured to allow unauthenticated access with full admin rights. We suggest you visit the `Admin -> User Management` menu item, and set `no_auth: false` in `deployment.yml`, to remove this guest account and set up authenticated user access.
 
-##  Upgrading
+###  Upgrading or Re-deploying
 
 Pull new images and recreate the containers:
 
+    docker-compose pull
+    docker-compose down
     curl -Ls --clobber -o compose.yaml https://tinyurl.com/nd2-dockercompose
-    docker-compose pull ; docker-compose down ; docker-compose up --force-recreate --detach
+    docker-compose --profile with-pg-upgrade up --force-recreate --detach
 
-With our standard `compose.yaml` file (as above), the database schema is automatically upgraded.
+Note carefully the commands used. The PostgreSQL database, and Netdisco's schema, will both be upgraded.
 
 ##  Using an external PostgreSQL database
 
@@ -69,7 +73,7 @@ Edit the mix-in to point to another location.
 
 The following command will download and update the MAC vendor database:
 
-    curl -Ls https://raw.githubusercontent.com/netdisco/upstream-sources/refs/heads/master/bootstrap/netdisco-lookup-tables.sql | docker-compose run -T netdisco-do psql
+    curl -Ls https://raw.githubusercontent.com/netdisco/upstream-sources/refs/heads/master/bootstrap/netdisco-lookup-tables.sql | docker-compose exec -T netdisco-backend /home/netdisco/bin/netdisco-env psql
 
 Each containerised Netdisco release also includes the latest MAC vendors, and automatically updates them when starting.
 
@@ -77,9 +81,9 @@ Each containerised Netdisco release also includes the latest MAC vendors, and au
 
 The [netdisco-do](https://metacpan.org/dist/App-Netdisco/view/bin/netdisco-do) utility can be run like this (or without `<action>` to get help):
 
-    docker-compose run netdisco-do <action> ...
+    docker-compose exec -T netdisco-backend netdisco-do <action> ...
 
-Local web or backend plugins can be installed into `netdisco/nd-site-local/` as per [our documentation](https://github.com/netdisco/netdisco/wiki). The PostgreSQL data files are stored in `netdisco/pgdata/` and we do not advise touching them (unless you wish to reinitialize the system).
+Local web or backend plugins can be installed into `netdisco/nd-site-local/` as per [our documentation](https://github.com/netdisco/netdisco/wiki). The PostgreSQL data files are stored in `netdisco/postgresql/` or `netdisco/pgdata/` and we do not advise touching them (unless you wish to reinitialize the system).
 
 The `NETDISCO_RO_COMMUNITY` environment variable allows you to override the default of `public` (and avoiding the need to edit the configuration file).
 
