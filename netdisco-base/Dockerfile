@@ -1,5 +1,5 @@
 # vim: ft=Dockerfile
-FROM docker.io/alpine:latest AS netdisco-builder-image
+FROM docker.io/postgres:18-alpine3.22 AS netdisco-builder-image
 
 # temporary bloated image used for building Netdisco
 # in github actions the COMMITTISH is set to latest release version
@@ -28,7 +28,6 @@ RUN apk add --no-cache \
       perl-ldap \
       perl-netaddr-ip \
       perl-io-tty \
-      postgresql-client \
       python3 \
       tzdata \
       openssh-client \
@@ -49,7 +48,7 @@ RUN PERL5LIB='.' \
   mv /home/netdisco /home/netdisco-build
 
 # ----------------------------------------------------------------------------
-FROM docker.io/alpine:latest
+FROM docker.io/postgres:18-alpine3.22
 
 ARG BUILD_DATE
 ARG COMMITTISH=HEAD
@@ -89,10 +88,12 @@ RUN apk add --no-cache \
       perl-file-sharedir \
       perl-netaddr-ip \
       perl-io-tty \
-      postgresql-client \
       python3 \
       tzdata \
       shadow
+
+# remove postgresql server binary so we can never accidentally start it
+RUN rm -f /usr/local/bin/postgres
 
 RUN groupadd -r netdisco -g 901 && \
     useradd -u 901 -r -p x -g netdisco -m -d /home/netdisco -s /bin/ash -c "netdisco user" netdisco
@@ -122,4 +123,5 @@ ENV SHELL=/bin/ash
 ## volumes can be optional, and controlled by docker-compose file
 # VOLUME ["/home/netdisco/environments", "/home/netdisco/nd-site-local", "/home/netdisco/logs"]
 
+ENTRYPOINT []
 CMD ["ash"]
