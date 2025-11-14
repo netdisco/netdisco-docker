@@ -124,4 +124,5 @@ ENV SHELL=/bin/ash
 # VOLUME ["/home/netdisco/environments", "/home/netdisco/nd-site-local", "/home/netdisco/logs"]
 
 ENTRYPOINT []
+STOPSIGNAL SIGTERM
 CMD ["ash"]
