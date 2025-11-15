@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -uxo pipefail
+set -euo pipefail
 
 # User needs to either set these in docker-compose environment
 # or else run wrapped in netdisco-env
@@ -20,6 +20,7 @@ psql=( psql -X -v ON_ERROR_STOP=0 -v ON_ERROR_ROLLBACK=on )
 
 echo >&2 -e "${COL}netdisco-updatedb: checking if schema is up-to-date${NC}"
 MAXSCHEMA=$(grep VERSION /home/netdisco/perl5/lib/perl5/App/Netdisco/DB.pm | sed 's/[^0-9]//g')
+
 if [ -z $("${psql[@]}" -A -t -c "SELECT 1 FROM dbix_class_schema_versions WHERE version = '${MAXSCHEMA}'") ]; then
   echo >&2 -e "${COL}netdisco-updatedb: bringing schema up-to-date${NC}"
 
@@ -29,10 +30,64 @@ if [ -z $("${psql[@]}" -A -t -c "SELECT 1 FROM dbix_class_schema_versions WHERE 
       "${psql[@]}" -f "/home/netdisco/perl5/lib/perl5/auto/share/dist/App-Netdisco/schema_versions/$file"
     done
 
-  echo >&2 -e "${COL}netdisco-updatedb: marking schema as up-to-date${NC}"
   STAMP=$(date '+v%Y%m%d_%H%M%S.000')
   "${psql[@]}" -c "CREATE TABLE dbix_class_schema_versions (version varchar(10) PRIMARY KEY, installed varchar(20) NOT NULL)"
   "${psql[@]}" -c "INSERT INTO dbix_class_schema_versions VALUES ('${MAXSCHEMA}', '${STAMP}')"
+fi
+echo >&2 -e "${COL}netdisco-updatedb: schema is up-to-date${NC}"
+
+if [ -z $("${psql[@]}" -A -t -c "SELECT ip FROM device LIMIT 1") ]; then
+  echo >&2 -e "${COL}netdisco-updatedb: finding upgrade candidate${NC}"
+  TEST_TO=$(($NETDISCO_CURRENT_PG_VERSION - 1))
+
+  if [ 13 -le $TEST_TO ]; then
+    for ((VER=$TEST_TO;VER>=13;VER--)); do
+      if [ $VER -eq 13 ]; then
+        ROOT="/var/lib/pgversions/pg13"
+      else
+        ROOT="/var/lib/pgversions/new/${VER}/docker"
+      fi
+      echo >&2 -e "${COL}netdisco-updatedb: checking pg ${VER} datadir${NC}"
+
+      if [ -f "${ROOT}/NETDISCO_UPGRADED" ]; then
+        echo >&2 -e "${COL}netdisco-updatedb: pg ${VER} already migrated${NC}"
+        break
+
+      else
+        if [ -f "${ROOT}/PG_VERSION" ]; then
+          echo >&2 -e "${COL}netdisco-updatedb: found candidate pg version ${VER} to upgrade${NC}"
+
+          echo >&2 -e "${COL}netdisco-updatedb: bringing old pg version up to date${NC}"
+          ls -1 /home/netdisco/perl5/lib/perl5/auto/share/dist/App-Netdisco/schema_versions/App-Netdisco-DB-* | \
+            xargs -n1 basename | sort -n -t '-' -k4 | \
+            while read file; do
+              PGHOST= PGPORT= "${psql[@]}" --port=50432 --host=netdisco-postgresql-${VER} \
+                -f "/home/netdisco/perl5/lib/perl5/auto/share/dist/App-Netdisco/schema_versions/$file"
+            done
+
+          echo >&2 -e "${COL}netdisco-updatedb: making backup of db v${NETDISCO_CURRENT_PG_VERSION}${NC}"
+          DATE=`date +%Y-%m-%d-%H:%M:%S`
+          pg_dump -F c -x -f /var/lib/pgversions/new/${NETDISCO_CURRENT_PG_VERSION}/netdisco-pgsql-$DATE.dump ${PGDATABASE}
+
+          echo >&2 -e "${COL}netdisco-updatedb: emptying db v${NETDISCO_CURRENT_PG_VERSION}${NC}"
+          "${psql[@]}" -c "DELETE FROM dbix_class_schema_versions"
+          "${psql[@]}" -c "DELETE FROM users"
+          "${psql[@]}" -c "DELETE FROM sessions"
+          "${psql[@]}" -c "DELETE FROM admin"
+
+          echo >&2 -e "${COL}netdisco-updatedb: copying data${NC}"
+          NEWDBHOST=$PGHOST
+          NEWDBPORT=$PGPORT
+          PGHOST= PGPORT= "pg_dump" --port=50432 --host=netdisco-postgresql-${VER} -a -x ${PGDATABASE} \
+            | "${psql[@]}" --port=${NEWDBPORT} --host=${NEWDBHOST}
+
+          echo >&2 -e "${COL}netdisco-updatedb: signalling old pg version ${VER} to shutdown${NC}"
+          touch "${ROOT}/NETDISCO_UPGRADED"
+          break
+        fi
+      fi
+    done
+  fi
 fi
 
 echo >&2 -e "${COL}netdisco-updatedb: importing OUI${NC}"
