@@ -58,6 +58,8 @@ Download the mix-in and start the services:
 
 If the database is on the same host as your Docker service, then use `host.docker.internal` for its hostname (either in the configuration file or with the `NETDISCO_DB_HOST` environment variable).
 
+The `with-pg-upgrade` profile isn't designed for an external database; you'll need to take care of PostgreSQL upgrades yourself. Netdisco will still manage schema updates every time it starts, though.
+
 ##  Pointing at a different configuration file
 
 We have an example [mix-in Docker Compose file](https://raw.githubusercontent.com/netdisco/netdisco-docker/refs/heads/master/compose.mixin.homeenv.yaml) for this. The example points to `deployment.yml` in a user's home directory.
@@ -81,7 +83,7 @@ Each containerised Netdisco release also includes the latest MAC vendors, and au
 
 The [netdisco-do](https://metacpan.org/dist/App-Netdisco/view/bin/netdisco-do) utility can be run like this (or without `<action>` to get help):
 
-    docker-compose exec -T netdisco-backend netdisco-do <action> ...
+    docker-compose exec netdisco-backend netdisco-do <action> ...
 
 Local web or backend plugins can be installed into `netdisco/nd-site-local/` as per [our documentation](https://github.com/netdisco/netdisco/wiki). The PostgreSQL data files are stored in `netdisco/postgresql/` or `netdisco/pgdata/` and we do not advise touching them (unless you wish to reinitialize the system).
 
@@ -89,7 +91,7 @@ The `NETDISCO_RO_COMMUNITY` environment variable allows you to override the defa
 
 ##  Rebuilding
 
-If you wish to build the images locally, use [this compose file](https://raw.githubusercontent.com/netdisco/netdisco-docker/refs/heads/master/compose.build.yaml). Note that it's not a mix-in:
+If you wish to build the images locally, use [this compose file](https://raw.githubusercontent.com/netdisco/netdisco-docker/refs/heads/master/compose.build.yaml) (it's not a mix-in):
 
     docker-compose -f compose.build.yaml build --no-cache
 
