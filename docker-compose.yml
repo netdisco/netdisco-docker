@@ -61,6 +61,7 @@ services:
     image: netdisco/netdisco:latest-do
     entrypoint: ''
     command: "/home/netdisco/bin/netdisco-env /home/netdisco/bin/netdisco-updatedb.sh"
+    user: postgres
     depends_on:
       netdisco-postgresql:
         condition: service_healthy
