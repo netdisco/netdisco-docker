@@ -17,13 +17,6 @@ services:
     environment:
       NETDISCO_DB_HOST: '${NETDISCO_DB_HOST:-}'
 
-  netdisco-do:
-    depends_on:
-      netdisco-postgresql:
-        required: false
-      external-postgresql:
-        condition: service_completed_successfully
-
   netdisco-db-init:
     depends_on:
       netdisco-postgresql:

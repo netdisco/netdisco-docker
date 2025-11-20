@@ -1,5 +1,5 @@
 {
-  "name": "netdisco-do Container",
-  "image": "ghcr.io/netdisco/netdisco:latest-do",
+  "name": "netdisco-backend Container",
+  "image": "ghcr.io/netdisco/netdisco:latest-backend",
   "features": {}
 }
