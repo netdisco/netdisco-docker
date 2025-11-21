@@ -11,9 +11,9 @@ services:
       - disabled
 
   external-postgresql:
-    image: netdisco/netdisco:latest-do
+    image: netdisco/netdisco:latest-backend
     entrypoint: ''
-    command: "/home/netdisco/bin/netdisco-env /usr/bin/pg_isready"
+    command: "/home/netdisco/bin/netdisco-env /usr/local/bin/pg_isready"
     environment:
       NETDISCO_DB_HOST: '${NETDISCO_DB_HOST:-}'
 
