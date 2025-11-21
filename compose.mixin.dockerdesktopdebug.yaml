@@ -20,10 +20,6 @@ services:
       <<: *debug-environment
       NETDISCO_DB_SUPERUSER: '${NETDISCO_DB_SUPERUSER:-}'
 
-  netdisco-do:
-    environment:
-      <<: *debug-environment
-
   netdisco-db-init:
     environment:
       <<: *debug-environment

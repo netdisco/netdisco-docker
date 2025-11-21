@@ -10,6 +10,7 @@ RUN apk add --no-cache \
       ca-certificates \
       curl \
       openssh-client \
+      bash \
       tar
 
 WORKDIR /home/netdisco/netdisco-mibs
@@ -33,6 +34,13 @@ ENV UV_NO_MANAGED_PYTHON=true \
     UV_NO_DEV=1
 
 USER netdisco:netdisco
+
+COPY --chown=netdisco:netdisco netdisco-updatedb.sh /home/netdisco/bin/
+RUN chmod +x /home/netdisco/bin/netdisco-updatedb.sh
+
+WORKDIR /var/lib/postgresql/netdisco-sql
+RUN curl -sLO "https://raw.githubusercontent.com/netdisco/upstream-sources/refs/heads/master/bootstrap/netdisco-lookup-tables.sql"
+
 WORKDIR /home/netdisco
 ENTRYPOINT ["/home/netdisco/bin/netdisco-backend"]
 CMD ["foreground"]

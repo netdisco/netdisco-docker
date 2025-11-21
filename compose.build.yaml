@@ -42,12 +42,3 @@ services:
         - localhost:5000/netdisco:latest-web
       additional_contexts:
         "localhost:5000/netdisco:latest-base": "service:netdisco-base"
-
-  netdisco-do:
-    build:
-      context: ./netdisco-do
-      tags:
-        - netdisco/netdisco:latest-do
-        - localhost:5000/netdisco:latest-do
-      additional_contexts:
-        "localhost:5000/netdisco:latest-backend": "service:netdisco-backend"

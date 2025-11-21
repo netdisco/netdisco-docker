@@ -40,25 +40,8 @@ services:
     profiles:
       - with-pg-upgrade
 
-  netdisco-do:
-    image: netdisco/netdisco:latest-do
-    # use same hostname as backend to satisfy skiplist check (#68)
-    hostname: netdisco-backend
-    depends_on:
-      netdisco-postgresql:
-        condition: service_healthy
-    volumes:
-      - "./netdisco/nd-site-local:/home/netdisco/nd-site-local"
-      - "./netdisco/config:/home/netdisco/environments"
-    environment:
-      <<: *common-environment
-    profiles:
-      - cli-manual
-    # the service is not started in the default set, only if profile activated
-    # https://docs.docker.com/reference/compose-file/services/#profiles
-
   netdisco-db-init:
-    image: netdisco/netdisco:latest-do
+    image: netdisco/netdisco:latest-backend
     entrypoint: ''
     command: "/home/netdisco/bin/netdisco-env /home/netdisco/bin/netdisco-updatedb.sh"
     user: postgres
@@ -68,6 +51,7 @@ services:
     volumes:
       - "./netdisco/pgdata:/var/lib/pgversions/pg13"
       - "./netdisco/postgresql:/var/lib/pgversions/new"
+      - "./netdisco/config:/home/netdisco/environments"
     environment:
       <<: *common-environment
       DEPLOY_ADMIN_USER: '${DEPLOY_ADMIN_USER:-YES}' # or set to NO

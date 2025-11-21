@@ -1,9 +1,5 @@
 services:
 
-  netdisco-do:
-    volumes:
-      - "~/environments:/home/netdisco/environments"
-
   netdisco-db-init:
     volumes:
       - "~/environments:/home/netdisco/environments"
