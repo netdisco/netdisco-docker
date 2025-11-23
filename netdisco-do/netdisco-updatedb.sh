@@ -67,7 +67,7 @@ if [ -z $("${psql[@]}" -A -t -c "SELECT ip FROM device LIMIT 1") ]; then
 
           echo >&2 -e "${COL}netdisco-updatedb: making backup of db v${NETDISCO_CURRENT_PG_VERSION}${NC}"
           DATE=`date +%Y-%m-%d-%H:%M:%S`
-          pg_dump -F c -x -f /var/lib/pgversions/new/${NETDISCO_CURRENT_PG_VERSION}/netdisco-pgsql-$DATE.dump ${PGDATABASE}
+          pg_dump -F c -x -f /var/lib/pgversions/new/${NETDISCO_CURRENT_PG_VERSION}/docker/netdisco-pgsql-$DATE.dump ${PGDATABASE}
 
           echo >&2 -e "${COL}netdisco-updatedb: emptying db v${NETDISCO_CURRENT_PG_VERSION}${NC}"
           "${psql[@]}" -c "DELETE FROM dbix_class_schema_versions"
