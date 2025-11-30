@@ -87,6 +87,8 @@ The [netdisco-do](https://metacpan.org/dist/App-Netdisco/view/bin/netdisco-do) u
 
     docker compose exec netdisco-backend netdisco-do <action> ...
 
+If you're unable to download the `compose.yaml` file using our TinyURL above, it can be found here: https://raw.githubusercontent.com/netdisco/netdisco-docker/master/docker-compose.yml
+
 Local web or backend plugins can be installed into `netdisco/nd-site-local/` as per [our documentation](https://github.com/netdisco/netdisco/wiki). The PostgreSQL data files are stored in `netdisco/postgresql/` or `netdisco/pgdata/` and we do not advise touching them (unless you wish to reinitialize the system).
 
 The `NETDISCO_RO_COMMUNITY` environment variable allows you to override the default of `public` (and avoiding the need to edit the configuration file).
