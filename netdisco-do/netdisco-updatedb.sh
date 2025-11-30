@@ -41,7 +41,7 @@ if [ -z $("${psql[@]}" -Atc "SELECT to_regclass('device')") ] \
       else
         if [ -f "${ROOT}/PG_VERSION" ]; then
           echo >&2 -e "${COL}netdisco-updatedb: found candidate pg version ${VER} to upgrade${NC}"
-	  DATE=$(date '+%Y-%m-%d-%H:%M:%S')
+	        DATE=$(date '+%Y-%m-%d-%H:%M:%S')
 
           echo >&2 -e "${COL}netdisco-updatedb: making backup of db v${VER}${NC}"
           PGHOST= PGPORT= "pg_dump" --port=50432 --host=netdisco-postgresql-${VER} \
@@ -52,7 +52,7 @@ if [ -z $("${psql[@]}" -Atc "SELECT to_regclass('device')") ] \
 
           echo >&2 -e "${COL}netdisco-updatedb: reinitialising and copying data${NC}"
           "${psql[@]}" -c "DROP OWNED BY ${PGUSER};"
-	  pg_restore -c -d ${PGDATABASE} -x -1 -O --if-exists ${ROOT}/netdisco-db-$DATE.dump
+	        pg_restore -c -d ${PGDATABASE} -x -1 -O --if-exists ${ROOT}/netdisco-db-$DATE.dump
 
           echo >&2 -e "${COL}netdisco-updatedb: signalling old pg version ${VER} to shutdown${NC}"
           touch "${ROOT}/NETDISCO_UPGRADED"
