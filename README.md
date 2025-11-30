@@ -16,6 +16,8 @@ Netdisco includes a lightweight web server for the interface, a backend daemon t
 
 Container images are provided for `linux/arm64` and `linux/amd64`.
 
+The following commands use `docker compose` but you can use `docker-compose` instead if that's what you installed.
+
 On Linux hosts, create these directories and allow the service uid (`901`) to write into it:
 
 *(this step is only necessary on Linux hosts and can be omitted in the macOS and Windows versions of Docker)*
@@ -28,7 +30,7 @@ On Linux hosts, create these directories and allow the service uid (`901`) to wr
 Download `compose.yaml` and start everything:
 
     curl -Ls -o compose.yaml https://tinyurl.com/nd2-dockercompose
-    docker-compose up --detach
+    docker compose up --detach
 
 This runs the database, backend daemon, and web frontend listening on port 5000. If you have a device using the SNMP community `public`, enter it in the Netdisco homepage and click "Discover".
 
@@ -40,10 +42,10 @@ The web frontend is initally configured to allow unauthenticated access with ful
 
 Pull new images and recreate the containers:
 
-    docker-compose pull
-    docker-compose down
+    docker compose pull
+    docker compose down
     curl -Ls --clobber -o compose.yaml https://tinyurl.com/nd2-dockercompose
-    docker-compose --profile with-pg-upgrade up --force-recreate --detach
+    docker compose --profile with-pg-upgrade up --force-recreate --detach
 
 Note carefully the commands used. The PostgreSQL database, and Netdisco's schema, will both be upgraded.
 
@@ -54,7 +56,7 @@ We have a [mix-in Docker Compose file](https://raw.githubusercontent.com/netdisc
 Download the mix-in and start the services:
 
     curl -Ls -O https://raw.githubusercontent.com/netdisco/netdisco-docker/refs/heads/master/compose.mixin.extpg.yaml
-    docker-compose -f compose.yaml -f compose.mixin.extpg.yaml up --detach
+    docker compose -f compose.yaml -f compose.mixin.extpg.yaml up --detach
 
 If the database is on the same host as your Docker service, then use `host.docker.internal` for its hostname (either in the configuration file or with the `NETDISCO_DB_HOST` environment variable).
 
@@ -67,7 +69,7 @@ We have an example [mix-in Docker Compose file](https://raw.githubusercontent.co
 Download the mix-in and start the services:
 
     curl -Ls -O https://raw.githubusercontent.com/netdisco/netdisco-docker/refs/heads/master/compose.mixin.homeenv.yaml
-    docker-compose -f compose.yaml -f compose.mixin.homeenv.yaml up --detach
+    docker compose -f compose.yaml -f compose.mixin.homeenv.yaml up --detach
 
 Edit the mix-in to point to another location.
 
@@ -75,7 +77,7 @@ Edit the mix-in to point to another location.
 
 The following command will download and update the MAC vendor database:
 
-    curl -Ls https://raw.githubusercontent.com/netdisco/upstream-sources/refs/heads/master/bootstrap/netdisco-lookup-tables.sql | docker-compose exec -T netdisco-backend /home/netdisco/bin/netdisco-env psql
+    curl -Ls https://raw.githubusercontent.com/netdisco/upstream-sources/refs/heads/master/bootstrap/netdisco-lookup-tables.sql | docker compose exec -T netdisco-backend /home/netdisco/bin/netdisco-env psql
 
 Each containerised Netdisco release also includes the latest MAC vendors, and automatically updates them when starting.
 
@@ -83,7 +85,7 @@ Each containerised Netdisco release also includes the latest MAC vendors, and au
 
 The [netdisco-do](https://metacpan.org/dist/App-Netdisco/view/bin/netdisco-do) utility can be run like this (or without `<action>` to get help):
 
-    docker-compose exec netdisco-backend netdisco-do <action> ...
+    docker compose exec netdisco-backend netdisco-do <action> ...
 
 Local web or backend plugins can be installed into `netdisco/nd-site-local/` as per [our documentation](https://github.com/netdisco/netdisco/wiki). The PostgreSQL data files are stored in `netdisco/postgresql/` or `netdisco/pgdata/` and we do not advise touching them (unless you wish to reinitialize the system).
 
@@ -93,7 +95,7 @@ The `NETDISCO_RO_COMMUNITY` environment variable allows you to override the defa
 
 If you wish to build the images locally, use [this compose file](https://raw.githubusercontent.com/netdisco/netdisco-docker/refs/heads/master/compose.build.yaml) (it's not a mix-in):
 
-    docker-compose -f compose.build.yaml build --no-cache
+    docker compose -f compose.build.yaml build --no-cache
 
 ## Getting Support
 
