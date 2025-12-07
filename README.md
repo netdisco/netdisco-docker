@@ -42,9 +42,9 @@ The web frontend is initally configured to allow unauthenticated access with ful
 
 Pull new images and recreate the containers:
 
-    docker compose pull
     docker compose down
     curl -Ls --clobber -o compose.yaml https://tinyurl.com/nd2-dockercompose
+    docker compose pull
     docker compose --profile with-pg-upgrade up --remove-orphans --force-recreate --detach
 
 Note carefully the commands used. The PostgreSQL database, and Netdisco's schema, will both be upgraded.
