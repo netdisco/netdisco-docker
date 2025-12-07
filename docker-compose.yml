@@ -18,6 +18,7 @@ x-common-environment: &common-environment
 services:
 
   netdisco-postgresql:
+    container_name: netdisco-postgresql
     image: netdisco/netdisco:latest-postgresql
     shm_size: 128mb
     hostname: netdisco-postgresql
@@ -29,6 +30,7 @@ services:
       NETDISCO_DB_SUPERUSER:
 
   netdisco-postgresql-13:
+    container_name: netdisco-postgresql-13
     image: netdisco/netdisco:latest-postgresql-13
     shm_size: 128mb
     hostname: netdisco-postgresql-13
@@ -41,6 +43,7 @@ services:
       - with-pg-upgrade
 
   netdisco-db-init:
+    container_name: netdisco-db-init
     image: netdisco/netdisco:latest-backend
     entrypoint: ''
     command: "/home/netdisco/bin/netdisco-env /home/netdisco/bin/netdisco-updatedb.sh"
@@ -58,6 +61,7 @@ services:
       NETDISCO_ADMIN_USER:
 
   netdisco-backend:
+    container_name: netdisco-backend
     image: netdisco/netdisco:latest-backend
     hostname: netdisco-backend
     depends_on:
@@ -79,6 +83,7 @@ services:
       - trustad
 
   netdisco-web:
+    container_name: netdisco-web
     image: netdisco/netdisco:latest-web
     hostname: netdisco-web
     depends_on:
