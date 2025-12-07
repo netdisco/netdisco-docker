@@ -67,15 +67,19 @@ if [ -z $("${psql[@]}" -Atc "SELECT to_regclass('dbix_class_schema_versions')") 
   || [ -z $("${psql[@]}" -Atc "SELECT 1 FROM dbix_class_schema_versions WHERE version = '${MAXSCHEMA}'") ]; then
   echo >&2 -e "${COL}netdisco-updatedb: bringing schema up-to-date${NC}"
 
-  ls -1 /home/netdisco/perl5/lib/perl5/auto/share/dist/App-Netdisco/schema_versions/App-Netdisco-DB-* | \
-    xargs -n1 basename | sort -n -t '-' -k4 | \
-    while read file; do
-      "${psql[@]}" -f "/home/netdisco/perl5/lib/perl5/auto/share/dist/App-Netdisco/schema_versions/$file" >/dev/null 2>&1
-    done
-
+  MAXINSTALLED=0
   if [ -z $("${psql[@]}" -Atc "SELECT to_regclass('dbix_class_schema_versions')") ]; then
     "${psql[@]}" -c "CREATE TABLE dbix_class_schema_versions (version varchar(10) PRIMARY KEY, installed varchar(20) NOT NULL)"
+  else
+    MAXINSTALLED=$(${psql[@]} -Atc "SELECT max(version ::integer) FROM dbix_class_schema_versions")
   fi
+
+  ls -1 /home/netdisco/perl5/lib/perl5/auto/share/dist/App-Netdisco/schema_versions/App-Netdisco-DB-* | \
+    xargs -n1 basename | sort -n -t '-' -k4 | awk -v MAXINSTALLED="$MAXINSTALLED" -F '-' '$4 >= MAXINSTALLED' | \
+    while read file; do
+      echo >&2 -e "${COL}netdisco-updatedb: applying schema update ${file}${NC}"
+      "${psql[@]}" -f "/home/netdisco/perl5/lib/perl5/auto/share/dist/App-Netdisco/schema_versions/$file" >/dev/null 2>&1
+    done
 
   STAMP=$(date '+v%Y%m%d_%H%M%S.000')
   "${psql[@]}" -c "INSERT INTO dbix_class_schema_versions VALUES ('${MAXSCHEMA}', '${STAMP}')"
