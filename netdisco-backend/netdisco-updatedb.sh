@@ -90,7 +90,7 @@ echo >&2 -e "${COL}netdisco-updatedb: importing OUI${NC}"
 "${psql[@]}" -f /var/lib/postgresql/netdisco-sql/netdisco-lookup-tables.sql
 
 echo >&2 -e "${COL}netdisco-updatedb: adding admin user if required and none exists${NC}"
-if [ "${DEPLOY_ADMIN_USER}" != "NO" ] && [ -z $("${psql[@]}" -Atc "SELECT 1 FROM users WHERE admin") ]; then
+if [ "${DEPLOY_ADMIN_USER}" != "NO" ] && [ -z "$("${psql[@]}" -Atc "SELECT 1 FROM users WHERE admin LIMIT 1")" ]; then
   "${psql[@]}" -c "INSERT INTO users (username, port_control, admin) VALUES ('${NETDISCO_ADMIN_USER}', true, true)"
 fi
 
