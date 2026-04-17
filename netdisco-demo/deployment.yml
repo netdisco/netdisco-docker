@@ -28,3 +28,7 @@ check_userlog: false
 
 # disable user account actions and device delete
 defanged_admin: 'false_admin'
+
+# enable health and metrics #1494
+health_path: '/health'
+metrics_path: '/metrics'
