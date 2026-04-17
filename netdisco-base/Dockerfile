@@ -27,7 +27,6 @@ RUN apk add --no-cache \
       perl-io-socket-ssl \
       perl-ldap \
       perl-netaddr-ip \
-      perl-io-tty \
       python3 \
       tzdata \
       openssh-client \
@@ -39,6 +38,7 @@ RUN curl -sL -o /tmp/cpanm https://cpanmin.us/ && \
   chmod +x /tmp/cpanm
 
 WORKDIR /home/netdisco
+RUN PERL5LIB='.' /tmp/cpanm --quiet --notest --local-lib ./perl5 IO::Tty
 RUN PERL5LIB='.' \
    /tmp/cpanm --quiet --notest --local-lib ./perl5 \
    "https://github.com/netdisco/netdisco.git@${COMMITTISH}" \
@@ -71,7 +71,6 @@ RUN apk add --no-cache \
       perl-regexp-ipv6 \
       perl-file-sharedir \
       perl-netaddr-ip \
-      perl-io-tty \
       python3 \
       tzdata \
       bash \
