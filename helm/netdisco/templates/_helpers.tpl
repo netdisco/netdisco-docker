@@ -48,7 +48,12 @@ fsGroup: {{ .Values.securityContext.fsGroup }}
 {{- end }}
 {{- end }}
 
-{{/* Common env vars for all netdisco containers */}}
+{{/* True when any credential injection is active */}}
+{{- define "netdisco.credentialsEnabled" -}}
+{{- or .Values.vault.enabled .Values.eso.enabled }}
+{{- end }}
+
+{{/* Common env vars — DB password from Secret unless Vault injects it */}}
 {{- define "netdisco.env" -}}
 - name: NETDISCO_DOMAIN
   value: {{ .Values.netdisco.domain | quote }}
@@ -60,29 +65,90 @@ fsGroup: {{ .Values.securityContext.fsGroup }}
   value: {{ .Values.db.name | quote }}
 - name: NETDISCO_DB_USER
   value: {{ .Values.db.user | quote }}
+{{- if not .Values.vault.enabled }}
 - name: NETDISCO_DB_PASS
   valueFrom:
     secretKeyRef:
       name: {{ if .Values.db.existingSecret }}{{ .Values.db.existingSecret }}{{ else }}{{ include "netdisco.fullname" . }}-db{{ end }}
       key: db-password
 {{- end }}
+{{- end }}
 
-{{/* Common volume mounts */}}
+{{/* Vault Agent Injector pod annotations */}}
+{{- define "netdisco.vaultAnnotations" -}}
+{{- if .Values.vault.enabled }}
+vault.hashicorp.com/agent-inject: "true"
+vault.hashicorp.com/role: {{ .Values.vault.role | quote }}
+vault.hashicorp.com/agent-inject-secret-db-credentials: {{ .Values.vault.dbPath | quote }}
+vault.hashicorp.com/agent-inject-template-db-credentials: |
+  {{`{{- with secret `}}"{{ .Values.vault.dbPath }}"{{` -}}`}}
+  database:
+    pass: '{{`{{ .Data.data.`}}{{ .Values.vault.dbPasswordKey }}{{` }}`}}'
+  {{`{{- end }}`}}
+{{- end }}
+{{- end }}
+
+{{/* Init container that merges ConfigMap + injected credential files */}}
+{{- define "netdisco.initContainer" -}}
+{{- if include "netdisco.credentialsEnabled" . }}
+- name: merge-config
+  image: alpine:3
+  command:
+    - sh
+    - -c
+    - |
+      cp /config-src/deployment.yml /merged/deployment.yml
+      {{- if .Values.vault.enabled }}
+      cat /vault/secrets/db-credentials >> /merged/deployment.yml
+      {{- end }}
+      {{- if .Values.eso.enabled }}
+      cat /credentials/device_auth.yml >> /merged/deployment.yml
+      {{- end }}
+  volumeMounts:
+    - name: config-src
+      mountPath: /config-src
+      readOnly: true
+    - name: config
+      mountPath: /merged
+    {{- if .Values.eso.enabled }}
+    - name: credentials
+      mountPath: /credentials
+      readOnly: true
+    {{- end }}
+{{- end }}
+{{- end }}
+
+{{/* Volume mounts for app containers */}}
 {{- define "netdisco.volumeMounts" -}}
 - name: config
   mountPath: /home/netdisco/environments
+  {{- if not (include "netdisco.credentialsEnabled" .) }}
   readOnly: true
+  {{- end }}
 {{- if .Values.persistence.enabled }}
 - name: nd-site-local
   mountPath: /home/netdisco/nd-site-local
 {{- end }}
 {{- end }}
 
-{{/* Common volumes */}}
+{{/* Volumes */}}
 {{- define "netdisco.volumes" -}}
+{{- if include "netdisco.credentialsEnabled" . }}
+- name: config-src
+  configMap:
+    name: {{ include "netdisco.fullname" . }}-config
+- name: config
+  emptyDir: {}
+{{- else }}
 - name: config
   configMap:
     name: {{ include "netdisco.fullname" . }}-config
+{{- end }}
+{{- if .Values.eso.enabled }}
+- name: credentials
+  secret:
+    secretName: {{ include "netdisco.fullname" . }}-credentials
+{{- end }}
 {{- if .Values.persistence.enabled }}
 - name: nd-site-local
   persistentVolumeClaim:

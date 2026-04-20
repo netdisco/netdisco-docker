@@ -18,10 +18,15 @@ spec:
         app.kubernetes.io/component: web
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- include "netdisco.vaultAnnotations" . | nindent 8 }}
     spec:
       serviceAccountName: {{ include "netdisco.serviceAccountName" . }}
       securityContext:
         {{- include "netdisco.securityContext" . | nindent 8 }}
+      {{- if include "netdisco.credentialsEnabled" . }}
+      initContainers:
+        {{- include "netdisco.initContainer" . | nindent 8 }}
+      {{- end }}
       containers:
         - name: web
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}-web"

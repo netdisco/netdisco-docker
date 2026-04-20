@@ -21,6 +21,10 @@ spec:
       serviceAccountName: {{ include "netdisco.serviceAccountName" . }}
       securityContext:
         {{- include "netdisco.securityContext" . | nindent 8 }}
+      {{- if include "netdisco.credentialsEnabled" . }}
+      initContainers:
+        {{- include "netdisco.initContainer" . | nindent 8 }}
+      {{- end }}
       containers:
         - name: db-init
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}-backend"

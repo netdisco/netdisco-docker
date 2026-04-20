@@ -1,0 +1,46 @@
+# values-vault-eso.yaml — Vault Agent (DB) + ESO (SNMP credentials)
+# Usage:
+#   helm install netdisco ./helm/netdisco \
+#     -f helm/netdisco/values-openshift.yaml \
+#     -f helm/netdisco/values-vault-eso.yaml
+
+# -- Vault Agent Injector: DB password
+# The Vault Agent sidecar injects DB credentials as a YAML file that is
+# merged into deployment.yml by the init container.
+# Vault secret must contain a key matching vault.dbPasswordKey.
+vault:
+  enabled: true
+  role: netdisco
+  dbPath: "secret/data/netdisco/db"      # KV v2 path
+  dbPasswordKey: "password"              # key within the secret
+
+# -- ESO: SNMP device_auth credentials
+# ESO fetches all keys from vaultPath and renders them into device_auth.yml
+# via the deviceAuthTemplate. Adjust the template to match your Vault structure.
+eso:
+  enabled: true
+  secretStoreKind: ClusterSecretStore
+  secretStoreName: vault-backend
+  refreshInterval: 1h
+  vaultPath: "secret/data/netdisco/snmp"
+
+  # Render Netdisco device_auth from Vault keys.
+  # Keys are referenced with {{ .key_name }} — these must exist in vaultPath.
+  # Add one entry per SNMP community/v3 profile you have in Vault.
+  deviceAuthTemplate: |
+    device_auth:
+      # SNMPv2 read-only (community string from Vault key 'snmp_ro_community')
+      - tag: default_v2_readonly
+        community: '{{ .snmp_ro_community }}'
+        read: true
+        write: false
+
+      # SNMPv3 authPriv example (keys: snmp_v3_user, snmp_v3_auth, snmp_v3_priv)
+      # - tag: default_v3
+      #   username: '{{ .snmp_v3_user }}'
+      #   auth_password: '{{ .snmp_v3_auth }}'
+      #   priv_password: '{{ .snmp_v3_priv }}'
+      #   auth_protocol: SHA
+      #   priv_protocol: AES
+      #   version: 3
+      #   read: true

@@ -91,3 +91,46 @@ serviceAccount:
 nodeSelector: {}
 tolerations: []
 affinity: {}
+
+# -- Vault Agent Injector for DB credentials
+# Requires the Vault Agent Injector to be installed in the cluster.
+# When enabled, DB password is read from the Vault-injected file instead
+# of the k8s Secret. The injected file must render a YAML snippet:
+#   database:
+#     pass: 'the-password'
+vault:
+  enabled: false
+  role: netdisco
+  # KV v2 path to the secret containing the DB password
+  dbPath: "secret/data/netdisco/db"
+  # Key within the secret that holds the password
+  dbPasswordKey: "password"
+
+# -- External Secrets Operator for SNMP device_auth credentials
+# Requires ESO to be installed and a SecretStore/ClusterSecretStore configured.
+# ESO syncs Vault KV -> k8s Secret. The Secret must contain a key
+# 'device_auth.yml' with a valid Netdisco device_auth YAML block.
+# Use the deviceAuthTemplate to render credentials from Vault keys.
+eso:
+  enabled: false
+  secretStoreKind: ClusterSecretStore   # or SecretStore
+  secretStoreName: vault-backend
+  refreshInterval: 1h
+  # Vault KV v2 path containing SNMP credential keys
+  vaultPath: "secret/data/netdisco/snmp"
+  # Template rendered into device_auth.yml inside the k8s Secret.
+  # Reference Vault keys with {{ .keyname }} notation.
+  # See: https://external-secrets.io/latest/guides/templating/
+  deviceAuthTemplate: |
+    device_auth:
+      - tag: default_v2_readonly
+        community: '{{ .snmp_community_ro }}'
+        read: true
+        write: false
+      # SNMPv3 example:
+      # - tag: core_v3
+      #   auth_password: '{{ .core_v3_password }}'
+      #   priv_password: '{{ .core_v3_key }}'
+      #   auth_protocol: SHA
+      #   priv_protocol: AES
+      #   version: 3
