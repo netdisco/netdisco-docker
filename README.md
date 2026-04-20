@@ -1,5 +1,6 @@
 [![CPAN version](https://badge.fury.io/pl/App-Netdisco.svg)](https://metacpan.org/pod/App::Netdisco)
 [![Docker Image](https://img.shields.io/badge/docker%20images-ready-blue.svg)](https://store.docker.com/community/images/netdisco/netdisco)
+[![Helm Chart](https://img.shields.io/badge/helm%20chart-available-blue.svg)](https://netdisco.github.io/netdisco-docker)
 
 **Netdisco** is a web-based network management tool suitable for small to very large networks. IP and MAC address data is collected into a PostgreSQL database using SNMP, CLI, or device APIs. Some of the things you can do with Netdisco:
 
