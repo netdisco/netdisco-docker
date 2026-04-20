@@ -2,6 +2,6 @@
 *.pid
 test.pl
 *.tar.gz
-netdisco
+/netdisco
 !netdisco-*/hooks/*
 .idea

@@ -1,0 +1,17 @@
+apiVersion: v2
+name: netdisco
+description: Netdisco - Open Source Network Management
+type: application
+version: 0.1.0
+appVersion: "latest"
+keywords:
+  - netdisco
+  - network
+  - snmp
+  - management
+home: https://netdisco.org
+sources:
+  - https://github.com/netdisco/netdisco-docker
+maintainers:
+  - name: The Netdisco Project
+    url: https://github.com/netdisco

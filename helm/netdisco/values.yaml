@@ -1,0 +1,93 @@
+image:
+  repository: netdisco/netdisco
+  tag: latest
+  pullPolicy: IfNotPresent
+
+# -- External PostgreSQL (primary/default)
+db:
+  host: ""
+  port: 5432
+  name: netdisco
+  user: netdisco
+  password: ""
+  # name of an existing Secret with keys: db-password
+  existingSecret: ""
+
+# -- Bundled PostgreSQL for minimal testing only (not for production)
+postgresql:
+  enabled: false
+  image: postgres:16-alpine
+  password: netdisco
+  storage: 5Gi
+  storageClass: ""
+
+# -- Netdisco application config (mounted as deployment.yml)
+netdisco:
+  domain: discover
+  # Additional raw config appended to deployment.yml.
+  # Use this for device_auth, schedule overrides, metrics settings, etc.
+  extraConfig: |
+    #device_auth:
+    #  - tag: default_v2_readonly
+    #    community: public
+    #    read: true
+
+web:
+  replicas: 1
+  port: 5000
+  resources: {}
+  #  requests:
+  #    cpu: 100m
+  #    memory: 256Mi
+  #  limits:
+  #    memory: 512Mi
+
+backend:
+  replicas: 1
+  resources: {}
+
+# -- OpenShift Route (use this on RHOS)
+route:
+  enabled: false
+  host: ""
+  tls:
+    enabled: true
+    termination: edge
+
+# -- Kubernetes Ingress (use this on plain k8s)
+ingress:
+  enabled: false
+  className: ""
+  host: ""
+  tls: []
+  annotations: {}
+
+service:
+  type: ClusterIP
+  port: 80
+
+# -- Persistent storage for nd-site-local (custom MIBs, plugins, etc.)
+persistence:
+  enabled: true
+  size: 1Gi
+  storageClass: ""
+  accessMode: ReadWriteMany
+
+# -- Security context
+# RHOS: set runAsUser to null to let OpenShift assign arbitrary UID
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 901
+  runAsGroup: 901
+  fsGroup: 901
+
+# openshift: true will set runAsUser: null and add Route instead of Ingress
+openshift: false
+
+serviceAccount:
+  create: true
+  name: ""
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

@@ -1,0 +1,47 @@
+# values-test.yaml — minimal local/CI test with bundled PostgreSQL
+# Usage: helm install netdisco ./helm/netdisco -f helm/netdisco/values-test.yaml
+#
+# Requires a k8s/k3s/kind cluster. For a quick local cluster:
+#   kind create cluster
+#   helm install netdisco ./helm/netdisco -f helm/netdisco/values-test.yaml
+
+postgresql:
+  enabled: true
+  password: testpassword
+  storage: 1Gi
+
+db:
+  host: ""      # ignored when postgresql.enabled=true
+  name: netdisco
+  user: netdisco
+  password: testpassword
+
+persistence:
+  enabled: true
+  size: 100Mi
+  accessMode: ReadWriteOnce
+
+ingress:
+  enabled: false
+
+route:
+  enabled: false
+
+# Expose web via NodePort for easy local access
+service:
+  type: NodePort
+
+web:
+  replicas: 1
+
+backend:
+  replicas: 1
+
+netdisco:
+  domain: discover
+  extraConfig: |
+    no_auth: true
+    device_auth:
+      - tag: default_v2_readonly
+        community: public
+        read: true

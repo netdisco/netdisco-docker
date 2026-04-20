@@ -1,0 +1,64 @@
+# values-openshift.yaml — Red Hat OpenShift deployment
+# Usage: helm install netdisco ./helm/netdisco -f helm/netdisco/values-openshift.yaml -f my-secrets.yaml
+
+openshift: true
+
+# RHOS assigns an arbitrary UID — do not fix runAsUser
+securityContext:
+  runAsNonRoot: true
+
+route:
+  enabled: true
+  host: netdisco.apps.mycluster.example.com   # adjust to your cluster domain
+  tls:
+    enabled: true
+    termination: edge
+
+ingress:
+  enabled: false
+
+# External DB — fill in or use an existingSecret
+db:
+  host: mypostgres.example.com
+  port: 5432
+  name: netdisco
+  user: netdisco
+  password: ""          # set via --set db.password=... or existingSecret
+  existingSecret: ""    # e.g. name of a Secret with key db-password
+
+postgresql:
+  enabled: false
+
+# Shared storage — RHOS typically needs RWX (e.g. CephFS, NFS)
+persistence:
+  enabled: true
+  size: 1Gi
+  accessMode: ReadWriteMany
+  storageClass: ""      # set to your RWX storageclass, e.g. ocs-storagecluster-cephfs
+
+web:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 512Mi
+
+backend:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      memory: 512Mi
+
+netdisco:
+  domain: discover
+  extraConfig: |
+    #metrics_path: '/metrics'
+    #device_auth:
+    #  - tag: default_v2_readonly
+    #    community: public
+    #    read: true

@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "netdisco.fullname" . }}-db-init
+  labels:
+    {{- include "netdisco.labels" . | nindent 4 }}
+  annotations:
+    # Run on every helm upgrade too
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  backoffLimit: 5
+  template:
+    metadata:
+      labels:
+        {{- include "netdisco.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: db-init
+    spec:
+      restartPolicy: OnFailure
+      serviceAccountName: {{ include "netdisco.serviceAccountName" . }}
+      securityContext:
+        {{- include "netdisco.securityContext" . | nindent 8 }}
+      containers:
+        - name: db-init
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}-backend"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - /home/netdisco/bin/netdisco-env
+            - /home/netdisco/bin/netdisco-updatedb.sh
+          env:
+            {{- include "netdisco.env" . | nindent 12 }}
+          volumeMounts:
+            {{- include "netdisco.volumeMounts" . | nindent 12 }}
+      volumes:
+        {{- include "netdisco.volumes" . | nindent 8 }}
