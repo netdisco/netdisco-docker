@@ -132,6 +132,12 @@ LABEL org.label-schema.docker.schema-version="1.0" \
 # clone docker.io/postgres:18-alpine3.22 but without Dockerfile config
 COPY --from=netdisco-base-image / /
 
+# Make /home/netdisco writable under arbitrary UIDs (OpenShift random UID,
+# kubectl runAsUser, etc.) by routing access via supplemental gid 0, which
+# is added to every container by OpenShift. Harmless when the image runs
+# as the netdisco user (the default in docker compose).
+RUN chgrp -R 0 /home/netdisco && chmod -R g=u /home/netdisco
+
 USER netdisco:netdisco
 WORKDIR /home/netdisco
 ENV PATH="/home/netdisco/bin:$PATH"
