@@ -4,7 +4,11 @@ FROM docker.io/postgres:18-alpine3.22 AS netdisco-builder-image
 # temporary bloated image used for building Netdisco
 # in github actions the COMMITTISH is set to latest release version
 # netdisco-base will copy the built Netdisco files from this image
+#
+# NETDISCO_GIT_URL lets CI / local builds point at a fork (e.g. to test a PR)
+# without editing the Dockerfile. Defaults to upstream.
 
+ARG NETDISCO_GIT_URL=https://github.com/netdisco/netdisco.git
 ARG COMMITTISH=HEAD
 
 RUN apk add --no-cache \
@@ -41,7 +45,7 @@ WORKDIR /home/netdisco
 RUN PERL5LIB='.' /tmp/cpanm --verbose --notest --local-lib ./perl5 IO::Tty
 RUN PERL5LIB='.' \
    /tmp/cpanm --quiet --notest --local-lib ./perl5 \
-   "https://github.com/netdisco/netdisco.git@${COMMITTISH}" \
+   "${NETDISCO_GIT_URL}@${COMMITTISH}" \
    Dancer::Debug \
    URL::Encode \
    REST::Client && \

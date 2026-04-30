@@ -1,0 +1,82 @@
+name: Smoke Test
+
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      netdisco_git_url:
+        description: 'Netdisco source repo (HTTPS git URL)'
+        type: string
+        default: 'https://github.com/netdisco/netdisco.git'
+      committish:
+        description: 'Branch / tag / SHA to build'
+        type: string
+        default: 'HEAD'
+
+jobs:
+  build-and-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Resolve build args
+        id: args
+        run: |
+          echo "url=${{ github.event.inputs.netdisco_git_url || 'https://github.com/netdisco/netdisco.git' }}" >> "$GITHUB_OUTPUT"
+          echo "committish=${{ github.event.inputs.committish || 'HEAD' }}" >> "$GITHUB_OUTPUT"
+
+      - name: Build images
+        env:
+          NETDISCO_GIT_URL: ${{ steps.args.outputs.url }}
+          COMMITTISH: ${{ steps.args.outputs.committish }}
+        run: |
+          docker compose -f compose.build.yaml build \
+            --build-arg "NETDISCO_GIT_URL=${NETDISCO_GIT_URL}" \
+            --build-arg "COMMITTISH=${COMMITTISH}" \
+            netdisco-postgresql netdisco-base netdisco-backend netdisco-web
+
+      - name: Prepare host directories
+        run: |
+          mkdir -p netdisco/logs netdisco/config netdisco/nd-site-local
+          sudo chown -R 901:901 netdisco
+
+      - name: Start the stack
+        run: docker compose up --detach
+
+      - name: Wait for netdisco-web to respond
+        run: |
+          set -e
+          for i in $(seq 1 90); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:5000/ || true)
+            echo "[$i] HTTP $code"
+            if [ -n "$code" ] && [ "$code" -lt 500 ] && [ "$code" -ne 000 ]; then
+              echo "netdisco-web responded with $code after ${i}s"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Timed out waiting for netdisco-web"
+          exit 1
+
+      - name: Confirm logs reach docker stdout
+        run: |
+          for svc in netdisco-backend netdisco-web; do
+            lines=$(docker compose logs --no-color --no-log-prefix "$svc" | wc -l)
+            echo "$svc: $lines log lines on stdout"
+            if [ "$lines" -lt 1 ]; then
+              echo "FAIL: $svc produced no stdout logs"
+              exit 1
+            fi
+          done
+
+      - name: Dump compose logs
+        if: always()
+        run: docker compose logs --no-color || true
+
+      - name: Tear down
+        if: always()
+        run: docker compose down --volumes --remove-orphans || true
