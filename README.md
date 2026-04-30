@@ -1,5 +1,6 @@
 [![CPAN version](https://badge.fury.io/pl/App-Netdisco.svg)](https://metacpan.org/pod/App::Netdisco)
 [![Docker Image](https://img.shields.io/badge/docker%20images-ready-blue.svg)](https://store.docker.com/community/images/netdisco/netdisco)
+[![Helm Chart](https://img.shields.io/badge/helm%20chart-available-blue.svg)](https://github.com/netdisco/helm-charts)
 
 **Netdisco** is a web-based network management tool suitable for small to very large networks. IP and MAC address data is collected into a PostgreSQL database using SNMP, CLI, or device APIs. Some of the things you can do with Netdisco:
 
@@ -93,11 +94,17 @@ Local web or backend plugins can be installed into `netdisco/nd-site-local/` as 
 
 The `NETDISCO_RO_COMMUNITY` environment variable allows you to override the default of `public` (and avoiding the need to edit the configuration file).
 
+A `/health` endpoint (suitable for container/load-balancer health probes) is available when `health_path: '/health'` is set in `deployment.yml`. The bundled demo configuration enables it; if you supply your own `deployment.yml`, add the line yourself to expose the endpoint.
+
 ##  Rebuilding
 
 If you wish to build the images locally, use [this compose file](https://raw.githubusercontent.com/netdisco/netdisco-docker/refs/heads/master/compose.build.yaml) (it's not a mix-in):
 
     docker compose -f compose.build.yaml build --no-cache
+
+##  Kubernetes / OpenShift
+
+A Helm chart for deploying these container images on Kubernetes or Red Hat OpenShift is maintained at [netdisco/helm-charts](https://github.com/netdisco/helm-charts).
 
 ## Getting Support
 
