@@ -41,7 +41,7 @@ jobs:
 
       - name: Prepare host directories
         run: |
-          mkdir -p netdisco/logs netdisco/config netdisco/nd-site-local
+          mkdir -p netdisco/config netdisco/nd-site-local
           sudo chown -R 901:901 netdisco
 
       - name: Start the stack
@@ -72,6 +72,28 @@ jobs:
               exit 1
             fi
           done
+
+      - name: Confirm no real log files written (foreground mode)
+        run: |
+          # Post netdisco/netdisco#1500: foreground mode skips log file
+          # creation entirely. The Dockerfile keeps the legacy
+          # /home/netdisco/logs/netdisco-*.log -> /dev/stdout symlinks as a
+          # safety net for non-foreground use, so '-type f' excludes those
+          # and only catches *real* files (which would mean log writes
+          # accumulating inside the container instead of reaching stdout).
+          fail=0
+          for svc in netdisco-backend netdisco-web; do
+            real=$(docker compose exec -T "$svc" find /home/netdisco/logs \
+              -maxdepth 1 -type f -name '*.log' 2>/dev/null || true)
+            if [ -n "$real" ]; then
+              echo "FAIL: $svc has real log files (expected stdout only):"
+              echo "$real"
+              fail=1
+            else
+              echo "OK: $svc — no real .log files in /home/netdisco/logs/"
+            fi
+          done
+          exit $fail
 
       - name: Dump compose logs
         if: always()

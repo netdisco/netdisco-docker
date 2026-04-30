@@ -23,7 +23,7 @@ On Linux hosts, create these directories and allow the service uid (`901`) to wr
 
 *(this step is only necessary on Linux hosts and can be omitted in the macOS and Windows versions of Docker)*
 
-    mkdir -p netdisco/{logs,config,nd-site-local} 
+    mkdir -p netdisco/{config,nd-site-local}
     sudo chown -R 901:901 netdisco
 
 ###  New Deployments
@@ -35,7 +35,7 @@ Download `compose.yaml` and start everything:
 
 This runs the database, backend daemon, and web frontend listening on port 5000. If you have a device using the SNMP community `public`, enter it in the Netdisco homepage and click "Discover".
 
-The default configuration is available in `netdisco/config/deployment.yml`. The daemons automatically restart when you save changes to this file. Logs are available in `netdisco/logs/`.
+The default configuration is available in `netdisco/config/deployment.yml`. The daemons automatically restart when you save changes to this file. Logs are available via `docker compose logs` (the daemons write directly to the container stdout in foreground mode).
 
 The web frontend is initally configured to allow unauthenticated access with full admin rights. We suggest you visit the `Admin -> User Management` menu item, and set `no_auth: false` in `deployment.yml`, to remove this guest account and set up authenticated user access.
 
