@@ -12,6 +12,7 @@ ARG NETDISCO_GIT_URL=https://github.com/netdisco/netdisco.git
 ARG COMMITTISH=HEAD
 
 RUN apk add --no-cache \
+      linux-headers \
       ca-certificates \
       curl \
       findutils \
