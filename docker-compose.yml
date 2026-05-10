@@ -71,7 +71,6 @@ services:
     volumes:
       - "./netdisco/nd-site-local:/home/netdisco/nd-site-local"
       - "./netdisco/config:/home/netdisco/environments"
-      - "./netdisco/logs:/home/netdisco/logs"
     environment:
       <<: *common-environment
     dns_opt:
@@ -93,7 +92,6 @@ services:
     volumes:
       - "./netdisco/nd-site-local:/home/netdisco/nd-site-local"
       - "./netdisco/config:/home/netdisco/environments"
-      - "./netdisco/logs:/home/netdisco/logs"
     environment:
       <<: *common-environment
       IPV: '${IPV:-4}'
