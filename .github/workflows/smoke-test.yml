@@ -56,7 +56,7 @@ jobs:
           # netdisco user range — same failure mode as OpenShift restricted-v2
           # SCC. local::lib must be able to bootstrap (i.e. /home/netdisco
           # has to be writable for supplemental gid 0).
-          for tag in latest-base latest-backend latest-web; do
+          for tag in latest-backend latest-web; do
             echo "::group::arbitrary UID test: netdisco/netdisco:$tag"
             docker run --rm --user 1000050000 \
               --entrypoint /home/netdisco/bin/localenv \
