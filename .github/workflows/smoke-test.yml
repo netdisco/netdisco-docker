@@ -44,8 +44,8 @@ jobs:
           set: |
             *.cache-from=type=gha
             *.cache-to=type=gha,mode=max
-            *.build-arg.NETDISCO_GIT_URL=${{ steps.args.outputs.url }}
-            *.build-arg.COMMITTISH=${{ steps.args.outputs.committish }}
+            *.args.NETDISCO_GIT_URL=${{ steps.args.outputs.url }}
+            *.args.COMMITTISH=${{ steps.args.outputs.committish }}
 
       - name: Verify image is OpenShift / arbitrary-UID compatible
         run: |
