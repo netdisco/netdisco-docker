@@ -46,6 +46,8 @@ jobs:
             *.cache-to=type=gha,mode=max
             *.args.NETDISCO_GIT_URL=${{ steps.args.outputs.url }}
             *.args.COMMITTISH=${{ steps.args.outputs.committish }}
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Verify image is OpenShift / arbitrary-UID compatible
         run: |
