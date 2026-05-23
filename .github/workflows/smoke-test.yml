@@ -23,10 +23,7 @@ jobs:
           ref: 'master'
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        with:
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+        uses: docker/setup-buildx-action@v4.1.0
 
       - name: Resolve build args
         id: args
@@ -34,15 +31,21 @@ jobs:
           echo "url=${{ github.event.inputs.netdisco_git_url || 'https://github.com/netdisco/netdisco.git' }}" >> "$GITHUB_OUTPUT"
           echo "committish=${{ github.event.inputs.committish || 'HEAD' }}" >> "$GITHUB_OUTPUT"
 
-      - name: Build images
-        env:
-          NETDISCO_GIT_URL: ${{ steps.args.outputs.url }}
-          COMMITTISH: ${{ steps.args.outputs.committish }}
-        run: |
-          docker compose -f compose.build.yaml build \
-            --build-arg "NETDISCO_GIT_URL=${NETDISCO_GIT_URL}" \
-            --build-arg "COMMITTISH=${COMMITTISH}" \
-            netdisco-postgresql netdisco-base netdisco-backend netdisco-web
+      - name: Build images with Bake and Cache
+        uses: docker/bake-action@v7.2.0
+        with:
+          files: compose.build.yaml
+          targets: |
+            netdisco-postgresql
+            netdisco-backend
+            netdisco-web
+          push: false
+          load: true
+          set: |
+            *.cache-from=type=gha
+            *.cache-to=type=gha,mode=max
+            *.build-arg.NETDISCO_GIT_URL=${{ steps.args.outputs.url }}
+            *.build-arg.COMMITTISH=${{ steps.args.outputs.committish }}
 
       - name: Verify image is OpenShift / arbitrary-UID compatible
         run: |
