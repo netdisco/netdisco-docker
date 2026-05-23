@@ -2,6 +2,13 @@
 ARG PGVER=18
 FROM docker.io/postgres:${PGVER}-alpine
 
+COPY netdisco-initdb.sh /docker-entrypoint-initdb.d/
+COPY netdisco-db-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/netdisco-db-entrypoint.sh
+
+HEALTHCHECK --interval=3s --timeout=3s --retries=10 --start-period=10s \
+  CMD ["pg_isready", "-h", "netdisco-postgresql", "-U", "postgres"]
+
 ARG BUILD_DATE
 ARG COMMITTISH=HEAD
 
@@ -17,13 +24,6 @@ LABEL org.label-schema.docker.schema-version="1.0" \
       org.label-schema.build-date=${BUILD_DATE} \
       org.netdisco.maintainer="The Netdisco Project" \
       org.netdisco.version=${COMMITTISH}
-
-COPY netdisco-initdb.sh /docker-entrypoint-initdb.d/
-COPY netdisco-db-entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/netdisco-db-entrypoint.sh
-
-HEALTHCHECK --interval=3s --timeout=3s --retries=10 --start-period=10s \
-  CMD ["pg_isready", "-h", "netdisco-postgresql", "-U", "postgres"]
 
 WORKDIR /
 ENTRYPOINT ["/usr/local/bin/netdisco-db-entrypoint.sh"]
