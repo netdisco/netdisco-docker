@@ -6,8 +6,8 @@ services:
     build:
       context: ./netdisco-postgresql
       tags:
-        - netdisco/netdisco:${COMMITTISH}-postgresql
-        - localhost:5000/netdisco:${COMMITTISH}-postgresql
+        - netdisco/netdisco:${TAG}-postgresql
+        - localhost:5000/netdisco:${TAG}-postgresql
 
   netdisco-postgresql-13:
     build:
@@ -15,30 +15,30 @@ services:
       args:
         PGVER: 13.4
       tags:
-        - netdisco/netdisco:${COMMITTISH}-postgresql-13
-        - localhost:5000/netdisco:${COMMITTISH}-postgresql-13
+        - netdisco/netdisco:${TAG}-postgresql-13
+        - localhost:5000/netdisco:${TAG}-postgresql-13
 
   netdisco-base:
     build:
       context: ./netdisco-base
       tags:
-        - netdisco/netdisco:${COMMITTISH}-base
-        - localhost:5000/netdisco:${COMMITTISH}-base
+        - netdisco/netdisco:${TAG}-base
+        - localhost:5000/netdisco:${TAG}-base
 
   netdisco-backend:
     build:
       context: ./netdisco-backend
       tags:
-        - netdisco/netdisco:${COMMITTISH}-backend
-        - localhost:5000/netdisco:${COMMITTISH}-backend
+        - netdisco/netdisco:${TAG}-backend
+        - localhost:5000/netdisco:${TAG}-backend
       additional_contexts:
-        "localhost:5000/netdisco:${COMMITTISH}-base": "service:netdisco-base"
+        "localhost:5000/netdisco:${TAG}-base": "service:netdisco-base"
 
   netdisco-web:
     build:
       context: ./netdisco-web
       tags:
-        - netdisco/netdisco:${COMMITTISH}-web
-        - localhost:5000/netdisco:${COMMITTISH}-web
+        - netdisco/netdisco:${TAG}-web
+        - localhost:5000/netdisco:${TAG}-web
       additional_contexts:
-        "localhost:5000/netdisco:${COMMITTISH}-base": "service:netdisco-base"
+        "localhost:5000/netdisco:${TAG}-base": "service:netdisco-base"
