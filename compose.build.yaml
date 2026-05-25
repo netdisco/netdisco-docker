@@ -6,8 +6,8 @@ services:
     build:
       context: ./netdisco-postgresql
       tags:
-        - netdisco/netdisco:${TAG}-postgresql
-        - localhost:5000/netdisco:${TAG}-postgresql
+        - netdisco/netdisco:latest-postgresql
+        - localhost:5000/netdisco:latest-postgresql
 
   netdisco-postgresql-13:
     build:
@@ -15,30 +15,30 @@ services:
       args:
         PGVER: 13.4
       tags:
-        - netdisco/netdisco:${TAG}-postgresql-13
-        - localhost:5000/netdisco:${TAG}-postgresql-13
+        - netdisco/netdisco:latest-postgresql-13
+        - localhost:5000/netdisco:latest-postgresql-13
 
   netdisco-base:
     build:
       context: ./netdisco-base
       tags:
-        - netdisco/netdisco:${TAG}-base
-        - localhost:5000/netdisco:${TAG}-base
+        - netdisco/netdisco:latest-base
+        - localhost:5000/netdisco:latest-base
 
   netdisco-backend:
     build:
       context: ./netdisco-backend
       tags:
-        - netdisco/netdisco:${TAG}-backend
-        - localhost:5000/netdisco:${TAG}-backend
+        - netdisco/netdisco:latest-backend
+        - localhost:5000/netdisco:latest-backend
       additional_contexts:
-        "localhost:5000/netdisco:${TAG}-base": "service:netdisco-base"
+        "localhost:5000/netdisco:latest-base": "service:netdisco-base"
 
   netdisco-web:
     build:
       context: ./netdisco-web
       tags:
-        - netdisco/netdisco:${TAG}-web
-        - localhost:5000/netdisco:${TAG}-web
+        - netdisco/netdisco:latest-web
+        - localhost:5000/netdisco:latest-web
       additional_contexts:
-        "localhost:5000/netdisco:${TAG}-base": "service:netdisco-base"
+        "localhost:5000/netdisco:latest-base": "service:netdisco-base"
