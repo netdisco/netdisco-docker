@@ -28,13 +28,14 @@ jobs:
       - name: Resolve build args
         id: args
         run: |
-          echo "url=${{ github.event.inputs.netdisco_git_url || 'https://github.com/netdisco/netdisco.git' }}" >> "$GITHUB_OUTPUT"
-          echo "committish=${{ github.event.inputs.committish || 'HEAD' }}" >> "$GITHUB_OUTPUT"
+          echo "URL=${{ github.event.inputs.netdisco_git_url || 'https://github.com/netdisco/netdisco.git' }}" >> "$GITHUB_OUTPUT"
+          echo "COMMITTISH=${{ github.event.inputs.committish || 'HEAD' }}" >> "$GITHUB_OUTPUT"
 
       - name: Build images with Bake and Cache
         uses: docker/bake-action@v7.2.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMITTISH: ${{ steps.args.outputs.committish }}
         with:
           files: compose.build.yaml
           targets: |
@@ -56,7 +57,7 @@ jobs:
           # netdisco user range — same failure mode as OpenShift restricted-v2
           # SCC. local::lib must be able to bootstrap (i.e. /home/netdisco
           # has to be writable for supplemental gid 0).
-          for tag in latest-backend latest-web; do
+          for tag in ${{ steps.args.outputs.committish }}-backend ${{ steps.args.outputs.committish }}-web; do
             echo "::group::arbitrary UID test: netdisco/netdisco:$tag"
             docker run --rm --user 1000050000 \
               --entrypoint /home/netdisco/bin/localenv \
