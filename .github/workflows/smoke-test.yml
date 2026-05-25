@@ -17,6 +17,10 @@ jobs:
   build-and-smoke:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    services:
+      registry:
+        image: registry:3
+        ports: ["5000:5000"]
     steps:
       - uses: actions/checkout@v6.0.2
         with:
