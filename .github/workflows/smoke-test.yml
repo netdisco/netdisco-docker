@@ -42,10 +42,7 @@ jobs:
           COMMITTISH: ${{ steps.args.outputs.committish }}
         with:
           files: compose.build.yaml
-          targets: |
-            netdisco-postgresql
-            netdisco-backend
-            netdisco-web
+          targets: netdisco-base,netdisco-postgresql,netdisco-backend,netdisco-web
           push: false
           load: true
           set: |
