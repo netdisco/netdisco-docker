@@ -2,4 +2,4 @@ services:
 
   netdisco-web:
     ports: !override
-      - "localhost:3000:5000" 
+      - "127.0.0.1:3000:5000" 

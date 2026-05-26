@@ -41,10 +41,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMITTISH: ${{ steps.args.outputs.committish }}
         with:
-          files: compose.build.yaml
-          targets: netdisco-base,netdisco-backend,netdisco-web,netdisco-postgresql
+          files: docker-bake.hcl
+          targets: standalone
           push: true
-          load: false
           set: |
             *.cache-from=type=gha
             *.cache-to=type=gha,mode=max
@@ -73,7 +72,9 @@ jobs:
           sudo chown -R 901:901 netdisco
 
       - name: Start the stack
-        run: docker compose up -f compose.yaml -f compose.mixin.webport.yaml --detach
+        env:
+          COMMITTISH: ${{ steps.args.outputs.committish }}
+        run: docker compose -f compose.yaml -f compose.mixin.webport.yaml -f compose.mixin.localregistry.yaml --verbose up --detach
 
       - name: Wait for netdisco-web to respond
         run: |
