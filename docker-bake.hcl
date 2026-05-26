@@ -40,7 +40,6 @@ target "netdisco-web" {
   context    = "./netdisco-web"
   dockerfile = "Dockerfile"
   tags = [
-    "netdisco/netdisco:latest-web",
     "localhost:5000/netdisco:${COMMITTISH}-web",
   ]
   args = {
@@ -57,7 +56,6 @@ target "netdisco-backend" {
   context    = "./netdisco-backend"
   dockerfile = "Dockerfile"
   tags = [
-    "netdisco/netdisco:latest-backend",
     "localhost:5000/netdisco:${COMMITTISH}-backend",
   ]
   args = {
@@ -74,7 +72,6 @@ target "netdisco-postgresql" {
   context    = "./netdisco-postgresql"
   dockerfile = "Dockerfile"
   tags = [
-    "netdisco/netdisco:latest-postgresql",
     "localhost:5000/netdisco:${COMMITTISH}-postgresql",
   ]
   args = {
