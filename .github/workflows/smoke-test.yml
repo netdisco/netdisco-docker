@@ -42,23 +42,7 @@ jobs:
           COMMITTISH: ${{ steps.args.outputs.committish }}
         with:
           files: compose.build.yaml
-          targets: netdisco-base
-          push: false
-          load: true
-          set: |
-            *.cache-from=type=gha
-            *.cache-to=type=gha,mode=max
-            *.args.NETDISCO_GIT_URL=${{ steps.args.outputs.url }}
-            *.args.COMMITTISH=${{ steps.args.outputs.committish }}
-
-      - name: Build images with Bake and Cache
-        uses: docker/bake-action@v7.2.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COMMITTISH: ${{ steps.args.outputs.committish }}
-        with:
-          files: compose.build.yaml
-          targets: netdisco-postgresql,netdisco-backend,netdisco-web
+          targets: netdisco-base,netdisco-postgresql,netdisco-backend,netdisco-web
           push: false
           load: true
           set: |
