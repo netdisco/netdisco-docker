@@ -42,9 +42,9 @@ jobs:
           COMMITTISH: ${{ steps.args.outputs.committish }}
         with:
           files: compose.build.yaml
-          targets: netdisco-base,netdisco-postgresql,netdisco-backend,netdisco-web
-          push: false
-          load: true
+          targets: netdisco-base,netdisco-backend,netdisco-web,netdisco-postgresql
+          push: true
+          load: false
           set: |
             *.cache-from=type=gha
             *.cache-to=type=gha,mode=max
@@ -59,10 +59,10 @@ jobs:
           # SCC. local::lib must be able to bootstrap (i.e. /home/netdisco
           # has to be writable for supplemental gid 0).
           for tag in ${{ steps.args.outputs.committish }}-backend ${{ steps.args.outputs.committish }}-web; do
-            echo "::group::arbitrary UID test: netdisco/netdisco:$tag"
+            echo "::group::arbitrary UID test: localhost:5000/netdisco:$tag"
             docker run --rm --user 1000050000 \
               --entrypoint /home/netdisco/bin/localenv \
-              "netdisco/netdisco:$tag" \
+              "localhost:5000/netdisco:$tag" \
               perl -e 'print "ok\n"'
             echo "::endgroup::"
           done
@@ -73,13 +73,13 @@ jobs:
           sudo chown -R 901:901 netdisco
 
       - name: Start the stack
-        run: docker compose up --detach
+        run: docker compose up -f compose.yaml -f compose.mixin.webport.yaml --detach
 
       - name: Wait for netdisco-web to respond
         run: |
           set -e
           for i in $(seq 1 90); do
-            code=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:5000/ || true)
+            code=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/ || true)
             echo "[$i] HTTP $code"
             if [ -n "$code" ] && [ "$code" -lt 500 ] && [ "$code" -ne 000 ]; then
               echo "netdisco-web responded with $code after ${i}s"

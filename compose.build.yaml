@@ -3,42 +3,38 @@ services:
 # https://docs.docker.com/compose/how-tos/dependent-images/#use-another-services-image-as-the-base-image
 
   netdisco-postgresql:
+    image: localhost:5000/netdisco:${COMMITTISH:-latest}-postgresql
     build:
       context: ./netdisco-postgresql
       tags:
-        - netdisco/netdisco:${COMMITTISH:-latest}-postgresql
         - localhost:5000/netdisco:${COMMITTISH:-latest}-postgresql
 
   netdisco-postgresql-13:
+    image: localhost:5000/netdisco:${COMMITTISH:-latest}-postgresql-13
     build:
       context: ./netdisco-postgresql
       args:
         PGVER: 13.4
       tags:
-        - netdisco/netdisco:${COMMITTISH:-latest}-postgresql-13
         - localhost:5000/netdisco:${COMMITTISH:-latest}-postgresql-13
 
   netdisco-base:
+    image: localhost:5000/netdisco:${COMMITTISH:-latest}-base
     build:
       context: ./netdisco-base
       tags:
-        - netdisco/netdisco:${COMMITTISH:-latest}-base
         - localhost:5000/netdisco:${COMMITTISH:-latest}-base
 
   netdisco-backend:
+    image: localhost:5000/netdisco:${COMMITTISH:-latest}-backend
     build:
       context: ./netdisco-backend
       tags:
-        - netdisco/netdisco:${COMMITTISH:-latest}-backend
         - localhost:5000/netdisco:${COMMITTISH:-latest}-backend
-      additional_contexts:
-        "localhost:5000/netdisco:${COMMITTISH:-latest}-base": "service:netdisco-base"
 
   netdisco-web:
+    image: localhost:5000/netdisco:${COMMITTISH:-latest}-web
     build:
       context: ./netdisco-web
       tags:
-        - netdisco/netdisco:${COMMITTISH:-latest}-web
         - localhost:5000/netdisco:${COMMITTISH:-latest}-web
-      additional_contexts:
-        "localhost:5000/netdisco:${COMMITTISH:-latest}-base": "service:netdisco-base"
