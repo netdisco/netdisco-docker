@@ -102,7 +102,8 @@ If you wish to build the images locally, use a modern version of Docker which wi
 
     COMMITTISH=HEAD docker buildx bake
 
-Replace `HEAD` with the Git reference you wish to build from the [Netdisco repository](https://github.com/netdisco/netdisco); the name of a branch works well.
+Replace `HEAD` with the Git reference you wish to build from the [Netdisco repository](https://github.com/netdisco/netdisco); the
+name of a branch works well. You can also add `NETDISCO_GIT_URL` to point to any other online repo, or a local folder.
 
 This default target rebuilds only "netdisco-backend" and "netdisco-web". You can use the `standalone` target to rebuild with "netdisco-postgresql",
 or the `all` target to rebuild with both "netdisco-postgresql" and "netdisco-postgresql-13".
