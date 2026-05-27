@@ -48,7 +48,6 @@ target "netdisco-web" {
   contexts = {
     "localhost:5000/netdisco:${COMMITTISH}-base" = "target:netdisco-base"
   }
-#  depends_on = ["netdisco-base"]
   output = ["type=docker"]
 }
 
@@ -64,7 +63,6 @@ target "netdisco-backend" {
   contexts = {
     "localhost:5000/netdisco:${COMMITTISH}-base" = "target:netdisco-base"
   }
-#  depends_on = ["netdisco-base"]
   output = ["type=docker"]
 }
 
