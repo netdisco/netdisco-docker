@@ -1,6 +1,6 @@
 # vim: ft=Dockerfile
-ARG TAG=latest
-FROM localhost:5000/netdisco:${TAG}-base
+ARG COMMITTISH=latest
+FROM localhost:5000/netdisco:${COMMITTISH}-base
 
 LABEL org.label-schema.name="netdisco-web" \
       org.label-schema.description="Web Frontend for Netdisco"

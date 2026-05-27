@@ -17,32 +17,35 @@ jobs:
   build-and-smoke:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    services:
+      registry:
+        image: registry:3
+        ports: ["5000:5000"]
     steps:
       - uses: actions/checkout@v6.0.2
         with:
-          ref: 'master'
+          ref: ${{ github.sha }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4.1.0
+        with:
+          driver-opts: network=host
 
       - name: Resolve build args
         id: args
         run: |
-          echo "url=${{ github.event.inputs.netdisco_git_url || 'https://github.com/netdisco/netdisco.git' }}" >> "$GITHUB_OUTPUT"
-          echo "committish=${{ github.event.inputs.committish || 'HEAD' }}" >> "$GITHUB_OUTPUT"
+          echo "URL=${{ github.event.inputs.netdisco_git_url || 'https://github.com/netdisco/netdisco.git' }}" >> "$GITHUB_OUTPUT"
+          echo "COMMITTISH=${{ github.event.inputs.committish || 'HEAD' }}" >> "$GITHUB_OUTPUT"
 
       - name: Build images with Bake and Cache
         uses: docker/bake-action@v7.2.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMITTISH: ${{ steps.args.outputs.committish }}
         with:
-          files: compose.build.yaml
-          targets: |
-            netdisco-postgresql
-            netdisco-backend
-            netdisco-web
-          push: false
-          load: true
+          files: docker-bake.hcl
+          targets: standalone
+          push: true
           set: |
             *.cache-from=type=gha
             *.cache-to=type=gha,mode=max
@@ -56,11 +59,11 @@ jobs:
           # netdisco user range — same failure mode as OpenShift restricted-v2
           # SCC. local::lib must be able to bootstrap (i.e. /home/netdisco
           # has to be writable for supplemental gid 0).
-          for tag in latest-backend latest-web; do
-            echo "::group::arbitrary UID test: netdisco/netdisco:$tag"
+          for tag in ${{ steps.args.outputs.committish }}-backend ${{ steps.args.outputs.committish }}-web; do
+            echo "::group::arbitrary UID test: localhost:5000/netdisco:$tag"
             docker run --rm --user 1000050000 \
               --entrypoint /home/netdisco/bin/localenv \
-              "netdisco/netdisco:$tag" \
+              "localhost:5000/netdisco:$tag" \
               perl -e 'print "ok\n"'
             echo "::endgroup::"
           done
@@ -71,13 +74,15 @@ jobs:
           sudo chown -R 901:901 netdisco
 
       - name: Start the stack
-        run: docker compose up --detach
+        env:
+          COMMITTISH: ${{ steps.args.outputs.committish }}
+        run: docker compose -f compose.yaml -f compose.mixin.webport.yaml -f compose.mixin.localregistry.yaml --verbose up --detach
 
       - name: Wait for netdisco-web to respond
         run: |
           set -e
           for i in $(seq 1 90); do
-            code=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:5000/ || true)
+            code=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/ || true)
             echo "[$i] HTTP $code"
             if [ -n "$code" ] && [ "$code" -lt 500 ] && [ "$code" -ne 000 ]; then
               echo "netdisco-web responded with $code after ${i}s"

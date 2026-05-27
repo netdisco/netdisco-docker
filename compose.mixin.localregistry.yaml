@@ -1,0 +1,16 @@
+services:
+
+  netdisco-postgresql:
+    image: localhost:5000/netdisco:${COMMITTISH:-latest}-postgresql
+
+  netdisco-postgresql-13:
+    image: localhost:5000/netdisco:${COMMITTISH:-latest}-postgresql-13
+
+  netdisco-db-init:
+    image: localhost:5000/netdisco:${COMMITTISH:-latest}-backend
+
+  netdisco-backend:
+    image: localhost:5000/netdisco:${COMMITTISH:-latest}-backend
+
+  netdisco-web:
+    image: localhost:5000/netdisco:${COMMITTISH:-latest}-web

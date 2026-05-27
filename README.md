@@ -98,9 +98,22 @@ A `/health` endpoint (suitable for container/load-balancer health probes) is ava
 
 ##  Rebuilding
 
-If you wish to build the images locally, use [this compose file](https://raw.githubusercontent.com/netdisco/netdisco-docker/refs/heads/master/compose.build.yaml) (it's not a mix-in):
+If you wish to build the images locally, use a modern version of Docker which will include Docker Bake.
 
-    docker compose -f compose.build.yaml build --no-cache
+    COMMITTISH=HEAD docker buildx bake
+
+Replace `HEAD` with the Git reference you wish to build from the [Netdisco repository](https://github.com/netdisco/netdisco); the
+name of a branch works well. You can also add `NETDISCO_GIT_URL` to point to any other online repo, or a local folder.
+
+This default target rebuilds only "netdisco-backend" and "netdisco-web". You can use the `standalone` target to rebuild with "netdisco-postgresql",
+or the `all` target to rebuild with both "netdisco-postgresql" and "netdisco-postgresql-13".
+
+The build images will NOT be tagged with "netdisco" prefix (they will look like "localhost:5000/netdisco:latest-web" in `docker images --tree`). To use them
+with our Docker Compose files (as above), we have a [mix-in file](https://raw.githubusercontent.com/netdisco/netdisco-docker/refs/heads/master/compose.mixin.localregistry.yaml):
+
+    COMMITTISH=HEAD docker compose -f compose.yaml -f compose.mixin.localregistry.yaml up
+
+Specifying the `COMMITTISH` will ensure you run the same images you just built (in case there are others in your Docker).
 
 ##  Kubernetes / OpenShift
 
