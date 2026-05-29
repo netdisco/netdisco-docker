@@ -33,7 +33,7 @@ target "netdisco-base" {
     NETDISCO_GIT_URL = NETDISCO_GIT_URL
     BUILD_DATE       = BUILD_DATE
   }
-  output = ["type=docker"]
+  output = ["type=oci"]
 }
 
 target "netdisco-web" {
@@ -48,7 +48,7 @@ target "netdisco-web" {
   contexts = {
     "localhost:5000/netdisco:${COMMITTISH}-base" = "target:netdisco-base"
   }
-  output = ["type=docker"]
+  output = ["type=oci"]
 }
 
 target "netdisco-backend" {
@@ -63,7 +63,7 @@ target "netdisco-backend" {
   contexts = {
     "localhost:5000/netdisco:${COMMITTISH}-base" = "target:netdisco-base"
   }
-  output = ["type=docker"]
+  output = ["type=oci"]
 }
 
 target "netdisco-postgresql" {
@@ -76,7 +76,7 @@ target "netdisco-postgresql" {
     COMMITTISH = COMMITTISH
     BUILD_DATE = BUILD_DATE
   }
-  output = ["type=docker"]
+  output = ["type=oci"]
 }
 
 target "netdisco-postgresql-13" {
@@ -90,5 +90,5 @@ target "netdisco-postgresql-13" {
     COMMITTISH = COMMITTISH
     BUILD_DATE = BUILD_DATE
   }
-  output = ["type=docker"]
+  output = ["type=oci"]
 }
