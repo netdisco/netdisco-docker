@@ -76,7 +76,7 @@ target "netdisco-postgresql" {
     COMMITTISH = COMMITTISH
     BUILD_DATE = BUILD_DATE
   }
-  output = ["type=oci"]
+  output = ["type=docker"]
 }
 
 target "netdisco-postgresql-13" {
@@ -90,5 +90,5 @@ target "netdisco-postgresql-13" {
     COMMITTISH = COMMITTISH
     BUILD_DATE = BUILD_DATE
   }
-  output = ["type=oci"]
+  output = ["type=docker"]
 }
