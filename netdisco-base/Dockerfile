@@ -1,28 +1,6 @@
 # vim: ft=Dockerfile
 # ----------------------------------------------------------------------------
-FROM docker.io/alpine:latest AS fetcher
-
-# retrieve Build.PL to use as a cache invalidation test (whether to rebuild
-# netdisco dependencies which is a very slow task)
-
-RUN --mount=type=cache,target=/var/cache/apk \
-    apk add git
-
-# NETDISCO_GIT_URL lets CI / local builds point at a fork (e.g. to test a PR)
-# without editing the Dockerfile. Defaults to upstream.
-
-ARG NETDISCO_GIT_URL=https://github.com/netdisco/netdisco.git
-ARG COMMITTISH=HEAD
-
-WORKDIR /fetch
-
-RUN git init \
-  && git remote add origin "${NETDISCO_GIT_URL}" \
-  && git fetch --depth 1 origin "${COMMITTISH}" \
-  && git reset --hard FETCH_HEAD
-
-# ----------------------------------------------------------------------------
-FROM docker.io/alpine:latest AS netdisco-builder-image
+FROM docker.io/alpine:latest AS netdisco-static-image
 
 # temporary bloated image used for building Netdisco.
 # netdisco-base will copy the built Netdisco files from this image
@@ -82,7 +60,32 @@ RUN --mount=type=cache,target=${WORK_DIR}/.cpanm,sharing=locked \
       URL::Encode \
       REST::Client
 
-# grab the fetched file from the first stage.
+# ----------------------------------------------------------------------------
+FROM docker.io/alpine:latest AS fetcher
+
+# retrieve Build.PL to use as a cache invalidation test (whether to rebuild
+# netdisco dependencies which is a very slow task)
+
+RUN --mount=type=cache,target=/var/cache/apk \
+    apk add git
+
+# NETDISCO_GIT_URL lets CI / local builds point at a fork (e.g. to test a PR)
+# without editing the Dockerfile. Defaults to upstream.
+
+ARG NETDISCO_GIT_URL=https://github.com/netdisco/netdisco.git
+ARG COMMITTISH=HEAD
+
+WORKDIR /fetch
+
+RUN git init \
+  && git remote add origin "${NETDISCO_GIT_URL}" \
+  && git fetch --depth 1 origin "${COMMITTISH}" \
+  && git reset --hard FETCH_HEAD
+
+# ----------------------------------------------------------------------------
+FROM netdisco-static-image AS netdisco-builder-image
+
+# grab the fetched file from the second stage.
 # if Build.PL has not changed, Docker's cache remains valid.
 COPY --from=fetcher /fetch/Build.PL /tmp/netdisco-tree/Build.PL
 COPY Netdisco.pm /tmp/netdisco-tree/lib/App/Netdisco.pm
@@ -180,23 +183,7 @@ WORKDIR /home/netdisco
 ENV PATH="/home/netdisco/bin:$PATH"
 ENV SHELL=/bin/ash
 
-ARG BUILD_DATE
-ARG COMMITTISH=HEAD
-
-LABEL org.label-schema.docker.schema-version="1.0" \
-      org.label-schema.vendor="The Netdisco Project" \
-      org.label-schema.url="http://netdisco.org" \
-      org.label-schema.name="Netdisco Base" \
-      org.label-schema.description="Base Image for Netdisco" \
-      org.label-schema.usage="https://github.com/netdisco/netdisco-docker/blob/master/README.md" \
-      org.label-schema.version=${COMMITTISH} \
-      org.label-schema.vcs-ref=${COMMITTISH} \
-      org.label-schema.vcs-url="git://github.com/netdisco/netdisco.git" \
-      org.label-schema.build-date=${BUILD_DATE} \
-      org.netdisco.maintainer="The Netdisco Project" \
-      org.netdisco.version=${COMMITTISH}
-
-      ## volumes can be optional, and controlled by docker-compose file
+## volumes can be optional, and controlled by docker-compose file
 # VOLUME ["/home/netdisco/environments", "/home/netdisco/nd-site-local", "/home/netdisco/logs"]
 
 CMD ["ash"]

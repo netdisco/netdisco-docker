@@ -45,8 +45,19 @@ ENV UV_NO_MANAGED_PYTHON=true \
 COPY --chown=netdisco:netdisco netdisco-updatedb.sh /home/netdisco/bin/
 RUN chmod +x /home/netdisco/bin/netdisco-updatedb.sh
 
-LABEL org.label-schema.name="netdisco-backend" \
-      org.label-schema.description="Polling Daemon for Netdisco"
+ARG BUILD_DATE
+LABEL org.label-schema.docker.schema-version="1.0" \
+      org.label-schema.vendor="The Netdisco Project" \
+      org.label-schema.url="http://netdisco.org" \
+      org.label-schema.name="netdisco-backend" \
+      org.label-schema.description="Polling Daemon for Netdisco" \
+      org.label-schema.usage="https://github.com/netdisco/netdisco-docker/blob/master/README.md" \
+      org.label-schema.version=${COMMITTISH} \
+      org.label-schema.vcs-ref=${COMMITTISH} \
+      org.label-schema.vcs-url="git://github.com/netdisco/netdisco.git" \
+      org.label-schema.build-date=${BUILD_DATE} \
+      org.netdisco.maintainer="The Netdisco Project" \
+      org.netdisco.version=${COMMITTISH}
 
 ENTRYPOINT ["/home/netdisco/bin/netdisco-backend"]
 CMD ["foreground"]

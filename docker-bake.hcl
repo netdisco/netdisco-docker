@@ -31,7 +31,6 @@ target "netdisco-base" {
   args = {
     COMMITTISH       = COMMITTISH
     NETDISCO_GIT_URL = NETDISCO_GIT_URL
-    BUILD_DATE       = BUILD_DATE
   }
   output = ["type=docker"]
 }
