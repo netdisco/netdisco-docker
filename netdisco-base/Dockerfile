@@ -29,6 +29,7 @@ FROM docker.io/alpine:latest AS netdisco-builder-image
 
 ARG CACHE_BUST_OS=1
 RUN --mount=type=cache,target=/var/cache/apk \
+  NETDISCO_GIT_URL= COMMITTISH= BUILD_DATE= \
     apk update && \
     apk add \
       linux-headers \
@@ -60,7 +61,8 @@ RUN --mount=type=cache,target=/var/cache/apk \
     apk fix --no-cache perl perl-dev
 
 WORKDIR /tmp
-RUN curl -sL -o /tmp/cpanm https://cpanmin.us/ && \
+RUN NETDISCO_GIT_URL= COMMITTISH= BUILD_DATE= \
+  curl -sL -o /tmp/cpanm https://cpanmin.us/ && \
   chmod +x /tmp/cpanm
 
 ARG WORK_DIR=/home/netdisco
@@ -68,6 +70,7 @@ WORKDIR ${WORK_DIR}
 
 # CFLAGS for Authen::TacacsPlus
 RUN --mount=type=cache,target=${WORK_DIR}/.cpanm,sharing=locked \
+  NETDISCO_GIT_URL= COMMITTISH= BUILD_DATE= \
     export PERL5LIB="${WORK_DIR}" \
            PERL_CPANM_HOME="${WORK_DIR}/.cpanm" && \
            CFLAGS="-Wno-error=old-style-definition -std=gnu17" \
@@ -75,6 +78,7 @@ RUN --mount=type=cache,target=${WORK_DIR}/.cpanm,sharing=locked \
       IO::Tty Authen::TacacsPlus
 
 RUN --mount=type=cache,target=${WORK_DIR}/.cpanm,sharing=locked \
+  NETDISCO_GIT_URL= COMMITTISH= BUILD_DATE= \
     export PERL5LIB="${WORK_DIR}" \
            PERL_CPANM_HOME="${WORK_DIR}/.cpanm" && \
     /tmp/cpanm --quiet --notest --local-lib "${WORK_DIR}/perl5" \
@@ -89,6 +93,7 @@ COPY Netdisco.pm /tmp/netdisco-tree/lib/App/Netdisco.pm
 COPY Builder.pm /tmp/netdisco-tree/lib/App/Netdisco/Builder.pm
 
 RUN --mount=type=cache,target=${WORK_DIR}/.cpanm,sharing=locked \
+  NETDISCO_GIT_URL= COMMITTISH= BUILD_DATE= \
     export PERL5LIB="${WORK_DIR}" \
            PERL_CPANM_HOME="${WORK_DIR}/.cpanm" && \
     /tmp/cpanm --quiet --notest --local-lib "${WORK_DIR}/perl5" \
@@ -104,6 +109,7 @@ ARG NETDISCO_GIT_URL=https://github.com/netdisco/netdisco.git
 ARG COMMITTISH=HEAD
 
 RUN --mount=type=cache,target=${WORK_DIR}/.cpanm,sharing=locked \
+  BUILD_DATE= \
     export PERL5LIB="${WORK_DIR}" \
            PERL_CPANM_HOME="${WORK_DIR}/.cpanm" && \
     /tmp/cpanm --quiet --notest --local-lib "${WORK_DIR}/perl5" \
@@ -116,6 +122,7 @@ FROM docker.io/alpine:latest
 
 ARG CACHE_BUST_OS=1
 RUN --mount=type=cache,target=/var/cache/apk \
+  NETDISCO_GIT_URL= COMMITTISH= BUILD_DATE= \
     apk update && \
     apk add \
       shadow \
@@ -146,14 +153,16 @@ RUN --mount=type=cache,target=/var/cache/apk \
       icu-data-full \
       jq
 
-RUN groupadd -r netdisco -g 901 && \
+RUN NETDISCO_GIT_URL= COMMITTISH= BUILD_DATE= \
+    groupadd -r netdisco -g 901 && \
     useradd -u 901 -r -p x -g netdisco -m -d /home/netdisco -s /bin/ash -c "netdisco user" netdisco
 USER netdisco:netdisco
 
-RUN for tgt in bin environments nd-site-local logs; \
+RUN NETDISCO_GIT_URL= COMMITTISH= BUILD_DATE= \
+    for tgt in bin environments nd-site-local logs; \
       do mkdir /home/netdisco/$tgt; done && \
-      ln -s /dev/stdout /home/netdisco/logs/netdisco-backend.log && \
-      ln -s /dev/stdout /home/netdisco/logs/netdisco-web.log
+    ln -s /dev/stdout /home/netdisco/logs/netdisco-backend.log && \
+    ln -s /dev/stdout /home/netdisco/logs/netdisco-web.log
 
 # copy Netdisco from the bloated build image
 COPY --chown=netdisco:netdisco --from=netdisco-builder-image \
@@ -163,7 +172,8 @@ COPY --chown=netdisco:netdisco --from=netdisco-builder-image \
 COPY --chown=netdisco:netdisco deployment.yml \
   /home/netdisco/perl5/lib/perl5/auto/share/dist/App-Netdisco/environments/deployment.yml
 
-RUN for tgt in /home/netdisco/perl5/bin/netdisco-*; \
+RUN NETDISCO_GIT_URL= COMMITTISH= BUILD_DATE= \
+    for tgt in /home/netdisco/perl5/bin/netdisco-*; \
       do ln -sf $tgt /home/netdisco/bin/; done && \
     ln -sf /home/netdisco/perl5/bin/localenv /home/netdisco/bin/
 
@@ -172,7 +182,8 @@ RUN for tgt in /home/netdisco/perl5/bin/netdisco-*; \
 # is added to every container by OpenShift. Harmless when the image runs
 # as the netdisco user (the default in docker compose).
 USER root
-RUN chgrp -R 0 /home/netdisco && chmod -R g=u /home/netdisco
+RUN NETDISCO_GIT_URL= COMMITTISH= BUILD_DATE= \
+    chgrp -R 0 /home/netdisco && chmod -R g=u /home/netdisco
 
 USER netdisco:netdisco
 WORKDIR /home/netdisco
