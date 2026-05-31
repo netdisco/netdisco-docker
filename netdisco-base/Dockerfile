@@ -158,11 +158,10 @@ RUN NETDISCO_GIT_URL= COMMITTISH= BUILD_DATE= \
     useradd -u 901 -r -p x -g netdisco -m -d /home/netdisco -s /bin/ash -c "netdisco user" netdisco
 USER netdisco:netdisco
 
-RUN NETDISCO_GIT_URL= COMMITTISH= BUILD_DATE= \
-    for tgt in bin environments nd-site-local logs; \
+RUN for tgt in bin environments nd-site-local logs; \
       do mkdir /home/netdisco/$tgt; done && \
-    ln -s /dev/stdout /home/netdisco/logs/netdisco-backend.log && \
-    ln -s /dev/stdout /home/netdisco/logs/netdisco-web.log
+      ln -s /dev/stdout /home/netdisco/logs/netdisco-backend.log && \
+      ln -s /dev/stdout /home/netdisco/logs/netdisco-web.log
 
 # copy Netdisco from the bloated build image
 COPY --chown=netdisco:netdisco --from=netdisco-builder-image \
@@ -172,8 +171,7 @@ COPY --chown=netdisco:netdisco --from=netdisco-builder-image \
 COPY --chown=netdisco:netdisco deployment.yml \
   /home/netdisco/perl5/lib/perl5/auto/share/dist/App-Netdisco/environments/deployment.yml
 
-RUN NETDISCO_GIT_URL= COMMITTISH= BUILD_DATE= \
-    for tgt in /home/netdisco/perl5/bin/netdisco-*; \
+RUN for tgt in /home/netdisco/perl5/bin/netdisco-*; \
       do ln -sf $tgt /home/netdisco/bin/; done && \
     ln -sf /home/netdisco/perl5/bin/localenv /home/netdisco/bin/
 
@@ -182,8 +180,7 @@ RUN NETDISCO_GIT_URL= COMMITTISH= BUILD_DATE= \
 # is added to every container by OpenShift. Harmless when the image runs
 # as the netdisco user (the default in docker compose).
 USER root
-RUN NETDISCO_GIT_URL= COMMITTISH= BUILD_DATE= \
-    chgrp -R 0 /home/netdisco && chmod -R g=u /home/netdisco
+RUN chgrp -R 0 /home/netdisco && chmod -R g=u /home/netdisco
 
 USER netdisco:netdisco
 WORKDIR /home/netdisco
