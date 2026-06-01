@@ -43,6 +43,7 @@ target "netdisco-web" {
   ]
   args = {
     COMMITTISH = COMMITTISH
+    BUILD_DATE = BUILD_DATE
   }
   contexts = {
     "localhost:5000/netdisco:${COMMITTISH}-base" = "target:netdisco-base"
@@ -58,6 +59,7 @@ target "netdisco-backend" {
   ]
   args = {
     COMMITTISH = COMMITTISH
+    BUILD_DATE = BUILD_DATE
   }
   contexts = {
     "localhost:5000/netdisco:${COMMITTISH}-base" = "target:netdisco-base"
