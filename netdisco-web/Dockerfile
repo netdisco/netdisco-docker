@@ -2,7 +2,9 @@
 ARG COMMITTISH=HEAD
 FROM localhost:5000/netdisco:${COMMITTISH}-base
 
+ARG COMMITTISH=HEAD
 ARG BUILD_DATE
+
 LABEL org.label-schema.docker.schema-version="1.0" \
       org.label-schema.vendor="The Netdisco Project" \
       org.label-schema.url="http://netdisco.org" \
