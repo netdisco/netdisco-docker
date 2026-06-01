@@ -1,9 +1,8 @@
 # vim: ft=Dockerfile
-ARG COMMITTISH=latest
+ARG COMMITTISH=HEAD
 FROM localhost:5000/netdisco:${COMMITTISH}-base
 
 USER root
-
 RUN --mount=type=cache,target=/var/cache/apk \
     apk add \
       ca-certificates \
@@ -27,7 +26,6 @@ RUN curl -sL https://api.github.com/repos/netdisco/netdisco-mibs/releases/latest
   grep browser_download_url | xargs printf "curl -sL %s\n" | tail -1 | \
   sh | tar -zxf -
 
-ARG COMMITTISH=HEAD
 RUN rm -f /home/netdisco/perl5/lib/perl5/auto/share/dist/App-Netdisco/python/netdisco/uv.lock
 RUN `/home/netdisco/bin/localenv perl -MAlien::ultraviolet -e 'print Alien::ultraviolet->uv'` \
       --no-cache --no-progress --quiet --project \

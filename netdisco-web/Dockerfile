@@ -1,5 +1,5 @@
 # vim: ft=Dockerfile
-ARG COMMITTISH=latest
+ARG COMMITTISH=HEAD
 FROM localhost:5000/netdisco:${COMMITTISH}-base
 
 ARG BUILD_DATE

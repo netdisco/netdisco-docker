@@ -69,13 +69,13 @@ FROM docker.io/alpine:latest AS fetcher
 RUN --mount=type=cache,target=/var/cache/apk \
     apk add git
 
+WORKDIR /fetch
+
 # NETDISCO_GIT_URL lets CI / local builds point at a fork (e.g. to test a PR)
 # without editing the Dockerfile. Defaults to upstream.
 
 ARG NETDISCO_GIT_URL=https://github.com/netdisco/netdisco.git
 ARG COMMITTISH=HEAD
-
-WORKDIR /fetch
 
 RUN git init \
   && git remote add origin "${NETDISCO_GIT_URL}" \
