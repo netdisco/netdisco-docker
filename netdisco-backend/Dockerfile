@@ -2,16 +2,16 @@
 FROM localhost:5000/netdisco:netdisco-base
 
 USER netdisco:netdisco
-WORKDIR /home/netdisco
 
 # if Netdisco MIBs VERSION has not changed, Docker's cache remains valid.
 # there is a slight race, when the VERSION could have been updated in the repo before a release is made
 # in which case docker will simply re-download the previous version (the current release)
 ADD https://github.com/netdisco/netdisco-mibs/raw/refs/heads/master/VERSION /tmp/netdisco-mibs-version
 
-RUN curl -sL https://api.github.com/repos/netdisco/netdisco-mibs/releases/latest | \
+WORKDIR /home/netdisco/netdisco-mibs
+RUN 'curl -sL https://api.github.com/repos/netdisco/netdisco-mibs/releases/latest | \
   grep browser_download_url | xargs printf "curl -sL %s\n" | tail -1 | \
-  sh | tar -zxf -
+  sh | tar --strip-components=1 -zxf -'
 
 # this will probably bust the cache as it updates weekly
 # but that's OK, the rest of this Dockerfile we want to rebuild fresh
@@ -50,5 +50,6 @@ LABEL org.label-schema.docker.schema-version="1.0" \
       org.netdisco.maintainer="The Netdisco Project" \
       org.netdisco.version=${COMMITTISH}
 
+WORKDIR /home/netdisco
 ENTRYPOINT ["/home/netdisco/bin/netdisco-backend"]
 CMD ["foreground"]
