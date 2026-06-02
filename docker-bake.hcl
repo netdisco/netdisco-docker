@@ -29,7 +29,7 @@ target "netdisco-base" {
     NETDISCO_GIT_URL = NETDISCO_GIT_URL
   }
   tags = [
-    "localhost:5000/netdisco:builder-base",
+    "localhost:5000/netdisco:netdisco-base",
   ]
   output = ["type=docker"]
 }
@@ -39,7 +39,7 @@ target "netdisco" {
   matrix = {
     tgt = ["backend", "web"]
   }
-  target = tgt
+#  target = "netdisco-${tgt}"
   context = "./netdisco-${tgt}"
   args = {
     COMMITTISH = COMMITTISH
@@ -49,7 +49,7 @@ target "netdisco" {
     "localhost:5000/netdisco:${COMMITTISH}-${tgt}",
   ]
   contexts = {
-    "localhost:5000/netdisco:${COMMITTISH}-base" = "target:netdisco-base"
+    "localhost:5000/netdisco:netdisco-base" = "target:netdisco-base"
   }
   output = ["type=docker"]
 }

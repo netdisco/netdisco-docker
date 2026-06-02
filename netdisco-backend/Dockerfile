@@ -1,5 +1,5 @@
 # vim: ft=Dockerfile
-FROM localhost:5000/netdisco:builder-base
+FROM localhost:5000/netdisco:netdisco-base
 
 USER netdisco:netdisco
 WORKDIR /home/netdisco

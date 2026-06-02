@@ -138,9 +138,6 @@ RUN mv /home/netdisco /home/netdisco-build
 # ----------------------------------------------------------------------------
 FROM netdisco-common-base
 
-RUN --mount=type=cache,target=/var/cache/apk \
-    apk add \
-
 RUN groupadd -r netdisco -g 901 && \
     useradd -u 901 -r -p x -g netdisco -m -d /home/netdisco -s /bin/ash -c "netdisco user" netdisco
 USER netdisco:netdisco
