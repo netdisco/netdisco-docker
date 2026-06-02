@@ -11,15 +11,15 @@ variable "BUILD_DATE" {
 }
 
 group "default" {
-  targets = ["netdisco-backend","netdisco-web"]
+  targets = ["netdisco"]
 }
 
 group "standalone" {
-  targets = ["netdisco-postgresql","netdisco-backend", "netdisco-web"]
+  targets = ["netdisco-postgresql","netdisco"]
 }
 
 group "all" {
-  targets = ["netdisco-postgresql","netdisco-postgresql-13","netdisco-backend", "netdisco-web"]
+  targets = ["netdisco-postgresql","netdisco-postgresql-13","netdisco"]
 }
 
 target "netdisco-base" {
