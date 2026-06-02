@@ -9,8 +9,8 @@ USER netdisco:netdisco
 ADD https://github.com/netdisco/netdisco-mibs/raw/refs/heads/master/VERSION /tmp/netdisco-mibs-version
 
 WORKDIR /home/netdisco/netdisco-mibs
-RUN 'curl -sL https://api.github.com/repos/netdisco/netdisco-mibs/releases/latest | \
-  grep browser_download_url | xargs printf "curl -sL %s\n" | tail -1 | \
+RUN '/usr/bin/curl -sL https://api.github.com/repos/netdisco/netdisco-mibs/releases/latest | \
+  grep browser_download_url | xargs printf "/usr/bin/curl -sL %s\n" | tail -1 | \
   sh | tar --strip-components=1 -zxf -'
 
 # this will probably bust the cache as it updates weekly
