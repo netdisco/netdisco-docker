@@ -2,6 +2,9 @@
 # ----------------------------------------------------------------------------
 FROM docker.io/alpine:latest AS netdisco-mibs
 
+RUN --mount=type=cache,target=/var/cache/apk \
+    apk add curl
+
 # if Netdisco MIBs VERSION has not changed, Docker's cache remains valid.
 # there is a slight race, when the VERSION could have been updated in the repo before a release is made
 # in which case docker will simply re-download the previous version (the current release)
