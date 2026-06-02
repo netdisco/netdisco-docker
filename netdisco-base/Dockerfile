@@ -1,6 +1,28 @@
 # vim: ft=Dockerfile
 # ----------------------------------------------------------------------------
-FROM docker.io/alpine:latest AS netdisco-static-image
+FROM docker.io/alpine:latest AS fetcher
+
+# retrieve Build.PL to use as a cache invalidation test (whether to rebuild
+# netdisco dependencies which is a very slow task)
+
+RUN --mount=type=cache,target=/var/cache/apk \
+    apk add git
+
+WORKDIR /fetch
+
+# NETDISCO_GIT_URL lets CI / local builds point at a fork (e.g. to test a PR)
+# without editing the Dockerfile. Defaults to upstream.
+
+ARG NETDISCO_GIT_URL=https://github.com/netdisco/netdisco.git
+ARG COMMITTISH=HEAD
+
+RUN git init \
+  && git remote add origin "${NETDISCO_GIT_URL}" \
+  && git fetch --depth 1 origin "${COMMITTISH}" \
+  && git reset --hard FETCH_HEAD
+
+# ----------------------------------------------------------------------------
+FROM docker.io/alpine:latest AS netdisco-common-base
 
 # temporary bloated image used for building Netdisco.
 # netdisco-base will copy the built Netdisco files from this image
@@ -9,31 +31,55 @@ ARG CACHE_BUST_OS=1
 RUN --mount=type=cache,target=/var/cache/apk \
     apk update && \
     apk add \
-      linux-headers \
+      bash \
       ca-certificates \
       curl \
+      expect \
+      expect-dev \
       findutils \
-      g++ \
-      gcc \
-      git \
+      icu-data-full \
       jq \
       libc6-compat \
       musl-dev \
       musl-obstack-dev \
-      make \
       net-snmp-perl \
-      openssl-dev \
+      openssh-client \
       perl-crypt-rijndael \
       perl-dbd-pg \
-      perl-dev \
+      perl-file-sharedir \
+      perl-file-slurp \
       perl-io-socket-ssl \
+      perl-json \
       perl-ldap \
+      perl-lwp-protocol-https \
       perl-netaddr-ip \
+      perl-regexp-common \
+      perl-regexp-common-net-cidr \
+      perl-regexp-ipv6 \
       postgresql18-client \
-      postgresql18-dev \
       python3 \
+      shadow \
+      tar \
       tzdata \
-      openssh-client \
+      zstd && \
+    apk fix --no-cache perl perl-dev
+
+# ----------------------------------------------------------------------------
+FROM netdisco-common-base AS netdisco-builder-image
+
+# temporary bloated image used for building Netdisco.
+# netdisco-base will copy the built Netdisco files from this image
+
+RUN --mount=type=cache,target=/var/cache/apk \
+    apk add \
+      g++ \
+      gcc \
+      git \
+      linux-headers \
+      make \
+      openssl-dev \
+      perl-dev \
+      postgresql18-dev \
       wget && \
     apk fix --no-cache perl perl-dev
 
@@ -59,31 +105,6 @@ RUN --mount=type=cache,target=${WORK_DIR}/.cpanm,sharing=locked \
       Dancer::Debug \
       URL::Encode \
       REST::Client
-
-# ----------------------------------------------------------------------------
-FROM docker.io/alpine:latest AS fetcher
-
-# retrieve Build.PL to use as a cache invalidation test (whether to rebuild
-# netdisco dependencies which is a very slow task)
-
-RUN --mount=type=cache,target=/var/cache/apk \
-    apk add git
-
-WORKDIR /fetch
-
-# NETDISCO_GIT_URL lets CI / local builds point at a fork (e.g. to test a PR)
-# without editing the Dockerfile. Defaults to upstream.
-
-ARG NETDISCO_GIT_URL=https://github.com/netdisco/netdisco.git
-ARG COMMITTISH=HEAD
-
-RUN git init \
-  && git remote add origin "${NETDISCO_GIT_URL}" \
-  && git fetch --depth 1 origin "${COMMITTISH}" \
-  && git reset --hard FETCH_HEAD
-
-# ----------------------------------------------------------------------------
-FROM netdisco-static-image AS netdisco-builder-image
 
 # grab the fetched file from the second stage.
 # if Build.PL has not changed, Docker's cache remains valid.
@@ -115,39 +136,10 @@ RUN --mount=type=cache,target=${WORK_DIR}/.cpanm,sharing=locked \
 RUN mv /home/netdisco /home/netdisco-build
 
 # ----------------------------------------------------------------------------
-FROM docker.io/alpine:latest
+FROM netdisco-common-base
 
-ARG CACHE_BUST_OS=1
 RUN --mount=type=cache,target=/var/cache/apk \
-    apk update && \
     apk add \
-      shadow \
-      findutils \
-      libc6-compat \
-      musl-dev \
-      musl-obstack-dev \
-      net-snmp-perl \
-      expect \
-      expect-dev \
-      perl-crypt-rijndael \
-      perl-dbd-pg \
-      perl-io-socket-ssl \
-      perl-ldap \
-      perl-json \
-      perl-lwp-protocol-https \
-      perl-file-slurp \
-      perl-regexp-common \
-      perl-regexp-common-net-cidr \
-      perl-regexp-ipv6 \
-      perl-file-sharedir \
-      perl-netaddr-ip \
-      postgresql18-client \
-      python3 \
-      tzdata \
-      bash \
-      zstd \
-      icu-data-full \
-      jq
 
 RUN groupadd -r netdisco -g 901 && \
     useradd -u 901 -r -p x -g netdisco -m -d /home/netdisco -s /bin/ash -c "netdisco user" netdisco

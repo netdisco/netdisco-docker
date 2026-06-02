@@ -1,18 +1,5 @@
 # vim: ft=Dockerfile
-ARG COMMITTISH=HEAD
-FROM localhost:5000/netdisco:${COMMITTISH}-base
-
-USER root
-RUN --mount=type=cache,target=/var/cache/apk \
-    apk add \
-      ca-certificates \
-      curl \
-      openssh-client \
-      bash \
-      tar
-
-WORKDIR /var/lib/postgresql/netdisco-sql
-RUN curl -sLO "https://github.com/netdisco/upstream-sources/raw/refs/heads/master/bootstrap/netdisco-lookup-tables.sql"
+FROM localhost:5000/netdisco:builder-base
 
 USER netdisco:netdisco
 WORKDIR /home/netdisco
@@ -25,6 +12,10 @@ ADD https://github.com/netdisco/netdisco-mibs/raw/refs/heads/master/VERSION /tmp
 RUN curl -sL https://api.github.com/repos/netdisco/netdisco-mibs/releases/latest | \
   grep browser_download_url | xargs printf "curl -sL %s\n" | tail -1 | \
   sh | tar -zxf -
+
+# this will probably bust the cache as it updates weekly
+# but that's OK, the rest of this Dockerfile we want to rebuild fresh
+ADD --chown=root:root https://github.com/netdisco/upstream-sources/raw/refs/heads/master/bootstrap/netdisco-lookup-tables.sql /var/lib/postgresql/netdisco-sql/
 
 RUN rm -f /home/netdisco/perl5/lib/perl5/auto/share/dist/App-Netdisco/python/netdisco/uv.lock
 RUN `/home/netdisco/bin/localenv perl -MAlien::ultraviolet -e 'print Alien::ultraviolet->uv'` \

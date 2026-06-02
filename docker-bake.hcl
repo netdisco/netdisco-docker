@@ -23,14 +23,13 @@ group "all" {
 }
 
 target "netdisco-base" {
-  name = "netdisco-base"
   context = "./netdisco-base"
   args = {
     COMMITTISH       = COMMITTISH
     NETDISCO_GIT_URL = NETDISCO_GIT_URL
   }
   tags = [
-    "localhost:5000/netdisco:${COMMITTISH}-base",
+    "localhost:5000/netdisco:builder-base",
   ]
   output = ["type=docker"]
 }
@@ -56,7 +55,6 @@ target "netdisco" {
 }
 
 target "netdisco-postgresql" {
-  name = "netdisco-postgresql"
   context = "./netdisco-postgresql"
   args = {
     COMMITTISH = COMMITTISH
@@ -69,7 +67,6 @@ target "netdisco-postgresql" {
 }
 
 target "netdisco-postgresql-13" {
-  name = "netdisco-postgresql-13"
   context = "./netdisco-postgresql"
   args = {
     PGVER      = "13.4"
