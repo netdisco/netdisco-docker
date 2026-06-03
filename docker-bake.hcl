@@ -3,7 +3,7 @@ variable "NETDISCO_GIT_URL" {
 }
 
 variable "COMMITTISH" {
-  default = "latest"
+  default = "HEAD"
 }
 
 variable "BUILD_DATE" {
@@ -11,55 +11,42 @@ variable "BUILD_DATE" {
 }
 
 group "default" {
-  targets = ["netdisco-backend","netdisco-web"]
+  targets = ["netdisco"]
 }
 
 group "standalone" {
-  targets = ["netdisco-postgresql","netdisco-backend", "netdisco-web"]
+  targets = ["netdisco-postgresql","netdisco"]
 }
 
 group "all" {
-  targets = ["netdisco-postgresql","netdisco-postgresql-13","netdisco-backend", "netdisco-web"]
+  targets = ["netdisco-postgresql","netdisco-postgresql-13","netdisco"]
 }
 
 target "netdisco-base" {
-  context    = "./netdisco-base"
-  dockerfile = "Dockerfile"
-  tags = [
-    "localhost:5000/netdisco:${COMMITTISH}-base",
-  ]
+  context = "./netdisco-base"
   args = {
     COMMITTISH       = COMMITTISH
     NETDISCO_GIT_URL = NETDISCO_GIT_URL
-    BUILD_DATE       = BUILD_DATE
   }
+  tags = [
+    "localhost:5000/netdisco:${COMMITTISH}-base",
+  ]
   output = ["type=docker"]
 }
 
-target "netdisco-web" {
-  context    = "./netdisco-web"
-  dockerfile = "Dockerfile"
-  tags = [
-    "localhost:5000/netdisco:${COMMITTISH}-web",
-  ]
+target "netdisco" {
+  name = "netdisco-${tgt}"
+  matrix = {
+    tgt = ["backend", "web"]
+  }
+  context = "./netdisco-${tgt}"
   args = {
     COMMITTISH = COMMITTISH
+    BUILD_DATE = BUILD_DATE
   }
-  contexts = {
-    "localhost:5000/netdisco:${COMMITTISH}-base" = "target:netdisco-base"
-  }
-  output = ["type=docker"]
-}
-
-target "netdisco-backend" {
-  context    = "./netdisco-backend"
-  dockerfile = "Dockerfile"
   tags = [
-    "localhost:5000/netdisco:${COMMITTISH}-backend",
+    "localhost:5000/netdisco:${COMMITTISH}-${tgt}",
   ]
-  args = {
-    COMMITTISH = COMMITTISH
-  }
   contexts = {
     "localhost:5000/netdisco:${COMMITTISH}-base" = "target:netdisco-base"
   }
@@ -67,28 +54,26 @@ target "netdisco-backend" {
 }
 
 target "netdisco-postgresql" {
-  context    = "./netdisco-postgresql"
-  dockerfile = "Dockerfile"
-  tags = [
-    "localhost:5000/netdisco:${COMMITTISH}-postgresql",
-  ]
+  context = "./netdisco-postgresql"
   args = {
     COMMITTISH = COMMITTISH
     BUILD_DATE = BUILD_DATE
   }
+  tags = [
+    "localhost:5000/netdisco:${COMMITTISH}-postgresql",
+  ]
   output = ["type=docker"]
 }
 
 target "netdisco-postgresql-13" {
-  context    = "./netdisco-postgresql"
-  dockerfile = "Dockerfile"
-  tags = [
-    "localhost:5000/netdisco:${COMMITTISH}-postgresql-13",
-  ]
+  context = "./netdisco-postgresql"
   args = {
     PGVER      = "13.4"
     COMMITTISH = COMMITTISH
     BUILD_DATE = BUILD_DATE
   }
+  tags = [
+    "localhost:5000/netdisco:${COMMITTISH}-postgresql-13",
+  ]
   output = ["type=docker"]
 }

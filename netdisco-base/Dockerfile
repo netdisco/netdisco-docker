@@ -8,13 +8,13 @@ FROM docker.io/alpine:latest AS fetcher
 RUN --mount=type=cache,target=/var/cache/apk \
     apk add git
 
+WORKDIR /fetch
+
 # NETDISCO_GIT_URL lets CI / local builds point at a fork (e.g. to test a PR)
 # without editing the Dockerfile. Defaults to upstream.
 
 ARG NETDISCO_GIT_URL=https://github.com/netdisco/netdisco.git
 ARG COMMITTISH=HEAD
-
-WORKDIR /fetch
 
 RUN git init \
   && git remote add origin "${NETDISCO_GIT_URL}" \
@@ -22,7 +22,7 @@ RUN git init \
   && git reset --hard FETCH_HEAD
 
 # ----------------------------------------------------------------------------
-FROM docker.io/alpine:latest AS netdisco-builder-image
+FROM docker.io/alpine:latest AS netdisco-common-base
 
 # temporary bloated image used for building Netdisco.
 # netdisco-base will copy the built Netdisco files from this image
@@ -31,31 +31,55 @@ ARG CACHE_BUST_OS=1
 RUN --mount=type=cache,target=/var/cache/apk \
     apk update && \
     apk add \
-      linux-headers \
+      bash \
       ca-certificates \
       curl \
+      expect \
+      expect-dev \
       findutils \
-      g++ \
-      gcc \
-      git \
+      icu-data-full \
       jq \
       libc6-compat \
       musl-dev \
       musl-obstack-dev \
-      make \
       net-snmp-perl \
-      openssl-dev \
+      openssh-client \
       perl-crypt-rijndael \
       perl-dbd-pg \
-      perl-dev \
+      perl-file-sharedir \
+      perl-file-slurp \
       perl-io-socket-ssl \
+      perl-json \
       perl-ldap \
+      perl-lwp-protocol-https \
       perl-netaddr-ip \
+      perl-regexp-common \
+      perl-regexp-common-net-cidr \
+      perl-regexp-ipv6 \
       postgresql18-client \
-      postgresql18-dev \
       python3 \
+      shadow \
+      tar \
       tzdata \
-      openssh-client \
+      zstd && \
+    apk fix --no-cache perl perl-dev
+
+# ----------------------------------------------------------------------------
+FROM netdisco-common-base AS netdisco-builder-image
+
+# temporary bloated image used for building Netdisco.
+# netdisco-base will copy the built Netdisco files from this image
+
+RUN --mount=type=cache,target=/var/cache/apk \
+    apk add \
+      g++ \
+      gcc \
+      git \
+      linux-headers \
+      make \
+      openssl-dev \
+      perl-dev \
+      postgresql18-dev \
       wget && \
     apk fix --no-cache perl perl-dev
 
@@ -82,7 +106,7 @@ RUN --mount=type=cache,target=${WORK_DIR}/.cpanm,sharing=locked \
       URL::Encode \
       REST::Client
 
-# grab the fetched file from the first stage.
+# grab the fetched file from the second stage.
 # if Build.PL has not changed, Docker's cache remains valid.
 COPY --from=fetcher /fetch/Build.PL /tmp/netdisco-tree/Build.PL
 COPY Netdisco.pm /tmp/netdisco-tree/lib/App/Netdisco.pm
@@ -112,39 +136,7 @@ RUN --mount=type=cache,target=${WORK_DIR}/.cpanm,sharing=locked \
 RUN mv /home/netdisco /home/netdisco-build
 
 # ----------------------------------------------------------------------------
-FROM docker.io/alpine:latest
-
-ARG CACHE_BUST_OS=1
-RUN --mount=type=cache,target=/var/cache/apk \
-    apk update && \
-    apk add \
-      shadow \
-      findutils \
-      libc6-compat \
-      musl-dev \
-      musl-obstack-dev \
-      net-snmp-perl \
-      expect \
-      expect-dev \
-      perl-crypt-rijndael \
-      perl-dbd-pg \
-      perl-io-socket-ssl \
-      perl-ldap \
-      perl-json \
-      perl-lwp-protocol-https \
-      perl-file-slurp \
-      perl-regexp-common \
-      perl-regexp-common-net-cidr \
-      perl-regexp-ipv6 \
-      perl-file-sharedir \
-      perl-netaddr-ip \
-      postgresql18-client \
-      python3 \
-      tzdata \
-      bash \
-      zstd \
-      icu-data-full \
-      jq
+FROM netdisco-common-base
 
 RUN groupadd -r netdisco -g 901 && \
     useradd -u 901 -r -p x -g netdisco -m -d /home/netdisco -s /bin/ash -c "netdisco user" netdisco
@@ -180,23 +172,7 @@ WORKDIR /home/netdisco
 ENV PATH="/home/netdisco/bin:$PATH"
 ENV SHELL=/bin/ash
 
-ARG BUILD_DATE
-ARG COMMITTISH=HEAD
-
-LABEL org.label-schema.docker.schema-version="1.0" \
-      org.label-schema.vendor="The Netdisco Project" \
-      org.label-schema.url="http://netdisco.org" \
-      org.label-schema.name="Netdisco Base" \
-      org.label-schema.description="Base Image for Netdisco" \
-      org.label-schema.usage="https://github.com/netdisco/netdisco-docker/blob/master/README.md" \
-      org.label-schema.version=${COMMITTISH} \
-      org.label-schema.vcs-ref=${COMMITTISH} \
-      org.label-schema.vcs-url="git://github.com/netdisco/netdisco.git" \
-      org.label-schema.build-date=${BUILD_DATE} \
-      org.netdisco.maintainer="The Netdisco Project" \
-      org.netdisco.version=${COMMITTISH}
-
-      ## volumes can be optional, and controlled by docker-compose file
+## volumes can be optional, and controlled by docker-compose file
 # VOLUME ["/home/netdisco/environments", "/home/netdisco/nd-site-local", "/home/netdisco/logs"]
 
 CMD ["ash"]
