@@ -1,5 +1,6 @@
 # vim: ft=Dockerfile
-FROM localhost:5000/netdisco:netdisco-base
+ARG COMMITTISH=HEAD
+FROM localhost:5000/netdisco:${COMMITTISH}-base
 
 ARG COMMITTISH=HEAD
 ARG BUILD_DATE

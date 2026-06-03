@@ -1,4 +1,5 @@
 # vim: ft=Dockerfile
+ARG COMMITTISH=HEAD
 # ----------------------------------------------------------------------------
 FROM docker.io/alpine:latest AS netdisco-mibs
 
@@ -22,7 +23,7 @@ FROM docker.io/alpine:latest AS netdisco-sql
 ADD https://github.com/netdisco/upstream-sources/raw/refs/heads/master/bootstrap/netdisco-lookup-tables.sql /tmp/
 
 # ----------------------------------------------------------------------------
-FROM localhost:5000/netdisco:netdisco-base
+FROM localhost:5000/netdisco:${COMMITTISH}-base
 
 USER netdisco:netdisco
 WORKDIR /home/netdisco
