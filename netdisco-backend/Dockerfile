@@ -44,7 +44,7 @@ ENV UV_NO_MANAGED_PYTHON=true \
 
 COPY --chown=netdisco:netdisco --chmod=755 netdisco-updatedb.sh /home/netdisco/bin/
 COPY --from=netdisco-mibs --chown=netdisco:netdisco /tmp/netdisco-mibs /home/netdisco/
-COPY --from=netdisco-sql --chown=root:root /tmp/netdisco-lookup-tables.sql /var/lib/postgresql/netdisco-sql/
+COPY --from=netdisco-sql --chown=root:root --chmod=644 /tmp/netdisco-lookup-tables.sql /var/lib/postgresql/netdisco-sql/
 
 ARG COMMITTISH=HEAD
 ARG BUILD_DATE
