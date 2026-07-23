@@ -159,12 +159,17 @@ RUN for tgt in /home/netdisco/perl5/bin/netdisco-*; \
       do ln -sf $tgt /home/netdisco/bin/; done && \
     ln -sf /home/netdisco/perl5/bin/localenv /home/netdisco/bin/
 
-# Make /home/netdisco writable under arbitrary UIDs (OpenShift random UID,
-# kubectl runAsUser, etc.) by routing access via supplemental gid 0, which
-# is added to every container by OpenShift. Harmless when the image runs
-# as the netdisco user (the default in docker compose).
+# Make Netdisco's writable paths accessible under arbitrary UIDs (OpenShift
+# random UID, kubectl runAsUser, etc.) through supplemental gid 0. Keep the
+# home directory itself non-group-writable so Net::OpenSSH can safely create
+# its control socket directory there.
 USER root
-RUN chgrp -R 0 /home/netdisco && chmod -R g=u /home/netdisco
+RUN chgrp -R 0 /home/netdisco && chmod -R g=u /home/netdisco && \
+    chmod 755 /home/netdisco && \
+    mkdir /home/netdisco/run && \
+    chown netdisco:0 /home/netdisco/run && chmod 770 /home/netdisco/run && \
+    ln -s run/netdisco-daemon.pid /home/netdisco/netdisco-daemon.pid && \
+    ln -s run/netdisco-backend.pid /home/netdisco/netdisco-backend.pid
 
 USER netdisco:netdisco
 WORKDIR /home/netdisco
