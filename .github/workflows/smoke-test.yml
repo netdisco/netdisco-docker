@@ -65,6 +65,10 @@ jobs:
               --entrypoint /home/netdisco/bin/localenv \
               "localhost:5000/netdisco:$tag" \
               perl -e 'print "ok\n"'
+            docker run --rm --user 1000050000 \
+              --entrypoint /bin/ash \
+              "localhost:5000/netdisco:$tag" \
+              -ec 'echo "checking secure home permissions"; test "$(stat -c %a /home/netdisco)" = 755; echo "checking PID file access"; : > /home/netdisco/netdisco-backend.pid; rm /home/netdisco/run/netdisco-backend.pid'
             echo "::endgroup::"
           done
 
