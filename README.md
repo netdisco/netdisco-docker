@@ -52,11 +52,11 @@ Note carefully the commands used. The PostgreSQL database, and Netdisco's schema
 
 ##  Using an external PostgreSQL database
 
-We have a [mix-in Docker Compose file](https://raw.githubusercontent.com/netdisco/netdisco-docker/refs/heads/master/compose.mixin.extpg.yaml) for this. It stops our own database container from running and will look to either [environment variables](https://github.com/netdisco/netdisco/wiki/Environment-Variables) or a local `deployment.yml` configuration file for connection details.
+We have a [mix-in Docker Compose file](https://github.com/netdisco/netdisco-docker/raw/refs/heads/master/compose.mixin.extpg.yaml) for this. It stops our own database container from running and will look to either [environment variables](https://github.com/netdisco/netdisco/wiki/Environment-Variables) or a local `deployment.yml` configuration file for connection details.
 
 Download the mix-in and start the services:
 
-    curl -Ls -O https://raw.githubusercontent.com/netdisco/netdisco-docker/refs/heads/master/compose.mixin.extpg.yaml
+    curl -Ls -O https://github.com/netdisco/netdisco-docker/raw/refs/heads/master/compose.mixin.extpg.yaml
     docker compose -f compose.yaml -f compose.mixin.extpg.yaml up --detach
 
 If the database is on the same host as your Docker service, then use `host.docker.internal` for its hostname (either in the configuration file or with the `NETDISCO_DB_HOST` environment variable).
@@ -65,11 +65,11 @@ The `with-pg-upgrade` profile isn't designed for an external database; you'll ne
 
 ##  Pointing at a different configuration file
 
-We have an example [mix-in Docker Compose file](https://raw.githubusercontent.com/netdisco/netdisco-docker/refs/heads/master/compose.mixin.homeenv.yaml) for this. The example points to `deployment.yml` in a user's home directory.
+We have an example [mix-in Docker Compose file](https://github.com/netdisco/netdisco-docker/raw/refs/heads/master/compose.mixin.homeenv.yaml) for this. The example points to `deployment.yml` in a user's home directory.
 
 Download the mix-in and start the services:
 
-    curl -Ls -O https://raw.githubusercontent.com/netdisco/netdisco-docker/refs/heads/master/compose.mixin.homeenv.yaml
+    curl -Ls -O https://github.com/netdisco/netdisco-docker/raw/refs/heads/master/compose.mixin.homeenv.yaml
     docker compose -f compose.yaml -f compose.mixin.homeenv.yaml up --detach
 
 Edit the mix-in to point to another location.
@@ -88,7 +88,7 @@ The [netdisco-do](https://metacpan.org/dist/App-Netdisco/view/bin/netdisco-do) u
 
     docker compose exec netdisco-backend netdisco-do <action> ...
 
-If you're unable to download the `compose.yaml` file using our TinyURL above, it can be found here: https://raw.githubusercontent.com/netdisco/netdisco-docker/master/docker-compose.yml
+If you're unable to download the `compose.yaml` file using our TinyURL above, it can be found here: https://github.com/netdisco/netdisco-docker/raw/refs/heads/master/docker-compose.yml
 
 Local web or backend plugins can be installed into `netdisco/nd-site-local/` as per [our documentation](https://github.com/netdisco/netdisco/wiki). The PostgreSQL data files are stored in `netdisco/postgresql/` or `netdisco/pgdata/` and we do not advise touching them (unless you wish to reinitialize the system).
 
@@ -109,7 +109,7 @@ This default target rebuilds only "netdisco-backend" and "netdisco-web". You can
 or the `all` target to rebuild with both "netdisco-postgresql" and "netdisco-postgresql-13".
 
 The build images will NOT be tagged with "netdisco" prefix (they will look like "localhost:5000/netdisco:latest-web" in `docker images --tree`). To use them
-with our Docker Compose files (as above), we have a [mix-in file](https://raw.githubusercontent.com/netdisco/netdisco-docker/refs/heads/master/compose.mixin.localregistry.yaml):
+with our Docker Compose files (as above), we have a [mix-in file](https://github.com/netdisco/netdisco-docker/raw/refs/heads/master/compose.mixin.localregistry.yaml):
 
     COMMITTISH=HEAD docker compose -f compose.yaml -f compose.mixin.localregistry.yaml up
 
