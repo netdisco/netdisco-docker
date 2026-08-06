@@ -78,7 +78,7 @@ Edit the mix-in to point to another location.
 
 The following command will download and update the MAC vendor database:
 
-    curl -Ls https://raw.githubusercontent.com/netdisco/upstream-sources/refs/heads/master/bootstrap/netdisco-lookup-tables.sql | docker compose exec -T netdisco-backend /home/netdisco/bin/netdisco-env psql
+    curl -Ls https://github.com/netdisco/upstream-sources/raw/refs/heads/master/bootstrap/netdisco-lookup-tables.sql | docker compose exec -T netdisco-backend /home/netdisco/bin/netdisco-env psql
 
 Each containerised Netdisco release also includes the latest MAC vendors, and automatically updates them when starting.
 
