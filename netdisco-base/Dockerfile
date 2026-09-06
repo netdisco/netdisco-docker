@@ -35,13 +35,10 @@ RUN --mount=type=cache,target=/var/cache/apk \
       ca-certificates \
       curl \
       expect \
-      expect-dev \
       findutils \
-      icu-data-full \
+#      icu-data-full \
       jq \
       libc6-compat \
-      musl-dev \
-      musl-obstack-dev \
       net-snmp-perl \
       openssh-client \
       perl-crypt-rijndael \
@@ -72,11 +69,14 @@ FROM netdisco-common-base AS netdisco-builder-image
 
 RUN --mount=type=cache,target=/var/cache/apk \
     apk add \
+      expect-dev \
       g++ \
       gcc \
       git \
       linux-headers \
       make \
+      musl-dev \
+      musl-obstack-dev \
       openssl-dev \
       perl-dev \
       postgresql18-dev \
@@ -133,6 +133,9 @@ RUN --mount=type=cache,target=${WORK_DIR}/.cpanm,sharing=locked \
     /tmp/cpanm --quiet --notest --local-lib "${WORK_DIR}/perl5" \
       "${NETDISCO_GIT_URL}@${COMMITTISH}"
 
+# strip Perl docs/man pages — cpanm --notest still installs these
+RUN find "${WORK_DIR}/perl5" \( -name '*.pod' -o -path '*/man/*' \) -delete
+
 RUN mv /home/netdisco /home/netdisco-build
 
 # ----------------------------------------------------------------------------
@@ -140,35 +143,37 @@ FROM netdisco-common-base
 
 RUN groupadd -r netdisco -g 901 && \
     useradd -u 901 -r -p x -g netdisco -m -d /home/netdisco -s /bin/ash -c "netdisco user" netdisco
-USER netdisco:netdisco
 
 RUN for tgt in bin environments nd-site-local logs; \
       do mkdir /home/netdisco/$tgt; done && \
       ln -s /dev/stdout /home/netdisco/logs/netdisco-backend.log && \
       ln -s /dev/stdout /home/netdisco/logs/netdisco-web.log
 
-# copy Netdisco from the bloated build image
-COPY --chown=netdisco:netdisco --from=netdisco-builder-image \
-  /home/netdisco-build /home/netdisco/
-
-# replace default config with one that works better for docker install
-COPY --chown=netdisco:netdisco deployment.yml \
-  /home/netdisco/perl5/lib/perl5/auto/share/dist/App-Netdisco/environments/deployment.yml
-
-RUN for tgt in /home/netdisco/perl5/bin/netdisco-*; \
-      do ln -sf $tgt /home/netdisco/bin/; done && \
-    ln -sf /home/netdisco/perl5/bin/localenv /home/netdisco/bin/
-
 # Make /home/netdisco writable under arbitrary UIDs (OpenShift random UID,
 # kubectl runAsUser, etc.) by routing access via supplemental gid 0, which
 # is added to every container by OpenShift. Harmless when the image runs
 # as the netdisco user (the default in docker compose).
-USER root
-RUN chgrp -R 0 /home/netdisco && chmod -R g=u /home/netdisco
+
+RUN chown -R netdisco:root /home/netdisco && \
+    chmod -R ug=rwX,o=rX /home/netdisco
+
+# copy Netdisco from the bloated build image
+# make sure this happens after the general chown/chmod above, otherwise
+# we end up with a huge additonal layer in the container.
+COPY --chown=netdisco:root --chmod=ug=rwX,o=rX --from=netdisco-builder-image \
+  /home/netdisco-build /home/netdisco/
+
+# replace default config with one that works better for docker install
+COPY --chown=netdisco:root --chmod=ug=rwX,o=rX deployment.yml \
+  /home/netdisco/perl5/lib/perl5/auto/share/dist/App-Netdisco/environments/deployment.yml
+
+# these will be created as root but it's not a problem
+RUN for tgt in /home/netdisco/perl5/bin/netdisco-*; \
+      do ln -sf $tgt /home/netdisco/bin/; done && \
+    ln -sf /home/netdisco/perl5/bin/localenv /home/netdisco/bin/
 
 USER netdisco:netdisco
 WORKDIR /home/netdisco
-
 ENV PATH="/home/netdisco/bin:$PATH"
 ENV SHELL=/bin/ash
 
