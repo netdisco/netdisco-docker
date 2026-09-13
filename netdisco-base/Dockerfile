@@ -115,7 +115,7 @@ COPY Builder.pm /tmp/netdisco-tree/lib/App/Netdisco/Builder.pm
 RUN --mount=type=cache,target=${WORK_DIR}/.cpanm,sharing=locked \
     export PERL5LIB="${WORK_DIR}" \
            PERL_CPANM_HOME="${WORK_DIR}/.cpanm" && \
-    /tmp/cpanm --quiet --notest --local-lib "${WORK_DIR}/perl5" \
+    /tmp/cpanm --quiet --notest --mirror-only --local-lib "${WORK_DIR}/perl5" \
       --installdeps /tmp/netdisco-tree
 
 # in github actions the COMMITTISH is set to latest release version
