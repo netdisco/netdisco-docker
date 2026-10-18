@@ -56,7 +56,7 @@ If a schema upgrade fails, the `netdisco-db-init` container exits and the stack 
 
     NETDISCO_DB_DEPLOY_ARGS=--force-step 57
 
-then rerun the same `up` command you used for the upgrade. Remove the line after the stack starts. A leftover `--force-step` only warns, but a leftover `--redeploy-all` replays the whole deployment on every start. Adding `--check` compares the database with the expected schema and never blocks the start; combined with another option, it runs the check first and then the upgrade with the other option.
+then rerun the same `up` command you used for the upgrade. Remove the line after the stack starts. A leftover `--force-step` only warns, but a leftover `--redeploy-all` replays the whole deployment on every start. Adding `--check` compares the database with the expected schema and never blocks the start; it runs after the upgrade, which uses any other option given with it.
 
 ##  Using an external PostgreSQL database
 

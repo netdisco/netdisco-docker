@@ -79,12 +79,13 @@ for WORD in ${DEPLOY_WORDS[@]+"${DEPLOY_WORDS[@]}"}; do
   fi
 done
 
+# a non-zero exit stops this script (set -e) and so the whole stack start
+/home/netdisco/bin/netdisco-db-deploy ${DEPLOY_ARGS[@]+"${DEPLOY_ARGS[@]}"}
+
+# after the upgrade, because the check refuses a database at another version
 if [ "${RUN_CHECK}" -eq 1 ]; then
   /home/netdisco/bin/netdisco-db-deploy --check || true
 fi
-
-# a non-zero exit stops this script (set -e) and so the whole stack start
-/home/netdisco/bin/netdisco-db-deploy ${DEPLOY_ARGS[@]+"${DEPLOY_ARGS[@]}"}
 echo >&2 -e "${COL}netdisco-updatedb: schema is up-to-date${NC}"
 
 echo >&2 -e "${COL}netdisco-updatedb: importing OUI${NC}"
