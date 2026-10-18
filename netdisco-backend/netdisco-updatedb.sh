@@ -17,7 +17,6 @@ export COL='\033[0;35m'
 export NC='\033[0m'
 
 psql=( psql -X -v ON_ERROR_STOP=0 -v ON_ERROR_ROLLBACK=on )
-MAXSCHEMA=$(grep VERSION /home/netdisco/perl5/lib/perl5/App/Netdisco/DB.pm | sed 's/[^0-9]//g')
 
 if [ -z $("${psql[@]}" -Atc "SELECT to_regclass('device')") ] \
   || [ -z $("${psql[@]}" -Atc "SELECT ip FROM device LIMIT 1") ]; then
@@ -63,28 +62,30 @@ if [ -z $("${psql[@]}" -Atc "SELECT to_regclass('device')") ] \
   fi
 fi
 
-if [ -z $("${psql[@]}" -Atc "SELECT to_regclass('dbix_class_schema_versions')") ] \
-  || [ -z $("${psql[@]}" -Atc "SELECT 1 FROM dbix_class_schema_versions WHERE version = '${MAXSCHEMA}'") ]; then
-  echo >&2 -e "${COL}netdisco-updatedb: bringing schema up-to-date${NC}"
+echo >&2 -e "${COL}netdisco-updatedb: bringing schema up-to-date${NC}"
+export NETDISCO_DB_DEPLOY_CONTAINER=1
 
-  MAXINSTALLED=0
-  if [ -z $("${psql[@]}" -Atc "SELECT to_regclass('dbix_class_schema_versions')") ]; then
-    "${psql[@]}" -c "CREATE TABLE dbix_class_schema_versions (version varchar(10) PRIMARY KEY, installed varchar(20) NOT NULL)"
+# split on whitespace on purpose: the setting holds options such as "--force-step 57"
+# which must reach netdisco-db-deploy as separate arguments
+read -r -a DEPLOY_WORDS <<< "${NETDISCO_DB_DEPLOY_ARGS:-}"
+
+DEPLOY_ARGS=()
+RUN_CHECK=0
+for WORD in ${DEPLOY_WORDS[@]+"${DEPLOY_WORDS[@]}"}; do
+  if [ "${WORD}" = "--check" ]; then
+    RUN_CHECK=1
   else
-    MAXINSTALLED=$(${psql[@]} -Atc "SELECT max(version ::integer) FROM dbix_class_schema_versions")
+    DEPLOY_ARGS+=("${WORD}")
   fi
+done
 
-  ls -1 /home/netdisco/perl5/lib/perl5/auto/share/dist/App-Netdisco/schema_versions/App-Netdisco-DB-* | \
-    xargs -n1 basename | sort -n -t '-' -k4 | awk -v MAXINSTALLED="$MAXINSTALLED" -F '-' '$4 >= MAXINSTALLED' | \
-    while read file; do
-      echo >&2 -e "${COL}netdisco-updatedb: applying schema update ${file}${NC}"
-      "${psql[@]}" -f "/home/netdisco/perl5/lib/perl5/auto/share/dist/App-Netdisco/schema_versions/$file" >/dev/null 2>&1
-    done
-
-  STAMP=$(date '+v%Y%m%d_%H%M%S.000')
-  "${psql[@]}" -c "INSERT INTO dbix_class_schema_versions VALUES ('${MAXSCHEMA}', '${STAMP}')"
-  echo >&2 -e "${COL}netdisco-updatedb: schema is up-to-date${NC}"
+if [ "${RUN_CHECK}" -eq 1 ]; then
+  /home/netdisco/bin/netdisco-db-deploy --check || true
 fi
+
+# a non-zero exit stops this script (set -e) and so the whole stack start
+/home/netdisco/bin/netdisco-db-deploy ${DEPLOY_ARGS[@]+"${DEPLOY_ARGS[@]}"}
+echo >&2 -e "${COL}netdisco-updatedb: schema is up-to-date${NC}"
 
 echo >&2 -e "${COL}netdisco-updatedb: importing OUI${NC}"
 "${psql[@]}" -f /var/lib/postgresql/netdisco-sql/netdisco-lookup-tables.sql
