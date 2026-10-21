@@ -10,6 +10,11 @@ set -euo pipefail
 : "${PGUSER:=${NETDISCO_DB_USER:=netdisco}}"
 : "${PGPASSWORD:=${NETDISCO_DB_PASS:=netdisco}}"
 
+# netdisco-db-deploy reads these from the environment; running as postgres it
+# finds no deployment.yml, and an unset name gives it an empty dbname
+export PGDATABASE PGHOST PGPORT PGUSER PGPASSWORD \
+  NETDISCO_DB_NAME NETDISCO_DB_HOST NETDISCO_DB_PORT NETDISCO_DB_USER NETDISCO_DB_PASS
+
 # the no_auth=true initial login user
 : "${NETDISCO_ADMIN_USER:=guest}"
 
