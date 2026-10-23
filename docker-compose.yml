@@ -59,6 +59,7 @@ services:
       <<: *common-environment
       DEPLOY_ADMIN_USER: '${DEPLOY_ADMIN_USER:-YES}' # or set to NO
       NETDISCO_ADMIN_USER:
+      NETDISCO_DB_DEPLOY_ARGS:
 
   netdisco-backend:
     container_name: netdisco-backend

@@ -50,6 +50,14 @@ Pull new images and recreate the containers:
 
 Note carefully the commands used. The PostgreSQL database, and Netdisco's schema, will both be upgraded.
 
+##  When the database upgrade stops
+
+If a schema upgrade fails, the `netdisco-db-init` container exits and the stack does not start. Its log (`docker compose logs netdisco-db-init`) names the value to use. Set `NETDISCO_DB_DEPLOY_ARGS` to it in `.env`, for example:
+
+    NETDISCO_DB_DEPLOY_ARGS=--force-step 57
+
+then rerun the same `up` command you used for the upgrade. Remove the line after the stack starts. A leftover `--force-step` only warns, but a leftover `--redeploy-all` replays the whole deployment on every start. Adding `--check` compares the database with the expected schema and never blocks the start; it runs after the upgrade, which uses any other option given with it.
+
 ##  Using an external PostgreSQL database
 
 We have a [mix-in Docker Compose file](https://github.com/netdisco/netdisco-docker/raw/refs/heads/master/compose.mixin.extpg.yaml) for this. It stops our own database container from running and will look to either [environment variables](https://github.com/netdisco/netdisco/wiki/Environment-Variables) or a local `deployment.yml` configuration file for connection details.
