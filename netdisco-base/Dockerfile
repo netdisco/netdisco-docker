@@ -106,9 +106,11 @@ RUN --mount=type=cache,target=${WORK_DIR}/.cpanm,sharing=locked \
       URL::Encode \
       REST::Client
 
-# grab the fetched file from the second stage.
+# grab the fetched files from the second stage.
 # if Build.PL has not changed, Docker's cache remains valid.
+# Build.PL reads the SNMP::Info minimum from Util/SNMP.pm (since 2.121000)
 COPY --from=fetcher /fetch/Build.PL /tmp/netdisco-tree/Build.PL
+COPY --from=fetcher /fetch/lib/App/Netdisco/Util/SNMP.pm /tmp/netdisco-tree/lib/App/Netdisco/Util/SNMP.pm
 COPY Netdisco.pm /tmp/netdisco-tree/lib/App/Netdisco.pm
 COPY Builder.pm /tmp/netdisco-tree/lib/App/Netdisco/Builder.pm
 
